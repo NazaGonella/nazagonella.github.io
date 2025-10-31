@@ -68,6 +68,7 @@ padding: 2em;
 max-width: 100%;
 box-sizing: border-box;
 border-radius: 10px;
+font-weight: 500;
 /*
 margin-top: 1.5em;
 font-family: Georgia, "Times New Roman", serif;
@@ -154,13 +155,13 @@ margin-top: 4ch;
 
 @media (max-width: 500px) { /* For small screen decices */
 		* {
-				/*
-				font-size: 12px; 
-				*/
-				font-size: 14px; 
+		font-size: 13px;
 		}
 		body {
 				padding: 1em;
+		}
+		p {
+			text-align: justify;
 		}
 		header {
 				display: flex;
