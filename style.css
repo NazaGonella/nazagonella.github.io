@@ -27,35 +27,15 @@ header .title:hover {
 
 
 html, body {
-  margin: 0;
-  padding: 0;
+  box-sizing: border-box;
 }
 
 html {
-max-width: 900px;  /* For Desktop PC (see @media for Tablets/Phones) */
-padding-left: 2%;
-padding-right: 3%;
-margin: 0 auto;
-/*background: #F5F5F0;*/
-/*background: #2f2f3f;*/
-/*background: #e0e0f0;*/
-/*background: #03312E;*/
-/*background: #001A23;*/
-/*background: #F49D37;*/
-/*background: #D72638;*/
-/*background: #DB5A42;*/
-/*background: #F06543;*/
-/*background: #ED6A5A;*/
-/*background: #BE7C4D;*/
-/*background: #5B616A;*/
-/*background: #D7907B;*/
-/*
-background: #BB8588;
-background: #F19953;
-background: #C47335;
- */
-background: #F19953;
-} 
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  background: #F19953;
+}
 
 body {
 background: #fafafa;
@@ -64,7 +44,9 @@ font-size: 18px;
 line-height: 1.5;
 margin-top: 0.5em;
 padding: 2em;
-border-radius: 10px; /* rounds corners */
+max-width: 100%;
+box-sizing: border-box;
+border-radius: 10px;
 /*
 margin-top: 1.5em;
 font-family: Georgia, "Times New Roman", serif;
@@ -156,6 +138,27 @@ font-size: 16px;
 * {
 font-size: 12px; 
 }
+body {
+padding: 1em;
+}
+    header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    header > nav {
+        float: none;
+        margin-top: 0.0em;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5em; /* horizontal spacing between links */
+    }
+
+    header > nav a {
+        display: inline-block;
+        margin-bottom: 0;
+    }
 }   
 .title {
 text-decoration: none;
