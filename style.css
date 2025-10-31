@@ -60,7 +60,7 @@ html {
 
 body {
 background: #fafafa;
-font-family: monospace, "Fira Code Medium", "Fira Code", "DejaVu Sans Mono", "Ubuntu Mono", "Courier New", "Hack";
+font-family: "Fira Code Medium", "Fira Code", "DejaVu Sans Mono", "Ubuntu Mono", "Courier New", "Hack", monospace;
 font-size: 18px;
 line-height: 1.5;
 margin-top: 0.5em;
