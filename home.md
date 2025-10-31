@@ -6,6 +6,4 @@
 
 <hr />
 
-HOME TEST
-
 ---
