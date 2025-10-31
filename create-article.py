@@ -3,6 +3,9 @@ import sys
 import os
 from datetime import datetime
 
+def suffix(d):
+    return 'th' if 11<=d<=13 else {1:'st',2:'nd',3:'rd'}.get(d%10, 'th')
+
 home_path : str = "./home.md"
 articles_path : str = "./articles"
 
@@ -15,6 +18,9 @@ if len(sys.argv) != 3:
 
 file_name = sys.argv[1]
 article_title = sys.argv[2]
+
+today = datetime.now().strftime("%B {S}, %Y").replace('{S}', str(datetime.now().day) + suffix(datetime.now().day))
+
 header : str = f"""%{article_title}
 
 <header>
@@ -25,16 +31,20 @@ header : str = f"""%{article_title}
 
 ## {article_title}
 
+{today}
+
 ---
 """
 
+
 today = datetime.now().strftime("%d/%m/%Y")
-article_entry : str = f"{today}: [**{article_title}**](./articles/{file_name}/index.html) \n"
+article_entry : str = f"{today}: [**{article_title}**](./articles/{file_name}/index.html)  \n"
 
 with open(home_path, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
-lines.insert(-2, article_entry)
+print(lines)
+lines.insert(7, article_entry)
 
 with open(home_path, "w", encoding="utf-8") as f:
     f.writelines(lines)

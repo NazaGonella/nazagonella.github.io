@@ -5,6 +5,6 @@
 </header>
 
 <hr />
-31/10/2025: [**This is a Test Article**](./articles/test-article/index.html) 
+31/10/2025: [**This is a Test Article**](./articles/test-article/index.html)  
 
 ---
