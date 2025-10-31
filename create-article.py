@@ -9,10 +9,12 @@ articles_path : str = "./articles"
 file_name : str = ""
 article_title : str = ""
 
-if (len(sys.argv) == 3):
-    file_name = sys.argv[1]
-    article_title = sys.argv[2]
+if len(sys.argv) != 3:
+    print("Usage: python create-article.py <file_name> <article_title>")
+    sys.exit(1)
 
+file_name = sys.argv[1]
+article_title = sys.argv[2]
 header : str = f"""%{article_title}
 
 <header>
@@ -43,14 +45,14 @@ with open(f"{articles_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") 
     f.write(header)
 
 
-css_file = os.path.expanduser("~/css-styles/blog-style.css")
+css_file = "../../style.css"
 
 subprocess.run([
     "pandoc",
     "-s",
     home_path,
     "-o", "index.html",
-    "--css", css_file,
+    "--css", "./style.css",
     "-V", "title="
 ])
 
@@ -59,7 +61,12 @@ subprocess.run([
     "-s",
     f"{articles_path}/{file_name}/{file_name}.md",
     "-o", f"{articles_path}/{file_name}/index.html",
-    "--css", css_file,
+    "--css", "../../style.css",
     "-V", "title="
 ])
 # pandoc -s <afile> -o index.html --css $HOME/css-styles/blog-style.css -V title=""
+
+subprocess.run([
+    "vim",
+    f"{articles_path}/{file_name}/{file_name}.md"
+])
