@@ -1,0 +1,11 @@
+#!/bin/bash
+
+working_branch="working"
+
+git checkout master
+git reset --hard "$working_branch"
+git push --force origin master
+
+echo "Master branch updated."
+
+git checkout "$working_branch"
