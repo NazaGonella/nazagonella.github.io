@@ -154,7 +154,10 @@ margin-top: 4ch;
 
 @media (max-width: 500px) { /* For small screen decices */
 		* {
+				/*
 				font-size: 12px; 
+				*/
+				font-size: 14px; 
 		}
 		body {
 				padding: 1em;
