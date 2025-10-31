@@ -1,14 +1,10 @@
 % Naza Gonella's Site
 
-<div style="display: block; width: 100%; text-align: left; margin-bottom:2em">
-<a href="" class="title"><b>nazareno gonella</b><br></a>
+<header>
+    <a class="title" href="/">Nazareno Gonella</a><nav><a class="title" style="color: blue;" href="/blog/">BLOG</a> &nbsp;&nbsp; <a class="title" style="color: blue;" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" style="color: blue;" href="">CV</a></nav>
+</header>
+
 <hr />
-<div style="text-align: justify; width: 100%;">
-<a class="title" href="" style="color: blue;">BLOG</a> &nbsp;&nbsp;
-<a class="title" href="mailto:nazagonella2@gmail.com" style="color: blue;">CONTACT</a> &nbsp;&nbsp;
-<a class="title" href="" style="color: blue;">CV</a>
-</div>
-</div>
 
 ### Articles
 
