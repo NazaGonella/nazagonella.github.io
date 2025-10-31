@@ -43,7 +43,19 @@ html {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
+  /*
+  background: #B84A62;
+  background: #773344;
+  background: #524948;
+  background: #AC7B84;
+  background: #916953;
+  background: #191102;
+  background: #171614;
   background: #F19953;
+  background: #D5896F;
+  background: #945D5E;
+  */
+  background: #BC4B51;
 }
 
 body {
