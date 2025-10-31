@@ -6,6 +6,6 @@
 
 <hr />
 30/10/2025: [**JSON Parser Step by Step**](./articles/json-parser-step-by-step/index.html)  
-31/10/2025: [**The C Programming Language**](./articles/the-c-programming/index.html)  
+31/10/2025: [**Nothing Fancy - Making This Blog**](./articles/nothing-fancy-building-this-blog/index.html) 
 
 ---
