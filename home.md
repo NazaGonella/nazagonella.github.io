@@ -5,6 +5,5 @@
 </header>
 
 <hr />
-30/10/2025: [**JSON Parser Step by Step**](./articles/json-parser-step-by-step/index.html)  
 
 ---
