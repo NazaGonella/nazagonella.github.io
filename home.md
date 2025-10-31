@@ -5,6 +5,5 @@
 </header>
 
 <hr />
-31/10/2025: [**Nothing Fancy: Making This Blog**](./articles/nothing-fancy-making-this-blog/index.html) 
 
 ---
