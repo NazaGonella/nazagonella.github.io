@@ -3,9 +3,10 @@
 working_branch="working"
 
 git checkout master
-git reset --hard "$working_branch"
-git push --force origin master
+git merge working
+git push origin master
 
-echo "Master branch updated."
+
+echo "Master branch merged."
 
 git checkout "$working_branch"
