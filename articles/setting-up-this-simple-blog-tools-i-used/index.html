@@ -44,39 +44,37 @@ way to start than writing about this same process?</p>
 <hr />
 <h3 id="what-am-i-looking-for">What Am I Looking For?</h3>
 <p>From the start I knew I wanted something simple, easy to maintain and
-fast to iterate with. One of the major reasons I’m doing this is to
-structure my thinking when working on personal projects or studying for
-university, and for that I need not to lose the focus on anything other
-than the writing.</p>
+quick to iterate. One of the major reasons I’m doing this is to
+structure my thinking when working on any type of project, and for that
+I need not be distracted by implementation details.</p>
 <p>Still, I would like to have some formatting, as there were times I
-would take notes in a plain text file for then to never come back to
+would take notes in plain text files for then to never come back to
 them. So I’m using the next closest thing, Markdown.</p>
 <p>Now what I need is to convert this Markdown file into a HTML file,
-and after looking around for some converter recommendations on Reddit, I
-found pandoc, which is exactly what I needed, easy to use and fast. For
-any .md file I had I just had to run
+and after looking around for some recommendations on Reddit, I found the
+<a href="https://pandoc.org/">pandoc</a> document converter, which is
+exactly what I needed. For any <code>.md</code> file I just had to run
 <code>pandoc input.md -o index.html</code>.</p>
-<p>And there it was, all of just what I wanted, almost.</p>
+<p>And there it was, just what I wanted, almost.</p>
 <hr />
 <h3 id="the-looks">The Looks</h3>
 <p>A plain HTML file with formatted text is a lot better than a plain
-text file, but unfortunately it doesn’t look well on my portfolio. I
+text file, but unfortunately it doesn’t look good on the portfolio. I
 need something simple, but still good looking. Luckily you can link a
 .css file to the output of pandoc using the <code>--css</code> argument.
-The problem is I’m not used at all to using css, so it is time to look
-for references.</p>
+The problem is I don’t have much experience using css, so it is time to
+look for references.</p>
 <p>I really like <a href="https://fabiensanglard.net/">Fabien
 Sanglard’s</a> and <a href="https://stevelosh.com/">Steve Losh’s</a>
 websites. They are minimalistic, nice to look at, and easy to read. I
 appreciate how you can immediately see all the stuff the authors have
-been working or pondering on the last couple of years as soon as you
-enter. The structure of these websites I will also be focusing on, not
-just the looks. So with the help of inspect element and a couple of
-queries to ChatGPT, I ended up with a style I was happy with.</p>
+been working on or pondering over the last couple of years as soon as
+you enter. With the help of inspect element and a couple of queries to
+ChatGPT, I ended up with a style I was happy with.</p>
 <p>There was now a need for a nice header: css and Markdown alone
-wouln’t suffice. Fortunately pandoc allows for HTML to be written to the
-Markdown file, which then it passes to the final output unchanged. I can
-now define a simple header to include on all the pages to ensure a
+wouldn’t suffice. Fortunately, pandoc allows for HTML to be written into
+the Markdown file, which it then passes to the final output unchanged. I
+can now define a simple header to include on all the pages and ensure a
 concise style, but to achieve that I would have to copy and paste the
 same header everytime I create a new page. It would be nice to have some
 sort of page template.</p>
@@ -87,9 +85,9 @@ that takes <code>&lt;file-name&gt;</code> and
 <code>&lt;article-title&gt;</code> as arguments. This script creates
 <code>&lt;file-name&gt;.md</code> and writes to it the pandoc markdown
 title <code>% &lt;article-title&gt;</code>, the page header, and the
-article header with the date when the article was created.</p>
-<pre><code># creates the article md file, and inserts the header
-date_header : datetime = datetime.now().strftime(&quot;%B {S}, %Y&quot;).replace(&#39;{S}&#39;, str(datetime.now().day))
+article header with the date of when the article was created.</p>
+<pre><code>header_date : datetime = datetime.now().strftime(&quot;%B {S}, %Y&quot;).replace(&#39;{S}&#39;, str(datetime.now().day))
+
 header : str = f&quot;&quot;&quot;%{article_title}
 
 &lt;header&gt;
@@ -100,10 +98,11 @@ header : str = f&quot;&quot;&quot;%{article_title}
 
 ## {article_title}
 
-{date_header}
+{header_date}
 
 ---
 &quot;&quot;&quot;
+
 with open(f&quot;{articles_path}/{file_name}/{file_name}.md&quot;, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
     f.write(header)</code></pre>
 </body>

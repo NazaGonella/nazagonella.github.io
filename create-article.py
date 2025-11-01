@@ -11,7 +11,6 @@ if len(sys.argv) != 3:
 file_name = sys.argv[1]
 article_title = sys.argv[2]
 
-home_path : str = "./home.md"
 articles_path : str = "./articles"
 
 
@@ -49,6 +48,7 @@ with open(f"{articles_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") 
 
 # adds the article entry to home.md
 
+home_path : str = "./home.md"
 date_entry = datetime.now().strftime("%d/%m/%Y")
 article_entry : str = f"{date_entry}: [**{article_title}**](./articles/{file_name}/index.html)  \n"
 
