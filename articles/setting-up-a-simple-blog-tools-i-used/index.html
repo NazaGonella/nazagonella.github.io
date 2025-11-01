@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Setting Up This Simple Blog - Tools I Used</title>
+  <title>Setting Up a Simple Blog - Tools I Used</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -34,8 +34,8 @@
 </nav>
 </header>
 <hr />
-<h2 id="setting-up-this-simple-blog---tools-i-used">Setting Up This
-Simple Blog - Tools I Used</h2>
+<h2 id="setting-up-a-simple-blog---tools-i-used">Setting Up a Simple
+Blog - Tools I Used</h2>
 <p>October 31st, 2025</p>
 <hr />
 <p>The idea to start writing a blog has been in my mind for quite some
@@ -47,18 +47,23 @@ way to start than writing about this same process?</p>
 quick to iterate. One of the major reasons I’m doing this is to
 structure my thinking when working on any type of project, and for that
 I need not be distracted by implementation details.</p>
+<hr />
+<h3 id="barebones">Barebones</h3>
 <p>Still, I would like to have some formatting, as there were times I
 would take notes in plain text files for then to never come back to
 them. So I’m using the next closest thing, Markdown.</p>
 <p>Now what I need is to convert this Markdown file into a HTML file,
-and after looking around for some recommendations on Reddit, I found the
-<a href="https://pandoc.org/">pandoc</a> document converter, which is
+and after looking around through some posts on reddit, I found the <a
+href="https://pandoc.org/">pandoc</a> document converter, which is
 exactly what I needed. For any <code>.md</code> file I just had to run
-<code>pandoc input.md -o index.html</code>. <strong>pandoc</strong> also
-supports <em>Metadata Blocks</em>, an extension to Markdown that allows
-including bibliographic information such as <code>% title</code>,
-<code>% authors(s)</code> and <code>% date</code>. I will only be using
-<code>% title</code> since the tool requires it.</p>
+<code>pandoc input.md -o index.html</code>.</p>
+<p>Pandoc utilizes an extended version of Markdown which comes in handy,
+as it includes support for tables, definition lists, footnotes,
+citations and even math.</p>
+<p>It also supports <em>Metadata Blocks</em>, which allows including
+information such as <code>% title</code>, <code>% author</code> and
+<code>% date</code>. I will only be using <code>% title</code> since the
+tool requires it.</p>
 <p>And there it was, just what I wanted, almost.</p>
 <hr />
 <h3 id="the-looks">The Looks</h3>
@@ -83,13 +88,14 @@ concise style, but to achieve that I would have to copy and paste the
 same header everytime I create a new page. It would be nice to have some
 sort of page template.</p>
 <hr />
-<h3 id="page-template">Page Template</h3>
+<h3 id="the-page-template">The Page Template</h3>
 <p>I went on and created <code>create-article.py</code>, a Python script
 that takes <code>&lt;file-name&gt;</code> and
 <code>&lt;article-title&gt;</code> as arguments. This script creates
 <code>&lt;file-name&gt;.md</code> and writes to it the metadata block
-<code>% &lt;article-title&gt;</code>, the page header, and the article
-header with the date of when the article was created.</p>
+<code>% &lt;article-title&gt;</code>, the page header and the article
+header with the date of when the article was created.<a href="#fn1"
+class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <pre><code>header_date : datetime = datetime.now().strftime(&quot;%B {S}, %Y&quot;).replace(&#39;{S}&#39;, str(datetime.now().day))
 
 header : str = f&quot;&quot;&quot;%{article_title}
@@ -109,5 +115,59 @@ header : str = f&quot;&quot;&quot;%{article_title}
 
 with open(f&quot;{articles_path}/{file_name}/{file_name}.md&quot;, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
     f.write(header)</code></pre>
+<p>I also included in the script some code to add the article entry
+along with the date to the home page</p>
+<pre><code>home_path : str = &quot;./home.md&quot;
+date_entry = datetime.now().strftime(&quot;%d/%m/%Y&quot;)
+article_entry : str = f&quot;{date_entry}: [**{article_title}**](./articles/{file_name}/index.html)  \n&quot;
+
+with open(home_path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+    lines = f.readlines()
+
+lines.insert(7, article_entry)
+
+with open(home_path, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
+    f.writelines(lines)</code></pre>
+<p>And to convert both <code>home.md</code> and the article entry
+<code>.md</code> file to html</p>
+<pre><code>css_file = &quot;../../style.css&quot;
+
+subprocess.run([
+    &quot;pandoc&quot;,
+    &quot;-s&quot;,
+    home_path,
+    &quot;-o&quot;, &quot;index.html&quot;,
+    &quot;--css&quot;, &quot;./style.css&quot;,
+    &quot;-V&quot;, &quot;title=&quot;
+])
+
+subprocess.run([
+    &quot;pandoc&quot;,
+    &quot;-s&quot;,
+    f&quot;{articles_path}/{file_name}/{file_name}.md&quot;,
+    &quot;-o&quot;, f&quot;{articles_path}/{file_name}/index.html&quot;,
+    &quot;--css&quot;, &quot;../../style.css&quot;,
+    &quot;-V&quot;, &quot;title=&quot;
+])
+</code></pre>
+<p>Notice I’m adding additional arguments to <strong>pandoc</strong>:
+<code>-s</code> introduces the headers and footers to make the output a
+standalone HTML document. <code>-V</code> sets the <code>title</code>
+variable to nothing, preventing it of adding the Metadata Block
+<code>% title</code> as a header in the document.</p>
+<p>With this, I now have an easy way of creating new entries. How about
+working with them?</p>
+<hr />
+<h3 id="workflow">Workflow</h3>
+<p>I will be using <strong>vim</strong> as my text editor. Markdown is
+not too complicated so</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Actually,<a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 </body>
 </html>
