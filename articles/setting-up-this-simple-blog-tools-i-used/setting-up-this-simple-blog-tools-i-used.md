@@ -1,7 +1,7 @@
 %Setting Up This Simple Blog - Tools I Used
 
 <header>
-    <a class="name" href="../../index.html">Nazareno Gonella</a><nav><a class="title" href="">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="">CV</a></nav>
+    <a class="name" href="../../index.html">Nazareno Gonella</a><nav><a class="title" href="../../index.html">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="">CV</a></nav>
 </header>
 
 <hr />
@@ -22,7 +22,7 @@ From the start I knew I wanted something simple, easy to maintain and quick to i
 
 Still, I would like to have some formatting, as there were times I would take notes in plain text files for then to never come back to them. So I'm using the next closest thing, Markdown.
 
-Now what I need is to convert this Markdown file into a HTML file, and after looking around for some recommendations on Reddit, I found the [pandoc](https://pandoc.org/) document converter, which is exactly what I needed. For any `.md` file I just had to run `pandoc input.md -o index.html`.
+Now what I need is to convert this Markdown file into a HTML file, and after looking around for some recommendations on Reddit, I found the [pandoc](https://pandoc.org/) document converter, which is exactly what I needed. For any `.md` file I just had to run `pandoc input.md -o index.html`. **pandoc** also supports *Metadata Blocks*, an extension to Markdown that allows including bibliographic information such as `% title`, `% authors(s)` and `% date`. I will only be using `% title` since the tool requires it.
 
 And there it was, just what I wanted, almost.
 
@@ -30,7 +30,9 @@ And there it was, just what I wanted, almost.
 
 ### The Looks
 
-A plain HTML file with formatted text is a lot better than a plain text file, but unfortunately it doesn't look good on the portfolio. I need something simple, but still good looking. Luckily you can link a .css file to the output of pandoc using the `--css` argument. The problem is I don't have much experience using css, so it is time to look for references.
+A plain HTML file with formatted text is a lot better than a plain text file, but unfortunately it doesn't look good on the portfolio. 
+
+I need something simple, but still good looking. Luckily you can link a `.css` file to the output of pandoc using the `--css` argument. The problem is I don't have much experience using css, so it is time to look for references.
 
 I really like [Fabien Sanglard's](https://fabiensanglard.net/) and [Steve Losh's](https://stevelosh.com/) websites. They are minimalistic, nice to look at, and easy to read. I appreciate how you can immediately see all the stuff the authors have been working on or pondering over the last couple of years as soon as you enter. With the help of inspect element and a couple of queries to ChatGPT, I ended up with a style I was happy with.
 
@@ -40,7 +42,7 @@ There was now a need for a nice header: css and Markdown alone wouldn't suffice.
 
 ### Page Template
 
-I went on and created `create-article.py`, a Python script that takes `<file-name>` and `<article-title>` as arguments. This script creates `<file-name>.md` and writes to it the pandoc markdown title `% <article-title>`, the page header, and the article header with the date of when the article was created.
+I went on and created `create-article.py`, a Python script that takes `<file-name>` and `<article-title>` as arguments. This script creates `<file-name>.md` and writes to it the metadata block `% <article-title>`, the page header, and the article header with the date of when the article was created.
 
 ```
 header_date : datetime = datetime.now().strftime("%B {S}, %Y").replace('{S}', str(datetime.now().day))

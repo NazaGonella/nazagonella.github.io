@@ -28,7 +28,7 @@
 <header>
 <a class="name" href="../../index.html">Nazareno Gonella</a>
 <nav>
-<a class="title" href="">BLOG</a>   
+<a class="title" href="../../index.html">BLOG</a>   
 <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a>   
 <a class="title" href="">CV</a>
 </nav>
@@ -54,16 +54,20 @@ them. So I’m using the next closest thing, Markdown.</p>
 and after looking around for some recommendations on Reddit, I found the
 <a href="https://pandoc.org/">pandoc</a> document converter, which is
 exactly what I needed. For any <code>.md</code> file I just had to run
-<code>pandoc input.md -o index.html</code>.</p>
+<code>pandoc input.md -o index.html</code>. <strong>pandoc</strong> also
+supports <em>Metadata Blocks</em>, an extension to Markdown that allows
+including bibliographic information such as <code>% title</code>,
+<code>% authors(s)</code> and <code>% date</code>. I will only be using
+<code>% title</code> since the tool requires it.</p>
 <p>And there it was, just what I wanted, almost.</p>
 <hr />
 <h3 id="the-looks">The Looks</h3>
 <p>A plain HTML file with formatted text is a lot better than a plain
-text file, but unfortunately it doesn’t look good on the portfolio. I
-need something simple, but still good looking. Luckily you can link a
-.css file to the output of pandoc using the <code>--css</code> argument.
-The problem is I don’t have much experience using css, so it is time to
-look for references.</p>
+text file, but unfortunately it doesn’t look good on the portfolio.</p>
+<p>I need something simple, but still good looking. Luckily you can link
+a <code>.css</code> file to the output of pandoc using the
+<code>--css</code> argument. The problem is I don’t have much experience
+using css, so it is time to look for references.</p>
 <p>I really like <a href="https://fabiensanglard.net/">Fabien
 Sanglard’s</a> and <a href="https://stevelosh.com/">Steve Losh’s</a>
 websites. They are minimalistic, nice to look at, and easy to read. I
@@ -83,9 +87,9 @@ sort of page template.</p>
 <p>I went on and created <code>create-article.py</code>, a Python script
 that takes <code>&lt;file-name&gt;</code> and
 <code>&lt;article-title&gt;</code> as arguments. This script creates
-<code>&lt;file-name&gt;.md</code> and writes to it the pandoc markdown
-title <code>% &lt;article-title&gt;</code>, the page header, and the
-article header with the date of when the article was created.</p>
+<code>&lt;file-name&gt;.md</code> and writes to it the metadata block
+<code>% &lt;article-title&gt;</code>, the page header, and the article
+header with the date of when the article was created.</p>
 <pre><code>header_date : datetime = datetime.now().strftime(&quot;%B {S}, %Y&quot;).replace(&#39;{S}&#39;, str(datetime.now().day))
 
 header : str = f&quot;&quot;&quot;%{article_title}
