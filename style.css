@@ -200,6 +200,9 @@ blockquote div {
 
 pre, pre code, code {
 font-family: "Courier New", Consolas, Monaco, "Lucida Console", monospace;
+white-space: pre;
+background: #e5e5e5;
+border-radius: 0.5ch;
 /*
 font-family: Georgia, "Times New Roman", serif;
 font-family: Impact, Jokerman, Copperplate, fantasy;
@@ -210,9 +213,11 @@ font-family: Arial, Helvetica, Verdana, Tahoma, "Trebuchet MS", Calibri, sans-se
 }
 
 pre {
+		/*
     background: #F1F1F1;
     border: 1px solid #E1E1E1;
-    border-radius: 4px;
+	*/
+    border: 1px solid #e1e1e1;
     padding: 0.5rem;
     overflow-x: auto;
 }
@@ -220,15 +225,13 @@ pre {
 pre code {
     font-size: 90%;
     /*font-weight: normal;*/
-	font-weight: bold;
+	font-weight: normal;
 }
 
 /*Inline code*/
 :not(pre) > code {
     font-size: 90%;
     font-weight: bold;
-    background: #e1e1e1;
-    border-radius: 0.5ch;
     padding-left: 0.3ch;
     padding-right: 0.3ch;
 }
