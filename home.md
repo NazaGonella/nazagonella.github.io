@@ -5,7 +5,7 @@
 </header>
 
 <hr />
-31/10/2025: [**Setting Up a Simple Blog - Tools I Used**](./articles/setting-up-a-simple-blog-tools-i-used/index.html)  
-31/10/2025: [**This is a Test Article**](./articles/test-article/index.html)  
+31/10/2025: [**Setting Up a Simple Blog - Tools I Used**](./posts/setting-up-a-simple-blog-tools-i-used/index.html)  
+31/10/2025: [**This is a Test Article**](./posts/test-article/index.html)  
 
 ---

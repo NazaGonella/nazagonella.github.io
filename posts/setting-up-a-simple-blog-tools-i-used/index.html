@@ -52,10 +52,10 @@ I need not be distracted by implementation details.</p>
 <p>Still, I would like to have some formatting, as there were times I
 would take notes in plain text files for then to never come back to
 them. So I’m using the next closest thing, Markdown.</p>
-<p>Now what I need is to convert this Markdown file into a HTML file,
-and after looking around through some posts on reddit, I found the <a
-href="https://pandoc.org/">pandoc</a> document converter, which is
-exactly what I needed. For any <code>.md</code> file I just had to run
+<p>Now what I need is to convert this Markdown file into a HTML file.
+After looking around through some posts on reddit, I found the <a
+href="https://pandoc.org/">pandoc</a> document converter, exactly what I
+needed. For any <code>.md</code> file I just had to run
 <code>pandoc input.md -o index.html</code>.</p>
 <p>Pandoc utilizes an extended version of Markdown which comes in handy,
 as it includes support for tables, definition lists, footnotes,
@@ -79,7 +79,8 @@ websites. They are minimalistic, nice to look at, and easy to read. I
 appreciate how you can immediately see all the stuff the authors have
 been working on or pondering over the last couple of years as soon as
 you enter. With the help of inspect element and a couple of queries to
-ChatGPT, I ended up with a style I was happy with.</p>
+ChatGPT, I ended up with a style I was happy with.<a href="#fn1"
+class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <p>There was now a need for a nice header: css and Markdown alone
 wouldn’t suffice. Fortunately, pandoc allows for HTML to be written into
 the Markdown file, which it then passes to the final output unchanged. I
@@ -89,16 +90,16 @@ same header everytime I create a new page. It would be nice to have some
 sort of page template.</p>
 <hr />
 <h3 id="the-page-template">The Page Template</h3>
-<p>I went on and created <code>create-article.py</code>, a Python script
+<p>I went on and created <code>create-post.py</code>, a Python script
 that takes <code>&lt;file-name&gt;</code> and
-<code>&lt;article-title&gt;</code> as arguments. This script creates
+<code>&lt;post-title&gt;</code> as arguments. This script creates
 <code>&lt;file-name&gt;.md</code> and writes to it the metadata block
-<code>% &lt;article-title&gt;</code>, the page header and the article
-header with the date of when the article was created.<a href="#fn1"
-class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<code>% &lt;post-title&gt;</code>, the page header and the post header
+with the date of when the post was created.<a href="#fn2"
+class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <pre><code>header_date : datetime = datetime.now().strftime(&quot;%B {S}, %Y&quot;).replace(&#39;{S}&#39;, str(datetime.now().day))
 
-header : str = f&quot;&quot;&quot;%{article_title}
+header : str = f&quot;&quot;&quot;%{post_title}
 
 &lt;header&gt;
     &lt;a class=&quot;name&quot; href=&quot;../../index.html&quot;&gt;Nazareno Gonella&lt;/a&gt;&lt;nav&gt;&lt;a class=&quot;title&quot; href=&quot;&quot;&gt;BLOG&lt;/a&gt; &amp;nbsp;&amp;nbsp; &lt;a class=&quot;title&quot; href=&quot;mailto:nazagonella2@gmail.com&quot;&gt;CONTACT&lt;/a&gt; &amp;nbsp;&amp;nbsp; &lt;a class=&quot;title&quot; href=&quot;&quot;&gt;CV&lt;/a&gt;&lt;/nav&gt;
@@ -106,29 +107,30 @@ header : str = f&quot;&quot;&quot;%{article_title}
 
 &lt;hr /&gt;
 
-## {article_title}
+## {post_title}
 
 {header_date}
 
 ---
 &quot;&quot;&quot;
 
-with open(f&quot;{articles_path}/{file_name}/{file_name}.md&quot;, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
+with open(f&quot;{posts_path}/{file_name}/{file_name}.md&quot;, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
     f.write(header)</code></pre>
-<p>I also included in the script some code to add the article entry
-along with the date to the home page</p>
+<p>I also included some code to add the post entry along with the date
+to the home page</p>
 <pre><code>home_path : str = &quot;./home.md&quot;
 date_entry = datetime.now().strftime(&quot;%d/%m/%Y&quot;)
-article_entry : str = f&quot;{date_entry}: [**{article_title}**](./articles/{file_name}/index.html)  \n&quot;
+post_entry : str = f&quot;{date_entry}: [**{post_title}**]({posts_path**}/{file_name}/index.html)  \n&quot;
 
 with open(home_path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
     lines = f.readlines()
 
-lines.insert(7, article_entry)
+# hardcoded position
+lines.insert(7, post_entry)
 
 with open(home_path, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
     f.writelines(lines)</code></pre>
-<p>And to convert both <code>home.md</code> and the article entry
+<p>And to convert both <code>home.md</code> and the post entry
 <code>.md</code> file to html</p>
 <pre><code>css_file = &quot;../../style.css&quot;
 
@@ -144,8 +146,8 @@ subprocess.run([
 subprocess.run([
     &quot;pandoc&quot;,
     &quot;-s&quot;,
-    f&quot;{articles_path}/{file_name}/{file_name}.md&quot;,
-    &quot;-o&quot;, f&quot;{articles_path}/{file_name}/index.html&quot;,
+    f&quot;{posts_path}/{file_name}/{file_name}.md&quot;,
+    &quot;-o&quot;, f&quot;{posts_path}/{file_name}/index.html&quot;,
     &quot;--css&quot;, &quot;../../style.css&quot;,
     &quot;-V&quot;, &quot;title=&quot;
 ])
@@ -155,17 +157,68 @@ subprocess.run([
 standalone HTML document. <code>-V</code> sets the <code>title</code>
 variable to nothing, preventing it of adding the Metadata Block
 <code>% title</code> as a header in the document.</p>
-<p>With this, I now have an easy way of creating new entries. How about
-working with them?</p>
+<p>With this, I now have an easy way of creating new entries.</p>
+<hr />
+<h3 id="hosting-the-site">Hosting the Site</h3>
+<p>Github Pages will be more than enough for a static website. It is
+also simple and free.</p>
 <hr />
 <h3 id="workflow">Workflow</h3>
-<p>I will be using <strong>vim</strong> as my text editor. Markdown is
-not too complicated so</p>
+<p>I will be using vim as my text editor, primarily for three
+reasons.</p>
+<ol type="1">
+<li>Fast and comfortable to write in.</li>
+<li>Very customizable.</li>
+<li>Looks cool.</li>
+</ol>
+<p>Probably one of the most important aspects of using vim in this case
+is having the option to execute a command when saving the file. Thanks
+to this, I can now avoid having to call pandoc with the same arguments
+everytime I want to see the results on the browser. I just save the file
+and the HTML file is automatically generated.</p>
+<p>I added the following to the <code>.vimrc</code></p>
+<pre><code>autocmd BufWritePost *.md !pandoc -s % -o %:p:h/index.html --css style.css -V title=&quot;&quot;</code></pre>
+<p>This will apply only when saving any file that ends with
+<code>.md</code>.</p>
+<p>How about deployment? I just need to push my local files to the
+remote Github repository. The thing is, I don’t want to deploy everytime
+I correct a minor mistake, it would make version control really
+uncomfortable.</p>
+<p>To fix this I created a new <code>working</code> branch. Every change
+I make gets pushed to that branch, once I feel it’s time to deploy, I
+overwrite the <code>master</code> branch.</p>
+<p>I could also just merge both branches, but there is no need. For the
+time being I’m the only one pushing to the <code>master</code> branch,
+so the results of merging and overwriting are ultimately the same.</p>
+<p>For easy deployment I made a simple shell script
+<code>deploy.sh</code>.</p>
+<pre><code>working_branch=&quot;working&quot;
+
+git checkout master
+git reset --hard &quot;$working_branch&quot;
+git push --force origin master
+
+echo &quot;Master branch updated&quot;
+
+git checkout &quot;$working_branch&quot;</code></pre>
+<hr />
+<p>And there it is, a simple framework for my use case. Every time I
+want to write about a new topic, I run <code>create-post.py</code> and
+start writing right away. Once I’m done, I simply save and check the
+browser. If I’m happy with the result, I commit, push to origin and then
+run <code>deploy.sh</code>. And just like that a new entry is added to
+the blog.</p>
+<p>Now it’s a matter of time to see how well this framework holds up for
+me.</p>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p>Actually,<a href="#fnref1" class="footnote-back"
+<li id="fn1"><p>This stage took some time, tinkering with this kind of
+stuff can become dangerously addictive.<a href="#fnref1"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>It would make more sense for the date to be the day it’s
+published.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>

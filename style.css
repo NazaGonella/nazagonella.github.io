@@ -203,6 +203,7 @@ font-family: "Courier New", Consolas, Monaco, "Lucida Console", monospace;
 white-space: pre;
 background: #e5e5e5;
 border-radius: 0.5ch;
+font-weight: bold;
 /*
 font-family: Georgia, "Times New Roman", serif;
 font-family: Impact, Jokerman, Copperplate, fantasy;
@@ -225,7 +226,6 @@ pre {
 pre code {
     font-size: 90%;
     /*font-weight: normal;*/
-	font-weight: normal;
 }
 
 /*Inline code*/
