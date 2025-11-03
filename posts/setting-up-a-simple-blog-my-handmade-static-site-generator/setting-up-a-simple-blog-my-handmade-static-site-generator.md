@@ -6,13 +6,15 @@
 
 <hr />
 
-## Setting Up a Simple Blog - Tools I Used
+## Setting Up a Simple Blog - My Handmade Static Site Generator
 
-October 31st, 2025
+October 31, 2025
 
 ---
 
-The idea to start writing a blog has been in my mind for quite some time now, until today that I decided to get on with it. And what better way to start than writing about this same process?
+You can check the repository [here](https://github.com/NazaGonella/yors-generator).
+
+The idea to start writing a blog has been in my mind for quite some time now, until today that I decided to get on with it. And what better way to begin than writing about this same process?
 
 ---
 
@@ -28,15 +30,13 @@ Still, I would like to have some formatting, as there were times I would take no
 
 Now what I need is to convert this Markdown file into a HTML file. After looking around through some posts on reddit, I found the [pandoc](https://pandoc.org/) document converter, exactly what I needed. For any `.md` file I just had to run `pandoc input.md -o index.html`. 
 
-Pandoc utilizes an extended version of Markdown which comes in handy, as it includes support for tables, definition lists, footnotes, citations and even math.
-
-It also supports *Metadata Blocks*, which allows including information such as `% title`, `% author` and `% date`. I will only be using `% title` since the tool requires it.
+Pandoc utilizes an extended version of Markdown which comes in handy, as it includes support for tables, definition lists, footnotes, citations and even math.  It also supports *Metadata Blocks*, which allows including information such as `% title`, `% author` and `% date`. I will only be using `% title` since the tool requires it.
 
 And there it was, just what I wanted, almost.
 
 ---
 
-### The Looks
+### Not Stylish Yet
 
 A plain HTML file with formatted text is a lot better than a plain text file, but unfortunately it doesn't look good on the portfolio. 
 
@@ -121,12 +121,6 @@ With this, I now have an easy way of creating new entries.
 
 ---
 
-### Hosting the Site
-
-Github Pages will be more than enough for a static website. It is also simple and free.
-
----
-
 ### Workflow
 
 I will be using vim as my text editor, primarily for three reasons.
@@ -167,9 +161,14 @@ git checkout "$working_branch"
 
 ---
 
+
 And there it is, a simple framework for my use case. Every time I want to write about a new topic, I run `create-post.py` and start writing right away. Once I'm done, I simply save and check the browser. If I'm happy with the result, I commit, push to origin and then run `deploy.sh`. And just like that a new entry is added to the blog.
+
+Initially, I wasn't familiar with the concept of static site generators. I've seen recommendations of tools like [Jekyll](https://jekyllrb.com/) or [Hugo](https://gohugo.io/) for easily creating personal websites, but I felt they were more than what I needed at the moment[^3]. I also liked the idea of creating a basic blog framework. What I ended up with was a custom static site generator. 
 
 Now it's a matter of time to see how well this framework holds up for me.
 
+
 [^1]: This stage took some time, tinkering with this kind of stuff can become dangerously addictive.
 [^2]: It would make more sense for the date to be the day it's published.
+[^3]: Reading Fabien Sanglard's post [All you may need is HTML](https://fabiensanglard.net/html/index.html) may have had an effect on this decision.

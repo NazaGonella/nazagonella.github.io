@@ -22,7 +22,7 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="/home/nazar/Workspace/blog/style.css" />
 </head>
 <body>
 <header>
@@ -34,13 +34,16 @@
 </nav>
 </header>
 <hr />
-<h2 id="setting-up-a-simple-blog---tools-i-used">Setting Up a Simple
-Blog - Tools I Used</h2>
-<p>October 31st, 2025</p>
+<h2
+id="setting-up-a-simple-blog---my-handmade-static-site-generator">Setting
+Up a Simple Blog - My Handmade Static Site Generator</h2>
+<p>October 31, 2025</p>
 <hr />
+<p>You can check the repository <a
+href="https://github.com/NazaGonella/yors-generator">here</a>.</p>
 <p>The idea to start writing a blog has been in my mind for quite some
 time now, until today that I decided to get on with it. And what better
-way to start than writing about this same process?</p>
+way to begin than writing about this same process?</p>
 <hr />
 <h3 id="what-am-i-looking-for">What Am I Looking For?</h3>
 <p>From the start I knew I wanted something simple, easy to maintain and
@@ -59,14 +62,13 @@ needed. For any <code>.md</code> file I just had to run
 <code>pandoc input.md -o index.html</code>.</p>
 <p>Pandoc utilizes an extended version of Markdown which comes in handy,
 as it includes support for tables, definition lists, footnotes,
-citations and even math.</p>
-<p>It also supports <em>Metadata Blocks</em>, which allows including
-information such as <code>% title</code>, <code>% author</code> and
-<code>% date</code>. I will only be using <code>% title</code> since the
-tool requires it.</p>
+citations and even math. It also supports <em>Metadata Blocks</em>,
+which allows including information such as <code>% title</code>,
+<code>% author</code> and <code>% date</code>. I will only be using
+<code>% title</code> since the tool requires it.</p>
 <p>And there it was, just what I wanted, almost.</p>
 <hr />
-<h3 id="the-looks">The Looks</h3>
+<h3 id="not-stylish-yet">Not Stylish Yet</h3>
 <p>A plain HTML file with formatted text is a lot better than a plain
 text file, but unfortunately it doesn’t look good on the portfolio.</p>
 <p>I need something simple, but still good looking. Luckily you can link
@@ -159,10 +161,6 @@ variable to nothing, preventing it of adding the Metadata Block
 <code>% title</code> as a header in the document.</p>
 <p>With this, I now have an easy way of creating new entries.</p>
 <hr />
-<h3 id="hosting-the-site">Hosting the Site</h3>
-<p>Github Pages will be more than enough for a static website. It is
-also simple and free.</p>
-<hr />
 <h3 id="workflow">Workflow</h3>
 <p>I will be using vim as my text editor, primarily for three
 reasons.</p>
@@ -208,6 +206,15 @@ start writing right away. Once I’m done, I simply save and check the
 browser. If I’m happy with the result, I commit, push to origin and then
 run <code>deploy.sh</code>. And just like that a new entry is added to
 the blog.</p>
+<p>Initially, I wasn’t familiar with the concept of static site
+generators. I’ve seen recommendations of tools like <a
+href="https://jekyllrb.com/">Jekyll</a> or <a
+href="https://gohugo.io/">Hugo</a> for easily creating personal
+websites, but I felt they were more than what I needed at the moment<a
+href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>. I also liked the idea of creating a
+basic blog framework. What I ended up with was a custom static site
+generator.</p>
 <p>Now it’s a matter of time to see how well this framework holds up for
 me.</p>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
@@ -220,6 +227,10 @@ class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>It would make more sense for the date to be the day it’s
 published.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Reading Fabien Sanglard’s post <a
+href="https://fabiensanglard.net/html/index.html">All you may need is
+HTML</a> may have had an effect on this decision.<a href="#fnref3"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 </body>
