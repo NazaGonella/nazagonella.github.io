@@ -68,7 +68,7 @@ which allows including information such as <code>% title</code>,
 <code>% title</code> since the tool requires it.</p>
 <p>And there it was, just what I wanted, almost.</p>
 <hr />
-<h3 id="not-stylish-yet">Not Stylish Yet</h3>
+<h3 id="not-stylish-just-yet">Not Stylish, Just Yet</h3>
 <p>A plain HTML file with formatted text is a lot better than a plain
 text file, but unfortunately it doesn’t look good on the portfolio.</p>
 <p>I need something simple, but still good looking. Luckily you can link
@@ -132,34 +132,44 @@ lines.insert(7, post_entry)
 
 with open(home_path, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
     f.writelines(lines)</code></pre>
-<p>And to convert both <code>home.md</code> and the post entry
-<code>.md</code> file to html</p>
-<pre><code>css_file = &quot;../../style.css&quot;
-
-subprocess.run([
-    &quot;pandoc&quot;,
-    &quot;-s&quot;,
-    home_path,
-    &quot;-o&quot;, &quot;index.html&quot;,
-    &quot;--css&quot;, &quot;./style.css&quot;,
-    &quot;-V&quot;, &quot;title=&quot;
-])
-
-subprocess.run([
-    &quot;pandoc&quot;,
-    &quot;-s&quot;,
-    f&quot;{posts_path}/{file_name}/{file_name}.md&quot;,
-    &quot;-o&quot;, f&quot;{posts_path}/{file_name}/index.html&quot;,
-    &quot;--css&quot;, &quot;../../style.css&quot;,
-    &quot;-V&quot;, &quot;title=&quot;
-])
-</code></pre>
-<p>Notice I’m adding additional arguments to <strong>pandoc</strong>:
-<code>-s</code> introduces the headers and footers to make the output a
-standalone HTML document. <code>-V</code> sets the <code>title</code>
-variable to nothing, preventing it of adding the Metadata Block
-<code>% title</code> as a header in the document.</p>
 <p>With this, I now have an easy way of creating new entries.</p>
+<hr />
+<h3 id="generating-the-site">Generating the Site</h3>
+<p>Calling pandoc for every <code>.md</code> file is not ideal. That’s
+why I implemented <code>build.py</code>, a minimal build system for
+transforming recently modified Markdown files into HTML files.</p>
+<pre><code>import os
+import subprocess
+from pathlib import Path
+
+css_path = Path(&quot;style.css&quot;).resolve()      # absolute path to CSS
+
+ignored_mds = [Path(&quot;./README.md&quot;)]         # will not apply to ALL Markdown files
+
+markdown_files = [md for md in Path(&quot;.&quot;).rglob(&quot;*.md&quot;) if md not in ignored_mds]
+
+paired_files = [(md, md.parent / &quot;index.html&quot;) for md in markdown_files if md not in ignored_mds]   # target: index.html file in the same directory
+
+print(&quot;### BUILD ###&quot;)
+
+for md, html in paired_files:
+    mod_time_md = md.stat().st_mtime
+    if html.exists():
+        mod_time_html = html.stat().st_mtime
+        if mod_time_html &gt;  mod_time_md:
+            continue
+
+    relative_path_css = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
+
+    subprocess.run([
+        &quot;pandoc&quot;,
+        &quot;-s&quot;, str(md),
+        &quot;-o&quot;, str(html),
+        &quot;--css&quot;, relative_path_css,
+        &quot;-V&quot;, &quot;title=&quot;
+    ])
+
+    print(md, &quot;-&gt;&quot;, html)</code></pre>
 <hr />
 <h3 id="workflow">Workflow</h3>
 <p>I will be using vim as my text editor, primarily for three

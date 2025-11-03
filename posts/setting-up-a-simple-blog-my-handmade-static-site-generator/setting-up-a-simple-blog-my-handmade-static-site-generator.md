@@ -36,7 +36,7 @@ And there it was, just what I wanted, almost.
 
 ---
 
-### Not Stylish Yet
+### Not Stylish, Just Yet
 
 A plain HTML file with formatted text is a lot better than a plain text file, but unfortunately it doesn't look good on the portfolio. 
 
@@ -91,33 +91,48 @@ with open(home_path, "w", encoding="utf-8") as f:
     f.writelines(lines)
 ```
 
-And to convert both `home.md` and the post entry `.md` file to html
-```
-css_file = "../../style.css"
-
-subprocess.run([
-    "pandoc",
-    "-s",
-    home_path,
-    "-o", "index.html",
-    "--css", "./style.css",
-    "-V", "title="
-])
-
-subprocess.run([
-    "pandoc",
-    "-s",
-    f"{posts_path}/{file_name}/{file_name}.md",
-    "-o", f"{posts_path}/{file_name}/index.html",
-    "--css", "../../style.css",
-    "-V", "title="
-])
-
-```
-
-Notice I'm adding additional arguments to **pandoc**: `-s` introduces the headers and footers to make the output a standalone HTML document. `-V` sets the `title` variable to nothing, preventing it of adding the Metadata Block `% title` as a header in the document.
-
 With this, I now have an easy way of creating new entries.
+
+---
+
+### Generating the Site
+
+Calling pandoc for every `.md` file is not ideal. That's why I implemented `build.py`, a minimal build system for transforming recently modified Markdown files into HTML files.
+
+```
+import os
+import subprocess
+from pathlib import Path
+
+css_path = Path("style.css").resolve()      # absolute path to CSS
+
+ignored_mds = [Path("./README.md")]         # will not apply to ALL Markdown files
+
+markdown_files = [md for md in Path(".").rglob("*.md") if md not in ignored_mds]
+
+paired_files = [(md, md.parent / "index.html") for md in markdown_files if md not in ignored_mds]   # target: index.html file in the same directory
+
+print("### BUILD ###")
+
+for md, html in paired_files:
+    mod_time_md = md.stat().st_mtime
+    if html.exists():
+        mod_time_html = html.stat().st_mtime
+        if mod_time_html >  mod_time_md:
+            continue
+
+    relative_path_css = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
+
+    subprocess.run([
+        "pandoc",
+        "-s", str(md),
+        "-o", str(html),
+        "--css", relative_path_css,
+        "-V", "title="
+    ])
+
+    print(md, "->", html)
+```
 
 ---
 
@@ -172,3 +187,4 @@ Now it's a matter of time to see how well this framework holds up for me.
 [^1]: This stage took some time, tinkering with this kind of stuff can become dangerously addictive.
 [^2]: It would make more sense for the date to be the day it's published.
 [^3]: Reading Fabien Sanglard's post [All you may need is HTML](https://fabiensanglard.net/html/index.html) may have had an effect on this decision.
+

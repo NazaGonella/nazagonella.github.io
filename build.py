@@ -2,29 +2,30 @@ import os
 import subprocess
 from pathlib import Path
 
-ignored_mds = ["./README.md"]
-ignored_mds = [Path(md) for md in ignored_mds]
+css_path = Path("style.css").resolve()      # absolute path to CSS
 
-css_path = Path("style.css").resolve()  # absolute path to CSS
+ignored_mds = [Path("./README.md")]         # will not apply to ALL Markdown files
 
-markdown_files = list(Path(".").rglob("*.md"))
-paired_files = [(md, md.parent / "index.html") for md in markdown_files if md not in ignored_mds]
+markdown_files = [md for md in Path(".").rglob("*.md") if md not in ignored_mds]
+
+paired_files = [(md, md.parent / "index.html") for md in markdown_files if md not in ignored_mds]   # target: index.html file in the same directory
 
 print("### BUILD ###")
+
 for md, html in paired_files:
-    mtime_md = md.stat().st_mtime
+    mod_time_md = md.stat().st_mtime
     if html.exists():
-        mtime_html = html.stat().st_mtime
-        if mtime_html >  mtime_md:
+        mod_time_html = html.stat().st_mtime
+        if mod_time_html >  mod_time_md:
             continue
 
-    rel_css = os.path.relpath(css_path, start=html.parent)
+    relative_path_css = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
 
     subprocess.run([
         "pandoc",
         "-s", str(md),
         "-o", str(html),
-        "--css", rel_css,
+        "--css", relative_path_css,
         "-V", "title="
     ])
 
