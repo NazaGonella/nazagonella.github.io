@@ -18,13 +18,6 @@ posts_path : str = "./posts"
 
 os.makedirs(f"{posts_path}/{file_name}", exist_ok=True)
 
-
-# def suffix(d):
-#     return 'th' if 11<=d<=13 else {1:'st',2:'nd',3:'rd'}.get(d%10, 'th')
-
-# date_header = datetime.now().strftime("%B {S}, %Y").replace('{S}', str(datetime.now().day) + suffix(datetime.now().day))
-# creates the post entry md file, and inserts the header
-
 date_header : datetime = datetime.now().strftime("%B {S}, %Y").replace('{S}', str(datetime.now().day))
 
 header : str = f"""%{post_title}
@@ -59,29 +52,6 @@ lines.insert(7, post_entry)
 
 with open(home_path, "w", encoding="utf-8") as f:
     f.writelines(lines)
-
-
-# converts home.md and post entry md file to html
-
-css_file = "../../style.css"
-
-subprocess.run([
-    "pandoc",
-    "-s",
-    home_path,
-    "-o", "index.html",
-    "--css", "./style.css",
-    "-V", "title="
-])
-
-subprocess.run([
-    "pandoc",
-    "-s",
-    f"{posts_path}/{file_name}/{file_name}.md",
-    "-o", f"{posts_path}/{file_name}/index.html",
-    "--css", "../../style.css",
-    "-V", "title="
-])
 
 
 subprocess.run([
