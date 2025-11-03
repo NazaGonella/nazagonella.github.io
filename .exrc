@@ -18,7 +18,7 @@ function! s:markdown_mappings()
 
 		" Build on writing file
 		autocmd!
-		let s:project_root = expand('<sfile>:p:h')  " directory where this .vimrc/.exrc lives
+		let s:project_root = expand('<sfile>:p:h')  " directory where this .exrc lives
 		autocmd BufWritePost *.md execute '!python3 ' . shellescape(expand('<sfile>:p:h') . '/build.py')
 endfunction
 
