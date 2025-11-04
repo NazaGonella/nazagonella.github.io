@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import subprocess
 import sys
 import os
@@ -42,7 +44,7 @@ with open(f"{posts_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") as 
 # adds the post entry to home.md
 
 home_path : str = "./home.md"
-date_entry = datetime.now().strftime("%d/%m/%Y")
+date_entry : datetime = datetime.now().strftime("%d/%m/%Y")
 post_entry : str = f"{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n"
 
 with open(home_path, "r", encoding="utf-8") as f:

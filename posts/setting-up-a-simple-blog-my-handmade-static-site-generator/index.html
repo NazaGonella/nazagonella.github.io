@@ -30,20 +30,20 @@
 <nav>
 <a class="title" href="../../index.html">BLOG</a>   
 <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a>   
-<a class="title" href="">CV</a>
+<a class="title" href="../../resume/index.html">RESUME</a>
 </nav>
 </header>
 <hr />
 <h2
 id="setting-up-a-simple-blog---my-handmade-static-site-generator">Setting
 Up a Simple Blog - My Handmade Static Site Generator</h2>
-<p>October 31, 2025</p>
+<p>November 04, 2025</p>
 <hr />
 <p>You can check the repository <a
 href="https://github.com/NazaGonella/yors-generator">here</a>.</p>
-<p>The idea to start writing a blog has been in my mind for quite some
-time now, until today that I decided to get on with it. And what better
-way to begin than writing about this same process?</p>
+<p>The idea to start writing a blog has been in my mind for some time
+now, until today that I decided to get on with it. And what better way
+to begin than writing about this same process?</p>
 <hr />
 <h3 id="what-am-i-looking-for">What Am I Looking For?</h3>
 <p>From the start I knew I wanted something simple, easy to maintain and
@@ -58,7 +58,7 @@ them. So I’m using the next closest thing, Markdown.</p>
 <p>Now what I need is to convert this Markdown file into a HTML file.
 After looking around through some posts on reddit, I found the <a
 href="https://pandoc.org/">pandoc</a> document converter, exactly what I
-needed. For any <code>.md</code> file I just had to run
+needed. For any Markdown file I just had to run
 <code>pandoc input.md -o index.html</code>.</p>
 <p>Pandoc uses an extended version of Markdown which comes in handy, as
 it includes support for tables, definition lists, footnotes, citations
@@ -81,8 +81,7 @@ websites. They are minimalistic, nice to look at, and easy to read. I
 appreciate how you can immediately see all the stuff the authors have
 been working on or pondering over the last couple of years as soon as
 you enter. With the help of inspect element and a couple of queries to
-ChatGPT, I ended up with a style I was happy with.<a href="#fn1"
-class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+ChatGPT, I ended up with a style I was happy with.</p>
 <p>There was now a need for a nice header: css and Markdown alone
 wouldn’t suffice. Fortunately, pandoc allows for HTML to be written into
 the Markdown file, which it then passes to the final output unchanged. I
@@ -97,11 +96,11 @@ that takes <code>&lt;file-name&gt;</code> and
 <code>&lt;post-title&gt;</code> as arguments. This script creates
 <code>&lt;file-name&gt;.md</code> and writes to it the metadata block
 <code>% &lt;post-title&gt;</code>, the page header and the post header
-with the date of when the post was created.<a href="#fn2"
-class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
-<pre><code>header_date : datetime = datetime.now().strftime(&quot;%B {S}, %Y&quot;).replace(&#39;{S}&#39;, str(datetime.now().day))
+with the date of when the post was created.<a href="#fn1"
+class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<pre><code>header_date = datetime.now().strftime(&quot;%B {S}, %Y&quot;).replace(&#39;{S}&#39;, str(datetime.now().day))
 
-header : str = f&quot;&quot;&quot;%{post_title}
+header = f&quot;&quot;&quot;%{post_title}
 
 &lt;header&gt;
     header content goes here
@@ -118,9 +117,9 @@ with open(f&quot;{posts_path}/{file_name}/{file_name}.md&quot;, &quot;w&quot;, e
     f.write(header)</code></pre>
 <p>I also included some code to add the post entry along with the date
 to the home page</p>
-<pre><code>home_path : str = &quot;./home.md&quot;
+<pre><code>home_path = &quot;./home.md&quot;
 date_entry = datetime.now().strftime(&quot;%d/%m/%Y&quot;)
-post_entry : str = f&quot;{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n&quot;
+post_entry = f&quot;{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n&quot;
 
 with open(home_path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
     lines = f.readlines()
@@ -159,7 +158,7 @@ for md, html in paired_files:
         if mod_time_html &gt;  mod_time_md:
             continue
 
-    relative_path_css = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
+    relative_path_css  = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
 
     subprocess.run([
         &quot;pandoc&quot;,
@@ -172,8 +171,8 @@ for md, html in paired_files:
     print(md, &quot;-&gt;&quot;, html)</code></pre>
 <hr />
 <h3 id="workflow">Workflow</h3>
-<p>I will be using vim as my text editor, primarily for three
-reasons.</p>
+<p>I will be using <a href="https://www.vim.org/">vim</a> as my text
+editor, primarily for three reasons.</p>
 <ol type="1">
 <li>Fast and comfortable to write in.</li>
 <li>Very customizable.</li>
@@ -187,26 +186,23 @@ and the HTML file is automatically generated.</p>
 <p>I added the following to the <code>.vimrc</code></p>
 <pre><code>let s:script_dir = expand(&#39;&lt;sfile&gt;:p:h&#39;)
 autocmd FileType markdown autocmd BufWritePost &lt;buffer&gt; execute &#39;!python3 &#39; . shellescape(s:script_dir . &#39;/build.py&#39;)</code></pre>
-<p>This will apply only when saving any file that ends with
-<code>.md</code>.<a href="#fn3" class="footnote-ref" id="fnref3"
-role="doc-noteref"><sup>3</sup></a></p>
-<p>How about deployment? I just need to push my local files to the
-remote Github repository. The thing is, I don’t want to deploy everytime
-I correct a minor mistake, it would make version control really
-uncomfortable.</p>
+<p>This will apply only when saving <code>.md</code> files.<a
+href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a></p>
+<p>How about deployment? As I’m using Github Pages for hosting, pushing
+my local files to the remote repository will deploy the page. The thing
+is, I don’t want to deploy everytime I correct a minor mistake, it would
+make version control really uncomfortable.</p>
 <p>To fix this I created a new <code>working</code> branch. Every change
-I make gets pushed to that branch, once I feel it’s time to deploy, I
-overwrite the <code>master</code> branch.</p>
-<p>I could also just merge both branches, but there is no need. For the
-time being I’m the only one pushing to the <code>master</code> branch,
-so the results of merging and overwriting are ultimately the same.</p>
+I make gets pushed to that branch. And once I feel it’s time to deploy,
+I merge into the <code>master</code> branch.</p>
 <p>For easy deployment I made a simple shell script
 <code>deploy.sh</code>.</p>
 <pre><code>working_branch=&quot;working&quot;
 
 git checkout master
-git reset --hard &quot;$working_branch&quot;
-git push --force origin master
+git merge &quot;$working_branch&quot; --no-ff
+git push origin master
 
 echo &quot;Master branch updated&quot;
 
@@ -223,8 +219,8 @@ generators. I’ve seen recommendations of tools like <a
 href="https://jekyllrb.com/">Jekyll</a> or <a
 href="https://gohugo.io/">Hugo</a> for easily creating personal
 websites, but I felt they were more than what I needed at the moment<a
-href="#fn4" class="footnote-ref" id="fnref4"
-role="doc-noteref"><sup>4</sup></a>. I also liked the idea of creating a
+href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>. I also liked the idea of creating a
 basic blog framework. What I ended up with was a custom static site
 generator.</p>
 <p>Now it’s a matter of time to see how well this framework holds up for
@@ -233,18 +229,15 @@ me.</p>
 role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p>This stage took some time, tinkering with this kind of
-stuff can become dangerously addictive.<a href="#fnref1"
+<li id="fn1"><p>It would make more sense for the date to be the day it’s
+published, added to the TODO list.<a href="#fnref1"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>It would make more sense for the date to be the day it’s
-published.<a href="#fnref2" class="footnote-back"
+<li id="fn2"><p>This assumes the .vimrc or .exrc files are in the same
+directory as build.py.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>This assumes the .vimrc or .exrc file are in the same
-directory as build.py.<a href="#fnref3" class="footnote-back"
-role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>Reading Fabien Sanglard’s post <a
+<li id="fn3"><p>Reading Fabien Sanglard’s post <a
 href="https://fabiensanglard.net/html/index.html">All you may need is
-HTML</a> may have had an effect on this decision.<a href="#fnref4"
+HTML</a> may have had an effect on this decision.<a href="#fnref3"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
