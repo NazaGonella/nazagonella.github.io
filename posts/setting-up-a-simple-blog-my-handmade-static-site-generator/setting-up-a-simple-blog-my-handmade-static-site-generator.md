@@ -58,10 +58,8 @@ header_date : datetime = datetime.now().strftime("%B {S}, %Y").replace('{S}', st
 header : str = f"""%{post_title}
 
 <header>
-    <a class="name" href="../../index.html">Nazareno Gonella</a><nav><a class="title" href="">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="">CV</a></nav>
+    header content goes here
 </header>
-
-<hr />
 
 ## {post_title}
 
@@ -79,17 +77,18 @@ I also included some code to add the post entry along with the date to the home 
 ```
 home_path : str = "./home.md"
 date_entry = datetime.now().strftime("%d/%m/%Y")
-post_entry : str = f"{date_entry}: [**{post_title}**]({posts_path**}/{file_name}/index.html)  \n"
+post_entry : str = f"{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n"
 
 with open(home_path, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
-# hardcoded position
-lines.insert(7, post_entry)
+lines.insert(7, post_entry) # hardcoded position, for now
 
 with open(home_path, "w", encoding="utf-8") as f:
     f.writelines(lines)
 ```
+
+Some of this code is hardcoded. I plan on adding config files in the future. To see the full code visit the [repository](https://github.com/NazaGonella/ngonella-static-site-generator).
 
 With this, I now have an easy way of creating new entries.
 
@@ -149,10 +148,11 @@ Probably one of the most important aspects of using vim in this case is having t
 I added the following to the `.vimrc`
 
 ```
-autocmd BufWritePost *.md !pandoc -s % -o %:p:h/index.html --css style.css -V title=""
+let s:script_dir = expand('<sfile>:p:h')
+autocmd FileType markdown autocmd BufWritePost <buffer> execute '!python3 ' . shellescape(s:script_dir . '/build.py')
 ```
 
-This will apply only when saving any file that ends with `.md`.
+This will apply only when saving any file that ends with `.md`.[^3]
 
 How about deployment? I just need to push my local files to the remote Github repository. The thing is, I don't want to deploy everytime I correct a minor mistake, it would make version control really uncomfortable.
 
@@ -179,12 +179,13 @@ git checkout "$working_branch"
 
 And there it is, a simple framework for my use case. Every time I want to write about a new topic, I run `create-post.py` and start writing right away. Once I'm done, I simply save and check the browser. If I'm happy with the result, I commit, push to origin and then run `deploy.sh`. And just like that a new entry is added to the blog.
 
-Initially, I wasn't familiar with the concept of static site generators. I've seen recommendations of tools like [Jekyll](https://jekyllrb.com/) or [Hugo](https://gohugo.io/) for easily creating personal websites, but I felt they were more than what I needed at the moment[^3]. I also liked the idea of creating a basic blog framework. What I ended up with was a custom static site generator. 
+Initially, I wasn't familiar with the concept of static site generators. I've seen recommendations of tools like [Jekyll](https://jekyllrb.com/) or [Hugo](https://gohugo.io/) for easily creating personal websites, but I felt they were more than what I needed at the moment[^4]. I also liked the idea of creating a basic blog framework. What I ended up with was a custom static site generator. 
 
 Now it's a matter of time to see how well this framework holds up for me.
 
 
 [^1]: This stage took some time, tinkering with this kind of stuff can become dangerously addictive.
 [^2]: It would make more sense for the date to be the day it's published.
-[^3]: Reading Fabien Sanglard's post [All you may need is HTML](https://fabiensanglard.net/html/index.html) may have had an effect on this decision.
+[^3]: This assumes the .vimrc or .exrc file are in the same directory as build.py.
+[^4]: Reading Fabien Sanglard's post [All you may need is HTML](https://fabiensanglard.net/html/index.html) may have had an effect on this decision.
 

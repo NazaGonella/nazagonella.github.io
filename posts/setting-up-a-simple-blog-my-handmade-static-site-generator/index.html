@@ -104,10 +104,8 @@ class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 header : str = f&quot;&quot;&quot;%{post_title}
 
 &lt;header&gt;
-    &lt;a class=&quot;name&quot; href=&quot;../../index.html&quot;&gt;Nazareno Gonella&lt;/a&gt;&lt;nav&gt;&lt;a class=&quot;title&quot; href=&quot;&quot;&gt;BLOG&lt;/a&gt; &amp;nbsp;&amp;nbsp; &lt;a class=&quot;title&quot; href=&quot;mailto:nazagonella2@gmail.com&quot;&gt;CONTACT&lt;/a&gt; &amp;nbsp;&amp;nbsp; &lt;a class=&quot;title&quot; href=&quot;&quot;&gt;CV&lt;/a&gt;&lt;/nav&gt;
+    header content goes here
 &lt;/header&gt;
-
-&lt;hr /&gt;
 
 ## {post_title}
 
@@ -122,16 +120,18 @@ with open(f&quot;{posts_path}/{file_name}/{file_name}.md&quot;, &quot;w&quot;, e
 to the home page</p>
 <pre><code>home_path : str = &quot;./home.md&quot;
 date_entry = datetime.now().strftime(&quot;%d/%m/%Y&quot;)
-post_entry : str = f&quot;{date_entry}: [**{post_title}**]({posts_path**}/{file_name}/index.html)  \n&quot;
+post_entry : str = f&quot;{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n&quot;
 
 with open(home_path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
     lines = f.readlines()
 
-# hardcoded position
-lines.insert(7, post_entry)
+lines.insert(7, post_entry) # hardcoded position, for now
 
 with open(home_path, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
     f.writelines(lines)</code></pre>
+<p>Some of this code is hardcoded. I plan on adding config files in the
+future. To see the full code visit the <a
+href="https://github.com/NazaGonella/ngonella-static-site-generator">repository</a>.</p>
 <p>With this, I now have an easy way of creating new entries.</p>
 <hr />
 <h3 id="generating-the-site">Generating the Site</h3>
@@ -185,9 +185,11 @@ to this, I can now avoid having to call pandoc with the same arguments
 everytime I want to see the results on the browser. I just save the file
 and the HTML file is automatically generated.</p>
 <p>I added the following to the <code>.vimrc</code></p>
-<pre><code>autocmd BufWritePost *.md !pandoc -s % -o %:p:h/index.html --css style.css -V title=&quot;&quot;</code></pre>
+<pre><code>let s:script_dir = expand(&#39;&lt;sfile&gt;:p:h&#39;)
+autocmd FileType markdown autocmd BufWritePost &lt;buffer&gt; execute &#39;!python3 &#39; . shellescape(s:script_dir . &#39;/build.py&#39;)</code></pre>
 <p>This will apply only when saving any file that ends with
-<code>.md</code>.</p>
+<code>.md</code>.<a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a></p>
 <p>How about deployment? I just need to push my local files to the
 remote Github repository. The thing is, I don’t want to deploy everytime
 I correct a minor mistake, it would make version control really
@@ -221,8 +223,8 @@ generators. I’ve seen recommendations of tools like <a
 href="https://jekyllrb.com/">Jekyll</a> or <a
 href="https://gohugo.io/">Hugo</a> for easily creating personal
 websites, but I felt they were more than what I needed at the moment<a
-href="#fn3" class="footnote-ref" id="fnref3"
-role="doc-noteref"><sup>3</sup></a>. I also liked the idea of creating a
+href="#fn4" class="footnote-ref" id="fnref4"
+role="doc-noteref"><sup>4</sup></a>. I also liked the idea of creating a
 basic blog framework. What I ended up with was a custom static site
 generator.</p>
 <p>Now it’s a matter of time to see how well this framework holds up for
@@ -237,9 +239,12 @@ class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>It would make more sense for the date to be the day it’s
 published.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Reading Fabien Sanglard’s post <a
+<li id="fn3"><p>This assumes the .vimrc or .exrc file are in the same
+directory as build.py.<a href="#fnref3" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Reading Fabien Sanglard’s post <a
 href="https://fabiensanglard.net/html/index.html">All you may need is
-HTML</a> may have had an effect on this decision.<a href="#fnref3"
+HTML</a> may have had an effect on this decision.<a href="#fnref4"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
