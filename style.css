@@ -4,6 +4,10 @@ html, body {
   box-sizing: border-box;
 }
 
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
 html {
   width: 100%;
   max-width: 900px;
@@ -19,7 +23,6 @@ body {
   margin-top: 0.5em;
   padding: 2em;
   max-width: 100%;
-  box-sizing: border-box;
   border-radius: 10px;
   font-weight: 400;
 }
@@ -47,10 +50,7 @@ header .name:hover {
 }
 
 header .title {
-  color: blue;
-}
-
-header .title:hover {
+  text-decoration: none;
   color: blue;
 }
 
@@ -88,13 +88,6 @@ pre, pre code, code {
   background: #e5e5e5;
   border-radius: 0.5ch;
   font-weight: bold;
-  /*
-  font-family: Georgia, "Times New Roman", serif;
-  font-family: Impact, Jokerman, Copperplate, fantasy;
-  font-family: "Times New Roman", Georgia, Garamond, Palatino, serif;
-  font-family: "Comic Sans MS", "Brush Script MT", "Lucida Handwriting", Pacifico, cursive;
-  font-family: Arial, Helvetica, Verdana, Tahoma, "Trebuchet MS", Calibri, sans-serif;
-  */
 }
 
 pre {
@@ -102,16 +95,6 @@ pre {
   padding: 0.5rem;
   overflow-x: auto;
 }
-
-
-/* pre {
-  background-color: white; 
-  border: 1px solid Black; 
-  padding-left: 2%;
-  padding-top: 1ch;
-  padding-bottom: 1ch;
-  overflow: hidden;
-} */
 
 pre code {
   font-size: 90%;
@@ -133,18 +116,15 @@ figure {
   width: 100%;
 }
 
-figure img {
-  width: 100%;
-  height: auto;
-  display: block;
-  border: none;
-}
-
 img {
   border: none; 
   max-width: 100%;
   height: auto;
   display: block;
+}
+
+figure img {
+  width: 100%;
 }
 
 img.pixel, canvas.pixel {
@@ -194,17 +174,17 @@ blockquote div {
   * {
     font-size: 13px;
   }
+
   body {
     padding: 1em;
   }
-  p {
-    text-align: justify;
-  }
+
   header {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
+
   header > nav {
     float: none;
     margin-top: 0.0em;
@@ -213,10 +193,6 @@ blockquote div {
     gap: 0.0em;
   }
 }   
-
-.title {
-  text-decoration: none;
-}
 
 
 
