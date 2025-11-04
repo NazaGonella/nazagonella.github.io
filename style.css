@@ -1,6 +1,32 @@
-p a strong {
-  letter-spacing: -0.03em;
+/* base layout */
+
+html, body {
+  box-sizing: border-box;
 }
+
+html {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  background: #BC4B51;
+}
+
+body {
+  background: #fafafa;
+  font-family: "Fira Code Medium", "Fira Code", "DejaVu Sans Mono", "Ubuntu Mono", "Courier New", "Hack", monospace;
+  font-size: 18px;
+  line-height: 1.5;
+  margin-top: 0.5em;
+  padding: 2em;
+  max-width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  font-weight: 400;
+}
+
+
+/* header */
+
 header {
   color: #777;
   font-size: 20px;
@@ -29,49 +55,14 @@ header .title:hover {
 }
 
 
-html, body {
-  box-sizing: border-box;
+/* typography */
+
+p {
+  text-align: justify;
 }
 
-html {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  /*
-  background: #B84A62;
-  background: #773344;
-  background: #524948;
-  background: #AC7B84;
-  background: #916953;
-  background: #191102;
-  background: #171614;
-  background: #F19953;
-  background: #D5896F;
-  background: #945D5E;
-  */
-  background: #BC4B51;
-}
-
-body {
-  background: #fafafa;
-  font-family: "Fira Code Medium", "Fira Code", "DejaVu Sans Mono", "Ubuntu Mono", "Courier New", "Hack", monospace;
-  font-size: 18px;
-  line-height: 1.5;
-  margin-top: 0.5em;
-  padding: 2em;
-  max-width: 100%;
-  box-sizing: border-box;
-  border-radius: 10px;
-  font-weight: 400;
-  /*
-  margin-top: 1.5em;
-  font-family: Georgia, "Times New Roman", serif;
-  font-family: Impact, Jokerman, Copperplate, fantasy;
-  font-family: Arial, Helvetica, Verdana, Tahoma, "Trebuchet MS", Calibri, sans-serif;
-  font-family: "Comic Sans MS", "Brush Script MT", "Lucida Handwriting", Pacifico, cursive;
-  font-family: "Courier New", Consolas, Monaco, "Lucida Console", monospace;
-  font-family: "Times New Roman", Georgia, "DejaVu Serif", Garamond, Palatino, serif;
-  */
+p a strong {
+  letter-spacing: -0.03em;
 }
 
 a {
@@ -88,6 +79,54 @@ a:hover {
   text-decoration: underline;
 }
 
+
+/* code */
+
+pre, pre code, code {
+  font-family: "Courier New", Consolas, Monaco, "Lucida Console", monospace;
+  white-space: pre;
+  background: #e5e5e5;
+  border-radius: 0.5ch;
+  font-weight: bold;
+  /*
+  font-family: Georgia, "Times New Roman", serif;
+  font-family: Impact, Jokerman, Copperplate, fantasy;
+  font-family: "Times New Roman", Georgia, Garamond, Palatino, serif;
+  font-family: "Comic Sans MS", "Brush Script MT", "Lucida Handwriting", Pacifico, cursive;
+  font-family: Arial, Helvetica, Verdana, Tahoma, "Trebuchet MS", Calibri, sans-serif;
+  */
+}
+
+pre {
+  border: 1px solid #e1e1e1;
+  padding: 0.5rem;
+  overflow-x: auto;
+}
+
+
+/* pre {
+  background-color: white; 
+  border: 1px solid Black; 
+  padding-left: 2%;
+  padding-top: 1ch;
+  padding-bottom: 1ch;
+  overflow: hidden;
+} */
+
+pre code {
+  font-size: 90%;
+}
+
+:not(pre) > code {  /* inline code */
+  font-size: 90%;
+  font-weight: bold;
+  padding-left: 0.3ch;
+  padding-right: 0.3ch;
+}
+
+
+/* figures and images */
+
 figure {
   margin: 0;
   padding: 0;
@@ -101,7 +140,6 @@ figure img {
   border: none;
 }
 
-
 img {
   border: none; 
   max-width: 100%;
@@ -109,9 +147,14 @@ img {
   display: block;
 }
 
-p {
-  text-align: justify;
+img.pixel, canvas.pixel {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
+
+
+/* other */
 
 hr {
   display: block;
@@ -125,22 +168,29 @@ sup {
   font-size: 0.65em;
 }   
 
-pre {
-  background-color: white; 
-  border: 1px solid Black; 
-  padding-left: 2%;
-  padding-top: 1ch;
-  padding-bottom: 1ch;
-  overflow: hidden;
-}
-
 div.heading {
   font-weight: bold;      
   text-transform: uppercase;
   margin-top: 4ch;
 }
 
-@media (max-width: 500px) { /* For small screen decices */
+blockquote {
+  border-left: 4px solid #ccc;
+  margin: 1.0em 8px;
+  padding: 0.05em 8px;
+}
+
+blockquote div {
+  text-transform: none;
+  text-align: right;
+  width: 100%;
+}
+
+
+
+/* mobiles */
+
+@media (max-width: 500px) {
   * {
     font-size: 13px;
   }
@@ -160,7 +210,7 @@ div.heading {
     margin-top: 0.0em;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.0em; /* horizontal spacing between links */
+    gap: 0.0em;
   }
 }   
 
@@ -168,60 +218,6 @@ div.heading {
   text-decoration: none;
 }
 
-img.pixel, canvas.pixel {
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-}
 
 
-blockquote {
-  border-left: 4px solid #ccc;
-  margin: 1.0em 8px;
-  padding: 0.05em 8px;
-}
-
-blockquote div {
-  text-transform: none;
-  text-align: right;
-  width: 100%;
-}
-
-pre, pre code, code {
-  font-family: "Courier New", Consolas, Monaco, "Lucida Console", monospace;
-  white-space: pre;
-  background: #e5e5e5;
-  border-radius: 0.5ch;
-  font-weight: bold;
-  /*
-  font-family: Georgia, "Times New Roman", serif;
-  font-family: Impact, Jokerman, Copperplate, fantasy;
-  font-family: "Times New Roman", Georgia, Garamond, Palatino, serif;
-  font-family: "Comic Sans MS", "Brush Script MT", "Lucida Handwriting", Pacifico, cursive;
-  font-family: Arial, Helvetica, Verdana, Tahoma, "Trebuchet MS", Calibri, sans-serif;
-  */
-}
-
-pre {
-  /*
-  background: #F1F1F1;
-  border: 1px solid #E1E1E1;
-  */
-  border: 1px solid #e1e1e1;
-  padding: 0.5rem;
-  overflow-x: auto;
-}
-
-pre code {
-  font-size: 90%;
-  /*font-weight: normal;*/
-}
-
-/*Inline code*/
-:not(pre) > code {
-  font-size: 90%;
-  font-weight: bold;
-  padding-left: 0.3ch;
-  padding-right: 0.3ch;
-}
 
