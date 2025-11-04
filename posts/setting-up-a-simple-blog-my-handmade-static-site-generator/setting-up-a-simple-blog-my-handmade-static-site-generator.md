@@ -30,7 +30,7 @@ Still, I would like to have some formatting, as there were times I would take no
 
 Now what I need is to convert this Markdown file into a HTML file. After looking around through some posts on reddit, I found the [pandoc](https://pandoc.org/) document converter, exactly what I needed. For any `.md` file I just had to run `pandoc input.md -o index.html`. 
 
-Pandoc utilizes an extended version of Markdown which comes in handy, as it includes support for tables, definition lists, footnotes, citations and even math.  It also supports *Metadata Blocks*, which allows including information such as `% title`, `% author` and `% date`. I will only be using `% title` since the tool requires it.
+Pandoc uses an extended version of Markdown which comes in handy, as it includes support for tables, definition lists, footnotes, citations and even math.  It also supports *Metadata Blocks*, which allows including information such as `% title`, `% author` and `% date`. I will only be using `% title` since the tool requires it.
 
 And there it was, just what I wanted, almost.
 
