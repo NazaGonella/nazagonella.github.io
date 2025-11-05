@@ -161,6 +161,8 @@ To fix this I created a new `working` branch. Every change I make gets pushed to
 For easy deployment I made a simple shell script `deploy.sh`.
 
 ```
+set -e
+
 working_branch="working"
 
 git checkout master
@@ -171,6 +173,10 @@ echo "Master branch updated"
 
 git checkout "$working_branch"
 ```
+
+`set -e` tells the shell to exit immediately if any command fails.
+
+`--no-ff` ensures git creates a merge commit even if a fast-forward is possible.
 
 ---
 
