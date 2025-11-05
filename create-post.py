@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import subprocess
 import sys
 import os
@@ -23,7 +25,7 @@ date_header : datetime = datetime.now().strftime("%B {S}, %Y").replace('{S}', st
 header : str = f"""%{post_title}
 
 <header>
-    <a class="name" href="../../index.html">Nazareno Gonella</a><nav><a class="title" href="">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="">CV</a></nav>
+    <a class="author-name" href="../../index.html">Nazareno Gonella</a><nav><a class="title" href="">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="">CV</a></nav>
 </header>
 
 <hr />
@@ -42,7 +44,7 @@ with open(f"{posts_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") as 
 # adds the post entry to home.md
 
 home_path : str = "./home.md"
-date_entry = datetime.now().strftime("%d/%m/%Y")
+date_entry : datetime = datetime.now().strftime("%d/%m/%Y")
 post_entry : str = f"{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n"
 
 with open(home_path, "r", encoding="utf-8") as f:

@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
+
 import os
 import subprocess
 from pathlib import Path
 
-css_path = Path("style.css").resolve()      # absolute path to CSS
+css_path : Path = Path("style.css").resolve()      # absolute path to CSS
 
 ignored_mds = [Path("./README.md")]         # will not apply to ALL Markdown files
 
@@ -19,7 +21,7 @@ for md, html in paired_files:
         if mod_time_html >  mod_time_md:
             continue
 
-    relative_path_css = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
+    relative_path_css : str = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
 
     subprocess.run([
         "pandoc",
