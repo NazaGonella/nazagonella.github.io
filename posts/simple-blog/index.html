@@ -201,7 +201,7 @@ I merge into the <code>master</code> branch.</p>
 <pre><code>working_branch=&quot;working&quot;
 
 git checkout master
-git merge &quot;$working_branch&quot; --no-ff
+git merge &quot;$working_branch&quot; --no-ff -m &quot;Merge $working_branch branch into master&quot;
 git push origin master
 
 echo &quot;Master branch updated&quot;

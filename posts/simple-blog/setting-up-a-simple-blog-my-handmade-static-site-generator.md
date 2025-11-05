@@ -164,7 +164,7 @@ For easy deployment I made a simple shell script `deploy.sh`.
 working_branch="working"
 
 git checkout master
-git merge "$working_branch" --no-ff
+git merge "$working_branch" --no-ff -m "Merge $working_branch branch into master"
 git push origin master
 
 echo "Master branch updated"
