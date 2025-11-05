@@ -10,7 +10,11 @@ html, body {
 
 html {
   width: 100%;
-  background: #BC4B51;
+  /*
+		  background: #BC4B51;
+  background: #704E2E;
+   * */
+  background: #448FA3;
   max-width: 900px;
   margin: 0 auto;
 }
