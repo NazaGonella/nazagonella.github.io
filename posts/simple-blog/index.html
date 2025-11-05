@@ -65,7 +65,8 @@ it includes support for tables, definition lists, footnotes, citations
 and even math. It also supports <em>Metadata Blocks</em>, which allows
 including information such as <code>% title</code>,
 <code>% author</code> and <code>% date</code>. I will only be using
-<code>% title</code> since the tool requires it.</p>
+<code>% title</code> since the tool issues a warning when not using
+it.</p>
 <p>And there it was, just what I wanted, almost.</p>
 <hr />
 <h3 id="not-stylish-just-yet">Not Stylish, Just Yet</h3>
@@ -169,6 +170,11 @@ for md, html in paired_files:
     ])
 
     print(md, &quot;-&gt;&quot;, html)</code></pre>
+<p><code>-s</code> inserts the necessary headers and footers to create a
+full HTML file.</p>
+<p><code>-V title=</code> prevents pandoc of inserting the variable
+defined in <code>% title</code> as a header, while still keeping it as
+the document title.</p>
 <hr />
 <h3 id="workflow">Workflow</h3>
 <p>I will be using <a href="https://www.vim.org/">vim</a> as my text
