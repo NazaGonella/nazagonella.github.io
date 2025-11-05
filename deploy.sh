@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 working_branch="working"
 
 git checkout master

@@ -198,15 +198,21 @@ I make gets pushed to that branch. And once I feel it’s time to deploy,
 I merge into the <code>master</code> branch.</p>
 <p>For easy deployment I made a simple shell script
 <code>deploy.sh</code>.</p>
-<pre><code>working_branch=&quot;working&quot;
+<pre><code>set -e
+
+working_branch=&quot;working&quot;
 
 git checkout master
-git merge &quot;$working_branch&quot; --no-ff
+git merge &quot;$working_branch&quot; --no-ff -m &quot;Merge $working_branch branch into master&quot;
 git push origin master
 
 echo &quot;Master branch updated&quot;
 
 git checkout &quot;$working_branch&quot;</code></pre>
+<p><code>set -e</code> tells the shell to exit immediately if any
+command fails.</p>
+<p><code>--no-ff</code> ensures git creates a merge commit even if a
+fast-forward is possible.</p>
 <hr />
 <p>And there it is, a simple framework for my use case. Every time I
 want to write about a new topic, I run <code>create-post.py</code> and
