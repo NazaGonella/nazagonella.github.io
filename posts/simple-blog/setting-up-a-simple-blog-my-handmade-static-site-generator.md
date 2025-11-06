@@ -42,7 +42,7 @@ A plain HTML file with formatted text is a lot better than a plain text file, bu
 
 I need something simple, but still good looking. Luckily you can link a `.css` file to the output of pandoc using the `--css` argument. The problem is I don't have much experience using css, so it is time to look for references.
 
-I really like [Fabien Sanglard's](https://fabiensanglard.net/) and [Steve Losh's](https://stevelosh.com/) websites. They are minimalistic, nice to look at, and easy to read. I appreciate how you can immediately see all the stuff the authors have been working on or pondering over the last couple of years as soon as you enter. With the help of inspect element and a couple of queries to ChatGPT, I ended up with a style I was happy with.
+I really like [Fabien Sanglard's](https://fabiensanglard.net/) and [Steve Losh's](https://stevelosh.com/) websites. They are minimalistic, nice to look at, and easy to read. I appreciate how you can immediately see all the stuff the authors have been working on or pondering over the last couple of years as soon as you enter. With the help of inspect element, a couple of queries to ChatGPT, and a background from [Hero Patterns](https://heropatterns.com/), I ended up with a style I was happy with.
 
 There was now a need for a nice header: css and Markdown alone wouldn't suffice. Fortunately, pandoc allows for HTML to be written into the Markdown file, which it then passes to the final output unchanged. I can now define a simple header to include on all the pages and ensure a concise style, but to achieve that I would have to copy and paste the same header everytime I create a new page. It would be nice to have some sort of page template.
 
