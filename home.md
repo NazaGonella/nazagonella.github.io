@@ -1,4 +1,4 @@
-% Naza Gonella's Site
+% Nazareno Gonella
 
 <header>
     <a class="name" href="/">Nazareno Gonella</a><nav><a class="title" href="/">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="/resume/">RESUME</a></nav>
