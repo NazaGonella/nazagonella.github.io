@@ -5,6 +5,6 @@
 </header>
 
 <hr />
-04/11/2025: [**Setting Up a Simple Blog - My Handmade Static Site Generator**](/posts/simple-blog/)  
+04/11/2025: [**Setting Up a Simple Blog - Handmade Static Site Generator**](/posts/simple-blog/)  
 
 ---
