@@ -30,11 +30,15 @@ header : str = f"""%{post_title}
 
 <hr />
 
+<article>
+
 ## {post_title}
 
 {date_header}
 
 ---
+
+</article>
 """
 
 with open(f"{posts_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") as f:
@@ -45,7 +49,7 @@ with open(f"{posts_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") as 
 
 home_path : str = "./home.md"
 date_entry : datetime = datetime.now().strftime("%d/%m/%Y")
-post_entry : str = f"{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n"
+post_entry : str = f"{date_entry}: [**{post_title}**]({posts_path}/{file_name}/)  \n"
 
 with open(home_path, "r", encoding="utf-8") as f:
     lines = f.readlines()
