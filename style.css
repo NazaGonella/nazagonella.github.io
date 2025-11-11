@@ -133,7 +133,7 @@ a:hover {
 /* code */
 
 pre, pre code, code {
-  font-family: "Courier New", Consolas, Monaco, "Lucida Console", monospace;
+  font-family: inherit;
   white-space: pre;
   background: #e5e5e5;
   border-radius: 0.5ch;
