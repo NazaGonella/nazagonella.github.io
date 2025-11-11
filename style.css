@@ -54,7 +54,11 @@ background-image: url('/assets/topography.svg');
 
 body {
   background: #fafafa;
+  /*
   font-family: "Fira Code Medium", "Fira Code", "DejaVu Sans Mono", "Ubuntu Mono", "Courier New", "Hack", monospace;
+  font-family: "Courier New", "DejaVu Sans Mono", monospace;
+*/
+  font-family: Consolas, Monaco, "DejaVu Sans Mono", "Courier New", monospace;
   font-size: 18px;
   line-height: 1.5;
   margin-top: 0.5em;
