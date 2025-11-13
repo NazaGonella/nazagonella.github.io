@@ -1,0 +1,13 @@
+### Structures
+
+- Lists
+- Dictionaries
+
+### Outline
+
+- Define a starting API
+- Analyze the time complexity of common operations by reading the source code
+- Implement based on that.
+    - Follow the same implementation?
+    - Improve the python implementation?
+    - Cons and 

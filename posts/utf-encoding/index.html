@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Nazareno Gonella</title>
+  <title>Decoding UTF-8</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -22,12 +22,12 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../../style.css" />
 </head>
 <body>
 <header>
 <link rel="icon" href="/assets/favicon.svg" type="image/svg">
-<a class="name" href="/">Nazareno Gonella</a>
+<a class="author-name" href="/">Nazareno Gonella</a>
 <nav>
 <a class="title" href="/">BLOG</a>   
 <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a>   
@@ -35,10 +35,26 @@
 </nav>
 </header>
 <hr />
-<p>12/11/2025 <a href="./posts/utf-encoding/"><strong>Decoding
-UTF-8</strong></a><br />
-04/11/2025 <a href="/posts/simple-blog/"><strong>Setting Up a Simple
-Blog - Handmade Static Site Generator</strong></a></p>
+<article>
+<h2 id="decoding-utf-8">Decoding UTF-8</h2>
+<p>November 12, 2025</p>
 <hr />
+<p>How do we represent characters in memory?</p>
+<hr />
+<p>You probably may know ASCI, characters represented by numbers from 0
+to 127; you may also know Unicode, same thing as ASCII but expanded,
+right? There is a slight difference. ASCII and Unicode are both
+<em>coded character sets</em>, they map abstract symbols to numeric
+values called <em>code points</em>. The way they differ is on how they
+store these code points in memory.</p>
+<p>ASCII is straightforward. These are not big numbers, we can assign a
+byte for each code point, so the character with the code point
+<code>84</code>, would be stored in a byte like <code>0101 0100</code>.
+The next plausible step for Unicode would be to do the same, just store
+every code point to whatever amount of bytes we need.</p>
+<p>Let’s analyze the % Unicode character, Smiling Face with Sunglasses
+emoji 😎. Unicode characters are usually represented in hexadecimal, in
+this case 1F60E. We</p>
+</article>
 </body>
 </html>
