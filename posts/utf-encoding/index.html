@@ -46,15 +46,52 @@ to 127; you may also know Unicode, same thing as ASCII but expanded,
 right? There is a slight difference. ASCII and Unicode are both
 <em>coded character sets</em>, they map abstract symbols to numeric
 values called <em>code points</em>. The way they differ is on how they
-store these code points in memory.</p>
+store these code points in memory, this is what we call
+<em>encoding</em>. ASCII is both a coded character set and a encoding
+format.</p>
+<hr />
+<h3 id="easy-ways-to-encode">Easy ways to encode</h3>
 <p>ASCII is straightforward. These are not big numbers, we can assign a
 byte for each code point, so the character with the code point
 <code>84</code>, would be stored in a byte like <code>0101 0100</code>.
-The next plausible step for Unicode would be to do the same, just store
-every code point to whatever amount of bytes we need.</p>
-<p>Let’s analyze the % Unicode character, Smiling Face with Sunglasses
-emoji 😎. Unicode characters are usually represented in hexadecimal, in
-this case 1F60E. We</p>
+The next plausible step for Unicode would be to do the same, we map the
+code point directly to bytes.</p>
+<p>The problem arises from the number of characters in Unicode, 159,801
+characters that will need more than a single byte. This gets worse when
+you take into account the <em>codespace</em> of Unicode, being the range
+of code points, from 0 to 1,114,111.<a href="#fn1" class="footnote-ref"
+id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p><strong>UTF-32</strong> solves this by assigning 4 bytes for each
+code point. Code point <code>84</code> would be stored as
+<code>0000 0000 0000 0000 0000 0000 0101 0100</code> in binary, or
+<code>00 00 00 54</code> in hexadecimal. A string like <code>Dog</code>
+would be encoded this way:</p>
+<ul>
+<li>D: <code>0000 0000 0000 0000 0000 0000 0100 0100</code></li>
+<li>o: <code>0000 0000 0000 0000 0000 0000 0110 1111</code></li>
+<li>g: <code>0000 0000 0000 0000 0000 0000 0110 0111</code></li>
+</ul>
+<p>You may notice the problem UTF-32 introduces. A lot of bytes go to
+waste when using the most common letters in the english alphabet. When
+in ASCII would take only 3 bytes to encode dog, we are using 12 bytes
+when encoding with UTF-32. With this encoding, every character takes the
+same amount of bytes, so we call UTF-32 a <em>fixed-length
+encoding</em>.</p>
+<hr />
+<h3 id="complex-ways-to-encode">Complex ways to encode</h3>
+<p><strong>UTF-8</strong> fixes the fixed-length problem by using a
+<em>variable-width encoding</em>.</p>
+<p>Let’s analyze the Smiling Face with Sunglasses emoji 😎. Unicode
+characters are usually represented in hexadecimal, in this case
+<code>U+1F60E</code>.</p>
 </article>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Not all code points are assigned.<a href="#fnref1"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 </body>
 </html>
