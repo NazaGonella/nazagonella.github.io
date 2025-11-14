@@ -5,6 +5,9 @@
     <a class="name" href="/">Nazareno Gonella</a><nav><a class="title" href="/">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="/resume/">RESUME</a></nav>
 </header>
 
+<button onclick="swap()">EN/ES</button>
+
+<div id="es">
 <hr />
 
 Estudiante de Ingeniería en Inteligencia Artificial
@@ -89,3 +92,103 @@ First Certificate in English | Grade A (C1 performance) | Overall Score 180
 **Herramientas y entornos:** Git, Linux, Bash, Docker, Make, CMake, LaTeX, unit testing, redacción técnica
 
 ---
+
+</div>
+
+<div id="en">
+<hr />
+
+Artificial Intelligence Engineering Student
+
+San Fernando, Buenos Aires, Argentina
+
+Tel: +543537335531 | Mail: [nazagonella2@gmail.com](mailto:nazagonella2@gmail.com)
+
+LinkedIn: [linkedin.com/in/nazareno-gonella](https://www.linkedin.com/in/nazareno-gonella/)
+
+GitHub: [github.com/NazaGonella](https://github.com/NazaGonella)
+
+---
+
+### ABOUT ME
+
+As an artificial intelligence engineering student, I have training in programming, statistical models, data management, and mathematics. Always willing to learn.
+
+### EDUCATION
+
+**Universidad de San Andrés**
+
+Artificial Intelligence Engineering | March 2023 - Present
+
+**Colegio San José de Bell Ville**
+
+Baccalaureate in Economics and Administration | 2016-2022
+
+### EXPERIENCE
+
+**Teaching Assistant in Discrete Mathematics**
+
+Universidad de San Andrés | March 2024 – July 2024
+
+Preparar material explicativo sobre temas de la materia para cursantes de la materia.
+
+Responder consultas de alumnos.
+
+Presentar temas en clase.
+
+### PROYECTOS
+
+#### Generación de terrenos mediante autómata celular
+C | Raylib
+
+Desarrollo de un generador de mapas que utiliza reglas de autómatas celulares para crear terrenos con océanos, llanuras y montañas, con visualización en tiempo real y control de parámetros.
+
+#### Parser JSON
+C
+
+Implementación de un parser recursivo de archivos JSON que construye estructuras en memoria capaces de almacenar todos los tipos de datos del formato (cadenas, números, booleanos, objetos, arrays y valores nulos). Libre de dependencias externas.
+
+#### Interfaz gráfica para simulación de escalada
+Python | Pygame
+
+Desarrollo de una interfaz que muestra en tiempo real la posición y progreso de varios participantes, con seguimiento de métricas y trayectorias de cada escalador.
+
+### ACTIVIDADES EXTRACURRICULARES
+
+**Simposio Científico de IA y Aplicaciones - Presentación de proyecto**
+
+Julio 2023
+
+**Game Jam Society - Computer Society ITBA - 2° Puesto**
+
+Godot | Trabajo en equipo | Octubre 2024
+
+### IDIOMAS
+
+**Cambridge English**
+
+First Certificate in English | Grade A (C1 performance) | Overall Score 180
+
+### CONOCIMIENTO TÉCNICO
+
+**Lenguajes:** C, C++, Python, C#, Java, JavaScript, HTML, CSS
+
+**Frameworks y librerías:** Raylib, SDL2, PyTorch, TensorFlow, NumPy, scikit-learn, Matplotlib, pandas, pygame, Godot, Unity, Flask
+
+**Bases de datos:** PostgreSQL, MongoDB
+
+**Herramientas y entornos:** Git, Linux, Bash, Docker, Make, CMake, LaTeX, unit testing, redacción técnica
+
+---
+
+</div>
+
+<script>
+function swap() {
+  const es = document.getElementById('es');
+  const en = document.getElementById('en');
+  const esVisible = es.style.display !== 'none';
+  es.style.display = esVisible ? 'none' : 'block';
+  en.style.display = esVisible ? 'block' : 'none';
+}
+</script>

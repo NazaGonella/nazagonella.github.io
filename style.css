@@ -152,7 +152,10 @@ pre code {
 
 :not(pre) > code {  /* inline code */
   font-size: 90%;
+  /*
   font-weight: bold;
+  */
+  font-weight: normal;
   padding-left: 0.3ch;
   padding-right: 0.3ch;
 }
@@ -217,6 +220,71 @@ blockquote div {
 }
 
 
+/* tables */
+
+/*
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+}
+
+table, th, td {
+    border: 1px solid #666;
+}
+
+th, td {
+    padding: 0.5em 1em;
+    text-align: left;
+}
+
+th {
+    background-color: #eee;
+}
+*/
+
+/* tables */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+table, th, td {
+    border: 1px solid #666;
+}
+
+th, td {
+    padding: 0.5em 1em;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background-color: #eee;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+caption {
+    caption-side: bottom;
+    text-align: left;
+    font-style: italic;
+    padding-top: 0.5em;
+    color: #555;
+}
+
+
 /* mobiles */
 
 @media (max-width: 500px) {
@@ -239,3 +307,5 @@ blockquote div {
     gap: 0;
   }
 }   
+
+

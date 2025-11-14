@@ -34,6 +34,10 @@
 <a class="title" href="/resume/">RESUME</a>
 </nav>
 </header>
+<button onclick="swap()">
+EN/ES
+</button>
+<div id="es">
 <hr />
 <p>Estudiante de Ingeniería en Inteligencia Artificial</p>
 <p>San Fernando, Buenos Aires</p>
@@ -101,5 +105,84 @@ Unity, Flask</p>
 <p><strong>Herramientas y entornos:</strong> Git, Linux, Bash, Docker,
 Make, CMake, LaTeX, unit testing, redacción técnica</p>
 <hr />
+</div>
+<div id="en">
+<hr />
+<p>Artificial Intelligence Engineering Student</p>
+<p>San Fernando, Buenos Aires, Argentina</p>
+<p>Tel: +543537335531 | Mail: <a
+href="mailto:nazagonella2@gmail.com">nazagonella2@gmail.com</a></p>
+<p>LinkedIn: <a
+href="https://www.linkedin.com/in/nazareno-gonella/">linkedin.com/in/nazareno-gonella</a></p>
+<p>GitHub: <a
+href="https://github.com/NazaGonella">github.com/NazaGonella</a></p>
+<hr />
+<h3 id="about-me">ABOUT ME</h3>
+<p>As an artificial intelligence engineering student, I have training in
+programming, statistical models, data management, and mathematics.
+Always willing to learn.</p>
+<h3 id="education">EDUCATION</h3>
+<p><strong>Universidad de San Andrés</strong></p>
+<p>Artificial Intelligence Engineering | March 2023 - Present</p>
+<p><strong>Colegio San José de Bell Ville</strong></p>
+<p>Baccalaureate in Economics and Administration | 2016-2022</p>
+<h3 id="experience">EXPERIENCE</h3>
+<p><strong>Teaching Assistant in Discrete Mathematics</strong></p>
+<p>Universidad de San Andrés | March 2024 – July 2024</p>
+<p>Preparar material explicativo sobre temas de la materia para
+cursantes de la materia.</p>
+<p>Responder consultas de alumnos.</p>
+<p>Presentar temas en clase.</p>
+<h3 id="proyectos-1">PROYECTOS</h3>
+<h4 id="generación-de-terrenos-mediante-autómata-celular-1">Generación
+de terrenos mediante autómata celular</h4>
+<p>C | Raylib</p>
+<p>Desarrollo de un generador de mapas que utiliza reglas de autómatas
+celulares para crear terrenos con océanos, llanuras y montañas, con
+visualización en tiempo real y control de parámetros.</p>
+<h4 id="parser-json-1">Parser JSON</h4>
+<p>C</p>
+<p>Implementación de un parser recursivo de archivos JSON que construye
+estructuras en memoria capaces de almacenar todos los tipos de datos del
+formato (cadenas, números, booleanos, objetos, arrays y valores nulos).
+Libre de dependencias externas.</p>
+<h4 id="interfaz-gráfica-para-simulación-de-escalada-1">Interfaz gráfica
+para simulación de escalada</h4>
+<p>Python | Pygame</p>
+<p>Desarrollo de una interfaz que muestra en tiempo real la posición y
+progreso de varios participantes, con seguimiento de métricas y
+trayectorias de cada escalador.</p>
+<h3 id="actividades-extracurriculares-1">ACTIVIDADES
+EXTRACURRICULARES</h3>
+<p><strong>Simposio Científico de IA y Aplicaciones - Presentación de
+proyecto</strong></p>
+<p>Julio 2023</p>
+<p><strong>Game Jam Society - Computer Society ITBA - 2°
+Puesto</strong></p>
+<p>Godot | Trabajo en equipo | Octubre 2024</p>
+<h3 id="idiomas-1">IDIOMAS</h3>
+<p><strong>Cambridge English</strong></p>
+<p>First Certificate in English | Grade A (C1 performance) | Overall
+Score 180</p>
+<h3 id="conocimiento-técnico-1">CONOCIMIENTO TÉCNICO</h3>
+<p><strong>Lenguajes:</strong> C, C++, Python, C#, Java, JavaScript,
+HTML, CSS</p>
+<p><strong>Frameworks y librerías:</strong> Raylib, SDL2, PyTorch,
+TensorFlow, NumPy, scikit-learn, Matplotlib, pandas, pygame, Godot,
+Unity, Flask</p>
+<p><strong>Bases de datos:</strong> PostgreSQL, MongoDB</p>
+<p><strong>Herramientas y entornos:</strong> Git, Linux, Bash, Docker,
+Make, CMake, LaTeX, unit testing, redacción técnica</p>
+<hr />
+</div>
+<script>
+function swap() {
+  const es = document.getElementById('es');
+  const en = document.getElementById('en');
+  const esVisible = es.style.display !== 'none';
+  es.style.display = esVisible ? 'none' : 'block';
+  en.style.display = esVisible ? 'block' : 'none';
+}
+</script>
 </body>
 </html>
