@@ -42,16 +42,17 @@
 <hr />
 <p>How do we represent characters in memory?</p>
 <hr />
-<p>You probably may know ASCI, characters represented by numbers from 0
-to 127; you may also know Unicode, same thing as ASCII but expanded,
-right? There is a slight difference. ASCII and Unicode are both
-<em>coded character sets</em>, they map abstract symbols to numeric
-values called <em>code points</em>. The way they differ is on how they
-store these code points in memory, this is what we call
-<em>encoding</em>. ASCII is both a coded character set and a encoding
-format.</p>
+<h3 id="unicode-is-not-just-ascii">Unicode is not just ASCII++</h3>
+<p>You probably know ASCI, characters represented by numbers from 0 to
+127; you may also know Unicode, same thing as ASCII but expanded, right?
+There is a slight difference. ASCII and Unicode are both <em>coded
+character sets</em>, they map abstract symbols to numeric values called
+<em>code points</em>. The way they differ is on how they store these
+code points in memory, this is what we call <em>encoding</em>. ASCII is
+both a coded character set and an encoding format. Unicode is NOT and
+encoding format.</p>
 <hr />
-<h3 id="easy-ways-to-encode">Easy ways to encode</h3>
+<h3 id="simple-ways-to-encode">Simple Ways to Encode</h3>
 <p>ASCII is straightforward. These are not big numbers, we can assign a
 byte for each code point, so the character with the code point
 <code>84</code>, would be stored in a byte like <code>0101 0100</code>.
@@ -78,7 +79,7 @@ in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with
 UTF-32. With this encoding, every character takes the same amount of
 bytes, so we call UTF-32 a <em>fixed-length encoding</em>.</p>
 <hr />
-<h3 id="utf-8-format">UTF-8 Format</h3>
+<h3 id="complex-ways-to-encode">Complex Ways to Encode</h3>
 <p>Now let’s look into UTF-8, which uses <em>variable-width
 encoding</em>.</p>
 <p>In UTF-8, the amount of bytes it takes to store a code point
@@ -116,7 +117,7 @@ starts and where it ends in a byte stream.</p>
 as how many bytes follow it; and a <em>continuation byte</em>, which is
 used to facilitate indexing and to detect if the sequence is valid
 UTF-8.</p>
-<p><code>U+1F60E</code> encoded with UTF-8 will look like this:</p>
+<p><code>U+1F60E</code> encoded with UTF-8 looks like this:</p>
 <ul>
 <li><code>(11110)000</code></li>
 <li><code>(10)011111</code></li>
@@ -124,12 +125,12 @@ UTF-8.</p>
 <li><code>(10)001110</code></li>
 </ul>
 <p>Inside the parentheses are the header bits. Just by looking at the
-header bits of a byte we can determine if we are in a leading or
-continuation byte.</p>
+header bits we can determine if we are in a leading or continuation
+byte.</p>
 <p>Continuation bytes start with <code>10</code>. We look at
 continuation bytes to validate UTF-8. If the number of continuation
 bytes do not correspond to those indicated by the leading byte, we know
-the sequence of bytes is invalid UTF-8.</p>
+it’s invalid UTF-8.</p>
 <p>Leading bytes consist of a sequence of ones followed by a zero. The
 number of ones indicate the total number of bytes used by the code
 point. In our emoji example we see the leading byte has header bits
@@ -138,18 +139,20 @@ bytes. This rule applies to all code points lengths except for those of
 1 byte, the ASCII characters.</p>
 <p>ASCII characters have a leading byte that start with zero, followed
 by the code point digits in binary. The letter <code>A</code> will be
-encoded in UTF-8 the same way as one would encode it in ASCII:</p>
-<ul>
-<li>U+0041: <code>(0)100 0001</code></li>
-</ul>
-<table style="width:100%;">
+encoded in UTF-8 the same way as one would encode it in ASCII.<a
+href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a></p>
+<hr />
+<h3 id="the-utf-8-structure">The UTF-8 Structure</h3>
+<p>We can visualize UTF-8 with this table</p>
+<table>
 <colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
+<col style="width: 26%" />
+<col style="width: 25%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
 </colgroup>
 <thead>
 <tr>
@@ -165,7 +168,7 @@ encoded in UTF-8 the same way as one would encode it in ASCII:</p>
 <tr>
 <td>U+0000</td>
 <td>U+007F</td>
-<td>0yyyzzzz</td>
+<td>0xxxxxxx</td>
 <td>-</td>
 <td>-</td>
 <td>-</td>
@@ -173,36 +176,89 @@ encoded in UTF-8 the same way as one would encode it in ASCII:</p>
 <tr>
 <td>U+0080</td>
 <td>U+07FF</td>
-<td>110xxxyy</td>
-<td>10yyzzzz</td>
+<td>110xxxxx</td>
+<td>10xxxxxx</td>
 <td>-</td>
 <td>-</td>
 </tr>
 <tr>
 <td>U+0800</td>
 <td>U+FFFF</td>
-<td>1110wwww</td>
-<td>10xxxxyy</td>
-<td>10yyzzzz</td>
+<td>1110xxxx</td>
+<td>10xxxxxx</td>
+<td>10xxxxxx</td>
 <td>-</td>
 </tr>
 <tr>
 <td>U+010000</td>
 <td>U+10FFFF</td>
-<td>11110uvv</td>
-<td>10vvwwww</td>
-<td>10xxxxyy</td>
-<td>10yyzzzz</td>
+<td>11110xxx</td>
+<td>10xxxxxx</td>
+<td>10xxxxxx</td>
+<td>10xxxxxx</td>
 </tr>
 </tbody>
 </table>
+<p>The table contains the bytes with the header bits set. The
+<code>x</code> bits correspond to the code point value in binary, with
+leading zeroes for the remaining bits.</p>
+<hr />
+<h3 id="cool-utf-8-feature">Cool UTF-8 Feature</h3>
+<hr />
+<h3 id="utf-8-in-code">UTF-8 in Code</h3>
+<p>I wrote a function to decode Unicode code points to UTF-8</p>
+<pre><code>#include &lt;stdio.h&gt;
+
+int CodepointToUTF8(unsigned int codepoint, char *output) {
+
+    // codepoint: U+uvwxyz
+    if (codepoint &lt;= 0x7F) {
+        output[0] = (char)codepoint;                            // (0)yyy zzzz
+        output[1] = &#39;\0&#39;;
+        return 1;
+    } else if (codepoint &lt;= 0x7FF) {
+        output[0] = (char)(0xC0 | ((codepoint &gt;&gt; 6) &amp; 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
+        output[1] = (char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[2] = &#39;\0&#39;;
+        return 2;
+    } else if (codepoint &lt;= 0xFFFF) {
+        output[0] = (char)(0xE0 | ((codepoint &gt;&gt; 12) &amp; 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
+        output[1] = (char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
+        output[2] = (char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[3] = &#39;\0&#39;;
+        return 3;
+    } else if (codepoint &lt;= 0x10FFFF) {
+        output[0] = (char)(0xF0 | ((codepoint &gt;&gt; 18) &amp; 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
+        output[1] = (char)(0x80 | ((codepoint &gt;&gt; 12) &amp; 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
+        output[2] = (char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
+        output[3] = (char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[4] = &#39;\0&#39;;
+        return 4;
+    }
+
+    // Invalid codepoint
+    return 0;
+}
+
+int main(void) {
+    char utf[5]; // The functions takes assigns 5 bytes max, including null terminator
+    CodepointToUTF8(0x1F60E, utf);
+
+    printf(&quot;%s\n&quot;, utf);    //  OUTPUT: 😎
+
+    return 0;
+}</code></pre>
 </article>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p>Not all code points are assigned.<a href="#fnref1"
-class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>This doesn’t mean all code points are assigned, some
+space is reserved for future use.<a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>One of the major benefits of using UTF-8 is backwards
+compatibility with ASCII.<a href="#fnref2" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 </body>

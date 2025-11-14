@@ -20,12 +20,14 @@ How do we represent characters in memory?
 
 ---
 
-You probably may know ASCI, characters represented by numbers from 0 to 127; you may also know Unicode, same thing as ASCII but expanded, right?
-There is a slight difference. ASCII and Unicode are both *coded character sets*, they map abstract symbols to numeric values called *code points*. The way they differ is on how they store these code points in memory, this is what we call *encoding*. ASCII is both a coded character set and a encoding format.
+### Unicode is not just ASCII++
+
+You probably know ASCI, characters represented by numbers from 0 to 127; you may also know Unicode, same thing as ASCII but expanded, right?
+There is a slight difference. ASCII and Unicode are both *coded character sets*, they map abstract symbols to numeric values called *code points*. The way they differ is on how they store these code points in memory, this is what we call *encoding*. ASCII is both a coded character set and an encoding format. Unicode is NOT and encoding format.
 
 ---
 
-### Easy ways to encode
+### Simple Ways to Encode
 
 ASCII is straightforward. These are not big numbers, we can assign a byte for each code point, so the character with the code point `84`, would be stored in a byte like `0101 0100`. The next plausible step for Unicode would be to do the same, we map the code point directly to bytes.
 
@@ -41,7 +43,7 @@ You may notice the problem UTF-32 introduces. A lot of bytes go to waste when us
 
 ---
 
-### UTF-8 Format
+### Complex Ways to Encode
 
 Now let's look into UTF-8, which uses *variable-width encoding*.
 
@@ -65,31 +67,91 @@ It becomes necessary to define a more complex structure when working with variab
 
 A document with UTF-8 encoding will have every byte either be a *leading byte*, which indicates the start of a character as well as how many bytes follow it; and a *continuation byte*, which is used to facilitate indexing and to detect if the sequence is valid UTF-8.
 
-`U+1F60E` encoded with UTF-8 will look like this:
+`U+1F60E` encoded with UTF-8 looks like this:
 
 - `(11110)000`
 - `(10)011111`
 - `(10)011000`
 - `(10)001110`
 
-Inside the parentheses are the header bits. Just by looking at the header bits of a byte we can determine if we are in a leading or continuation byte.
+Inside the parentheses are the header bits. Just by looking at the header bits we can determine if we are in a leading or continuation byte.
 
-Continuation bytes start with `10`. We look at continuation bytes to validate UTF-8. If the number of continuation bytes do not correspond to those indicated by the leading byte, we know the sequence of bytes is invalid UTF-8.
+Continuation bytes start with `10`. We look at continuation bytes to validate UTF-8. If the number of continuation bytes do not correspond to those indicated by the leading byte, we know it's invalid UTF-8.
 
 Leading bytes consist of a sequence of ones followed by a zero. The number of ones indicate the total number of bytes used by the code point. In our emoji example we see the leading byte has header bits `11110`, so we can read the code point as one character of 4 bytes. This rule applies to all code points lengths except for those of 1 byte, the ASCII characters.
 
-ASCII characters have a leading byte that start with zero, followed by the code point digits in binary. The letter `A` will be encoded in UTF-8 the same way as one would encode it in ASCII:
+ASCII characters have a leading byte that start with zero, followed by the code point digits in binary. The letter `A` will be encoded in UTF-8 the same way as one would encode it in ASCII.[^2]
 
-- U+0041: `(0)100 0001`
+---
+
+### The UTF-8 Structure
+
+We can visualize UTF-8 with this table
 
 | First code point | Last code point | Byte 1 | Byte 2 | Byte 3 | Byte 4 |
-|-+-+-+-+-+-|
-|U+0000|U+007F|0yyyzzzz|-|-|-|
-|U+0080|U+07FF|110xxxyy|10yyzzzz|-|-|
-|U+0800|U+FFFF|1110wwww|10xxxxyy|10yyzzzz|-|
-|U+010000|U+10FFFF|11110uvv|10vvwwww|10xxxxyy|10yyzzzz|
+|------------------+-----------------+--------+--------+--------+--------|
+| U+0000   | U+007F   | 0xxxxxxx |-|-|-|
+| U+0080   | U+07FF   | 110xxxxx | 10xxxxxx |-|-|
+| U+0800   | U+FFFF   | 1110xxxx | 10xxxxxx | 10xxxxxx |-|
+| U+010000 | U+10FFFF | 11110xxx | 10xxxxxx | 10xxxxxx | 10xxxxxx |
 
+The table contains the bytes with the header bits set. The `x` bits correspond to the code point value in binary, with leading zeroes for the remaining bits.
 
-[^1]: Not all code points are assigned.
+---
+
+### Cool UTF-8 Feature
+
+---
+
+### UTF-8 in Code
+
+I wrote a function to decode Unicode code points to UTF-8
+
+```
+#include <stdio.h>
+
+int CodepointToUTF8(unsigned int codepoint, char *output) {
+
+    // codepoint: U+uvwxyz
+    if (codepoint <= 0x7F) {
+        output[0] = (char)codepoint;                            // (0)yyy zzzz
+        output[1] = '\0';
+        return 1;
+    } else if (codepoint <= 0x7FF) {
+        output[0] = (char)(0xC0 | ((codepoint >> 6) & 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
+        output[1] = (char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[2] = '\0';
+        return 2;
+    } else if (codepoint <= 0xFFFF) {
+        output[0] = (char)(0xE0 | ((codepoint >> 12) & 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
+        output[1] = (char)(0x80 | ((codepoint >> 6) & 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
+        output[2] = (char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[3] = '\0';
+        return 3;
+    } else if (codepoint <= 0x10FFFF) {
+        output[0] = (char)(0xF0 | ((codepoint >> 18) & 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
+        output[1] = (char)(0x80 | ((codepoint >> 12) & 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
+        output[2] = (char)(0x80 | ((codepoint >> 6) & 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
+        output[3] = (char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[4] = '\0';
+        return 4;
+    }
+
+    // Invalid codepoint
+    return 0;
+}
+
+int main(void) {
+    char utf[5]; // The functions takes assigns 5 bytes max, including null terminator
+    CodepointToUTF8(0x1F60E, utf);
+
+    printf("%s\n", utf);    //  OUTPUT: 😎
+
+    return 0;
+}
+```
+
+[^1]: This doesn't mean all code points are assigned, some space is reserved for future use.
+[^2]: One of the major benefits of using UTF-8 is backwards compatibility with ASCII.
 
 </article>

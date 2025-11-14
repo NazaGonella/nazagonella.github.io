@@ -268,10 +268,6 @@ th {
     font-weight: bold;
 }
 
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
 tr:hover {
     background-color: #f1f1f1;
 }
@@ -279,9 +275,7 @@ tr:hover {
 caption {
     caption-side: bottom;
     text-align: left;
-    font-style: italic;
     padding-top: 0.5em;
-    color: #555;
 }
 
 
@@ -306,6 +300,25 @@ caption {
     flex-wrap: wrap;
     gap: 0;
   }
+
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border: none;          /* removes outer border */
+        box-shadow: none;      /* removes any shadow */
+        padding: 0;            /* optional: remove extra space */
+    }
+
+    ul, ol {
+        padding-left: 1em;
+        margin-left: 0;
+    }
+
+    li {
+        margin-bottom: 0.25em;
+    }
 }   
 
 
