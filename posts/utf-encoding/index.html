@@ -43,45 +43,48 @@
 <p>How do we represent characters in memory?</p>
 <hr />
 <h3 id="unicode-is-not-just-ascii">Unicode is not just ASCII++</h3>
-<p>You probably know ASCI, characters represented by numbers from 0 to
+<p>You probably know ASCII, characters represented by numbers from 0 to
 127; you may also know Unicode, same thing as ASCII but expanded, right?
 There is a slight difference. ASCII and Unicode are both <em>coded
 character sets</em>, they map abstract symbols to numeric values called
 <em>code points</em>. The way they differ is on how they store these
-code points in memory, this is what we call <em>encoding</em>. ASCII is
-both a coded character set and an encoding format. Unicode is NOT and
-encoding format.</p>
+code points in memory, what is called <em>encoding</em>. ASCII is both a
+coded character set and an encoding format. Unicode is NOT an encoding
+format.</p>
 <hr />
 <h3 id="simple-ways-to-encode">Simple Ways to Encode</h3>
-<p>ASCII is straightforward. These are not big numbers, we can assign a
+<p>ASCII is straightforward. These are small values; we can assign a
 byte for each code point, so the character with the code point
-<code>84</code>, would be stored in a byte like <code>0101 0100</code>.
+<code>84</code> would be stored in a byte like <code>0101 0100</code>.
 The next plausible step for Unicode would be to do the same, we map the
 code point directly to bytes.</p>
-<p>The problem arises from the number of characters in Unicode, 159,801
-characters that will need more than a single byte. This gets worse when
-you take into account the <em>codespace</em> of Unicode, being the range
-of code points, from 0 to 1,114,111.<a href="#fn1" class="footnote-ref"
-id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>The problem arises from the number of characters in Unicode, over
+150,000 characters that will need more than a single byte. This gets
+worse when you take into account the <em>codespace</em> of Unicode,
+which ranges from 0 to 1,114,111 code points<a href="#fn1"
+class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, or
+<code>U+0000</code> to <code>U+10FFFF</code> using Unicode notation.</p>
 <p>UTF-32 solves this by assigning 4 bytes for each code point. Code
-point <code>84</code> would be stored as
-<code>0000 0000 0000 0000 0000 0000 0101 0100</code> in binary, or
-<code>00 00 00 54</code> in hexadecimal. A string like <code>Dog</code>
-would be encoded this way:</p>
+point <code>84</code> would be stored as <code>00 00 00 54</code> in
+hexadecimal. A string like <code>Dog</code> would be encoded this
+way:</p>
 <ul>
-<li>D: <code>0000 0000 0000 0000 0000 0000 0100 0100</code></li>
-<li>o: <code>0000 0000 0000 0000 0000 0000 0110 1111</code></li>
-<li>g: <code>0000 0000 0000 0000 0000 0000 0110 0111</code></li>
+<li>D: <code>0000 0000</code> <code>0000 0000</code>
+<code>0000 0000</code> <code>0100 0100</code></li>
+<li>o: <code>0000 0000</code> <code>0000 0000</code>
+<code>0000 0000</code> <code>0110 1111</code></li>
+<li>g: <code>0000 0000</code> <code>0000 0000</code>
+<code>0000 0000</code> <code>0110 0111</code></li>
 </ul>
 <p>You may notice the problem UTF-32 introduces. A lot of bytes go to
 waste when using the most common letters in the english alphabet. What
 in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with
 UTF-32. With this encoding, every character takes the same amount of
-bytes, so we call UTF-32 a <em>fixed-length encoding</em>.</p>
+bytes, so we call UTF-32 a <em>fixed-length</em> encoding.</p>
 <hr />
 <h3 id="complex-ways-to-encode">Complex Ways to Encode</h3>
-<p>Now let’s look into UTF-8, which uses <em>variable-width
-encoding</em>.</p>
+<p>Now let’s look into UTF-8, which uses <em>variable-width</em>
+encoding.</p>
 <p>In UTF-8, the amount of bytes it takes to store a code point
 correspond to the range of the value. Code points from
 <code>U+0000</code> to <code>U+007F</code> are stored in 1 byte, ranges
@@ -103,15 +106,15 @@ to store:</p>
 <li>0E: <code>0000 1110</code></li>
 </ul>
 <p>In here, we store the number <code>1F60E</code> as presented in
-memory; this is NOT the way UTF-8 encodes. There are 4 bytes one next to
+memory. This is NOT the way UTF-8 encodes. There are 4 bytes one next to
 the other, and nothing to indicate this is a whole one character. How do
 we know if this isn’t 4 characters each one taking 1 byte? Or 2
 characters of 2 bytes? Let’s say we want to index the third character in
 a string. How would we do that?</p>
 <p>It becomes necessary to define a more complex structure when working
 with variable-width encoding. An ideal encoding format will make it
-possible to index characters, as well as to identify where a character
-starts and where it ends in a byte stream.</p>
+possible to identify where a character starts and where it ends in a
+string.</p>
 <p>A document with UTF-8 encoding will have every byte either be a
 <em>leading byte</em>, which indicates the start of a character as well
 as how many bytes follow it; and a <em>continuation byte</em>, which is
@@ -201,16 +204,17 @@ role="doc-noteref"><sup>2</sup></a></p>
 </table>
 <p>The table contains the bytes with the header bits set. The
 <code>x</code> bits correspond to the code point value in binary, with
-leading zeroes for the remaining bits.</p>
+leading zeroes for the remaining <code>x</code> bits.</p>
 <hr />
 <h3 id="cool-utf-8-feature">Cool UTF-8 Feature</h3>
+<p>…which is crazy, because that means a character like <code>é</code>
+can be represented with one or two code points.</p>
 <hr />
 <h3 id="utf-8-in-code">UTF-8 in Code</h3>
 <p>I wrote a function to decode Unicode code points to UTF-8</p>
 <pre><code>#include &lt;stdio.h&gt;
 
 int CodepointToUTF8(unsigned int codepoint, char *output) {
-
     // codepoint: U+uvwxyz
     if (codepoint &lt;= 0x7F) {
         output[0] = (char)codepoint;                            // (0)yyy zzzz
@@ -241,7 +245,7 @@ int CodepointToUTF8(unsigned int codepoint, char *output) {
 }
 
 int main(void) {
-    char utf[5]; // The functions takes assigns 5 bytes max, including null terminator
+    char utf[5]; // The functions assigns 5 bytes max, including null terminator
     CodepointToUTF8(0x1F60E, utf);
 
     printf(&quot;%s\n&quot;, utf);    //  OUTPUT: 😎

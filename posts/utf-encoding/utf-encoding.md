@@ -22,30 +22,30 @@ How do we represent characters in memory?
 
 ### Unicode is not just ASCII++
 
-You probably know ASCI, characters represented by numbers from 0 to 127; you may also know Unicode, same thing as ASCII but expanded, right?
-There is a slight difference. ASCII and Unicode are both *coded character sets*, they map abstract symbols to numeric values called *code points*. The way they differ is on how they store these code points in memory, this is what we call *encoding*. ASCII is both a coded character set and an encoding format. Unicode is NOT and encoding format.
+You probably know ASCII, characters represented by numbers from 0 to 127; you may also know Unicode, same thing as ASCII but expanded, right?
+There is a slight difference. ASCII and Unicode are both *coded character sets*, they map abstract symbols to numeric values called *code points*. The way they differ is on how they store these code points in memory, what is called *encoding*. ASCII is both a coded character set and an encoding format. Unicode is NOT an encoding format.
 
 ---
 
 ### Simple Ways to Encode
 
-ASCII is straightforward. These are not big numbers, we can assign a byte for each code point, so the character with the code point `84`, would be stored in a byte like `0101 0100`. The next plausible step for Unicode would be to do the same, we map the code point directly to bytes.
+ASCII is straightforward. These are small values; we can assign a byte for each code point, so the character with the code point `84` would be stored in a byte like `0101 0100`. The next plausible step for Unicode would be to do the same, we map the code point directly to bytes.
 
-The problem arises from the number of characters in Unicode, 159,801 characters that will need more than a single byte. This gets worse when you take into account the *codespace* of Unicode, being the range of code points, from 0 to 1,114,111.[^1]
+The problem arises from the number of characters in Unicode, over 150,000 characters that will need more than a single byte. This gets worse when you take into account the *codespace* of Unicode, which ranges from 0 to 1,114,111 code points[^1], or `U+0000` to `U+10FFFF` using Unicode notation.
 
-UTF-32 solves this by assigning 4 bytes for each code point. Code point `84` would be stored as `0000 0000 0000 0000 0000 0000 0101 0100` in binary, or `00 00 00 54` in hexadecimal. A string like `Dog` would be encoded this way:
+UTF-32 solves this by assigning 4 bytes for each code point. Code point `84` would be stored as  `00 00 00 54` in hexadecimal. A string like `Dog` would be encoded this way:
 
-- D: `0000 0000 0000 0000 0000 0000 0100 0100`
-- o: `0000 0000 0000 0000 0000 0000 0110 1111`
-- g: `0000 0000 0000 0000 0000 0000 0110 0111`
+- D: `0000 0000` `0000 0000` `0000 0000` `0100 0100`
+- o: `0000 0000` `0000 0000` `0000 0000` `0110 1111`
+- g: `0000 0000` `0000 0000` `0000 0000` `0110 0111`
 
-You may notice the problem UTF-32 introduces. A lot of bytes go to waste when using the most common letters in the english alphabet. What in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with UTF-32. With this encoding, every character takes the same amount of bytes, so we call UTF-32 a *fixed-length encoding*.
+You may notice the problem UTF-32 introduces. A lot of bytes go to waste when using the most common letters in the english alphabet. What in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with UTF-32. With this encoding, every character takes the same amount of bytes, so we call UTF-32 a *fixed-length* encoding.
 
 ---
 
 ### Complex Ways to Encode
 
-Now let's look into UTF-8, which uses *variable-width encoding*.
+Now let's look into UTF-8, which uses *variable-width* encoding.
 
 In UTF-8, the amount of bytes it takes to store a code point correspond to the range of the value. Code points from `U+0000` to `U+007F` are stored in 1 byte, ranges from `U+0080` to `U+207F` are stored in 2 bytes, and so on.
 
@@ -61,9 +61,9 @@ The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode code poin
 - F6: `1111 0110`
 - 0E: `0000 1110`
 
-In here, we store the number `1F60E` as presented in memory; this is NOT the way UTF-8 encodes. There are 4 bytes one next to the other, and nothing to indicate this is a whole one character. How do we know if this isn't 4 characters each one taking 1 byte? Or 2 characters of 2 bytes? Let's say we want to index the third character in a string. How would we do that?
+In here, we store the number `1F60E` as presented in memory. This is NOT the way UTF-8 encodes. There are 4 bytes one next to the other, and nothing to indicate this is a whole one character. How do we know if this isn't 4 characters each one taking 1 byte? Or 2 characters of 2 bytes? Let's say we want to index the third character in a string. How would we do that?
 
-It becomes necessary to define a more complex structure when working with variable-width encoding. An ideal encoding format will make it possible to index characters, as well as to identify where a character starts and where it ends in a byte stream.
+It becomes necessary to define a more complex structure when working with variable-width encoding. An ideal encoding format will make it possible to identify where a character starts and where it ends in a string.
 
 A document with UTF-8 encoding will have every byte either be a *leading byte*, which indicates the start of a character as well as how many bytes follow it; and a *continuation byte*, which is used to facilitate indexing and to detect if the sequence is valid UTF-8.
 
@@ -95,11 +95,13 @@ We can visualize UTF-8 with this table
 | U+0800   | U+FFFF   | 1110xxxx | 10xxxxxx | 10xxxxxx |-|
 | U+010000 | U+10FFFF | 11110xxx | 10xxxxxx | 10xxxxxx | 10xxxxxx |
 
-The table contains the bytes with the header bits set. The `x` bits correspond to the code point value in binary, with leading zeroes for the remaining bits.
+The table contains the bytes with the header bits set. The `x` bits correspond to the code point value in binary, with leading zeroes for the remaining `x` bits.
 
 ---
 
 ### Cool UTF-8 Feature
+
+...which is crazy, because that means a character like `é` can be represented with one or two code points.
 
 ---
 
@@ -111,7 +113,6 @@ I wrote a function to decode Unicode code points to UTF-8
 #include <stdio.h>
 
 int CodepointToUTF8(unsigned int codepoint, char *output) {
-
     // codepoint: U+uvwxyz
     if (codepoint <= 0x7F) {
         output[0] = (char)codepoint;                            // (0)yyy zzzz
@@ -142,7 +143,7 @@ int CodepointToUTF8(unsigned int codepoint, char *output) {
 }
 
 int main(void) {
-    char utf[5]; // The functions takes assigns 5 bytes max, including null terminator
+    char utf[5]; // The functions assigns 5 bytes max, including null terminator
     CodepointToUTF8(0x1F60E, utf);
 
     printf("%s\n", utf);    //  OUTPUT: 😎
