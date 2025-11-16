@@ -55,7 +55,7 @@ post_entry : str = f"{date_entry} [**{post_title}**]({posts_path}/{file_name}/) 
 with open(home_path, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
-lines.insert(8, post_entry)
+lines.insert(19, post_entry)
 
 with open(home_path, "w", encoding="utf-8") as f:
     f.writelines(lines)
