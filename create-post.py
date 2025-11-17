@@ -52,10 +52,15 @@ home_path : str = "./home.md"
 date_entry : datetime = datetime.now().strftime("%d/%m/%Y")
 post_entry : str = f"{date_entry} [**{post_title}**]({posts_path}/{file_name}/)  \n"
 
+anchor = "<div class=posts>"
+
 with open(home_path, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
-lines.insert(19, post_entry)
+for i, line in enumerate(lines):
+    if anchor in line:
+        lines.insert(i + 1, post_entry)
+        break
 
 with open(home_path, "w", encoding="utf-8") as f:
     f.writelines(lines)
