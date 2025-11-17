@@ -112,7 +112,7 @@ I wrote a function to decode Unicode code points to UTF-8
 ```
 #include <stdio.h>
 
-int CodepointToUTF8(unsigned int codepoint, char *output) {
+int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
     // codepoint: U+uvwxyz
     if (codepoint <= 0x7F) {
         output[0] = (char)codepoint;                            // (0)yyy zzzz
@@ -143,7 +143,7 @@ int CodepointToUTF8(unsigned int codepoint, char *output) {
 }
 
 int main(void) {
-    char utf[5]; // The functions assigns 5 bytes max, including null terminator
+    unsigned char utf[5]; // The functions assigns 5 bytes max, including null terminator
     CodepointToUTF8(0x1F60E, utf);
 
     printf("%s\n", utf);    //  OUTPUT: 😎

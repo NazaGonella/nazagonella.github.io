@@ -214,7 +214,7 @@ can be represented with one or two code points.</p>
 <p>I wrote a function to decode Unicode code points to UTF-8</p>
 <pre><code>#include &lt;stdio.h&gt;
 
-int CodepointToUTF8(unsigned int codepoint, char *output) {
+int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
     // codepoint: U+uvwxyz
     if (codepoint &lt;= 0x7F) {
         output[0] = (char)codepoint;                            // (0)yyy zzzz
@@ -245,7 +245,7 @@ int CodepointToUTF8(unsigned int codepoint, char *output) {
 }
 
 int main(void) {
-    char utf[5]; // The functions assigns 5 bytes max, including null terminator
+    unsigned char utf[5]; // The functions assigns 5 bytes max, including null terminator
     CodepointToUTF8(0x1F60E, utf);
 
     printf(&quot;%s\n&quot;, utf);    //  OUTPUT: 😎
