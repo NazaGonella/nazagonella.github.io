@@ -79,6 +79,7 @@ header > nav {
 header .author-name {
   color: black;
   color: #333333;
+  color: #D72638;
 }
 
 header .author-name:hover {
