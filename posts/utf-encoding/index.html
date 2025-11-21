@@ -206,9 +206,12 @@ role="doc-noteref"><sup>2</sup></a></p>
 <code>x</code> bits correspond to the code point value in binary, with
 leading zeroes for the remaining <code>x</code> bits.</p>
 <hr />
-<h3 id="cool-utf-8-feature">Cool UTF-8 Feature</h3>
-<p>…which is crazy, because that means a character like <code>é</code>
-can be represented with one or two code points.</p>
+<h3 id="combining-characters">Combining characters</h3>
+<p>Unicode also supports special characters called <em>combining
+characters</em>, these are used</p>
+<p>Until now I’ve described that each character starts with a leading
+byte and cannot be larger than 4 bytes. So you might be confused when
+you encounter situations like this</p>
 <hr />
 <h3 id="utf-8-in-code">UTF-8 in Code</h3>
 <p>I wrote a function to decode Unicode code points to UTF-8</p>

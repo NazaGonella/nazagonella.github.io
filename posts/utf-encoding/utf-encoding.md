@@ -99,9 +99,11 @@ The table contains the bytes with the header bits set. The `x` bits correspond t
 
 ---
 
-### Cool UTF-8 Feature
+### Combining characters
 
-...which is crazy, because that means a character like `é` can be represented with one or two code points.
+Unicode also supports special characters called *combining characters*, these are used 
+
+Until now I've described that each character starts with a leading byte and cannot be larger than 4 bytes. So you might be confused when you encounter situations like this
 
 ---
 
