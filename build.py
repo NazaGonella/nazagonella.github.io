@@ -28,7 +28,8 @@ for md, html in paired_files:
         "-s", str(md),
         "-o", str(html),
         "--css", relative_path_css,
-        "-V", "title="
+        "-V", "title=",
+        "-f", "markdown+pipe_tables"
     ])
 
     print(md, "->", html)
