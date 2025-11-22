@@ -7,7 +7,7 @@
 
 ---
 
-[[ES]](/resume/) - [[PDF]](/resume-en/Gonella-Nazareno.pdf)
+[[ES]](/resume/es/) - [[PDF]](/resume/en/Gonella-Nazareno.pdf)
 
 ---
 
