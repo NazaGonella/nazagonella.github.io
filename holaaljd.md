@@ -1,25 +1,14 @@
-% Resume | Nazareno Gonella
-
-<header>
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg">
-    <a class="author-name" href="/">Nazareno Gonella</a><nav><a class="title" href="/">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="/resume/">RESUME</a></nav>
-</header>
-
----
-
-[[EN]](/resume-en/) - [[PDF]](/resume/Gonella-Nazareno.pdf)
-
 ---
 
 Estudiante de Ingeniería en Inteligencia Artificial
 
-San Fernando, Buenos Aires
+My location, My location
 
-Tel: +543537335531 | Mail: [nazagonella2@gmail.com](mailto:nazagonella2@gmail.com)
+Tel: +123456789 | Mail: [a@gmail.com](mailto:a@gmail.com)
 
-LinkedIn: [linkedin.com/in/nazareno-gonella](https://www.linkedin.com/in/nazareno-gonella/)
+LinkedIn: [linkedin.com/in/my-name](https://www.linkedin.com/in/my-name/)
 
-GitHub: [github.com/NazaGonella](https://github.com/NazaGonella)
+GitHub: [github.com/my-name](https://github.com/my-name)
 
 ---
 
