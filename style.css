@@ -77,29 +77,15 @@ header > nav {
 }
 
 header .author-name {
+  color: #D72638;
   color: black;
   color: #333333;
-  color: #D72638;
 }
 
 header .author-name:hover {
   color: blue;
-  color: #D64933;
-  color: #06B2A7;
-  color: #00A9A5;
-  color: #DE1A1A;
-  color: #D78521;
-  color: #FF3C38;
-  color: #1A936F;
-  color: #CA895F;
-  color: #82BC24;
-  color: #ECC30B;
-  color: #9B2915;
-  color: #B43018;
-  color: #2A9D8F;
-  color: #B80C09;
-  color: #2541B2;
-  color: #F26419;
+  color: #028090;
+  color: #1B9AAA;
   color: red;
   color: #D72638;
 }
@@ -107,22 +93,8 @@ header .author-name:hover {
 header .title {
   text-decoration: none;
   color: blue;
-  color: #D64933;
-  color: #06B2A7;
-  color: #00A9A5;
-  color: #DE1A1A;
-  color: #D78521;
-  color: #FF3C38;
-  color: #1A936F;
-  color: #CA895F;
-  color: #82BC24;
-  color: #ECC30B;
-  color: #9B2915;
-  color: #B43018;
-  color: #2A9D8F;
-  color: #B80C09;
-  color: #2541B2;
-  color: #F26419;
+  color: #028090;
+  color: #1B9AAA;
   color: red;
   color: #D72638;
 }
@@ -153,22 +125,8 @@ a {
 
 a:not(.author-name):not(.title) {
   color: blue;
-  color: #D64933;
-  color: #06B2A7;
-  color: #00A9A5;
-  color: #DE1A1A;
-  color: #D78521;
-  color: #FF3C38;
-  color: #1A936F;
-  color: #CA895F;
-  color: #82BC24;
-  color: #ECC30B;
-  color: #9B2915;
-  color: #B43018;
-  color: #2A9D8F;
-  color: #B80C09;
-  color: #2541B2;
-  color: #F26419;
+  color: #028090;
+  color: #1B9AAA;
   color: red;
   color: #D72638;
 }
