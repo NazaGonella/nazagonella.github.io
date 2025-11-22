@@ -1,9 +1,8 @@
 %Setting Up a Simple Blog - Handmade Static Site Generator
 
 <header>
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="shortcut icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <a class="author-name" href="/">Nazareno Gonella</a><nav><a class="title" href="/">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="/resume/">RESUME</a></nav>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg">
+    <a class="author-name" href="/">Nazareno Gonella</a><nav><a class="title" href="/">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a>
 </header>
 
 <hr />
