@@ -30,6 +30,8 @@ There is a slight difference. ASCII and Unicode are both *coded character sets*,
 
 ASCII is straightforward. These are small values; we can assign a byte for each code point, so the character with the code point `84` would be stored in a byte like `0101 0100`. The next plausible step for Unicode would be to do the same, we map the code point directly to bytes.
 
+We can replicate this for Unicode with a naive approach, mapping the code point directly to bytes.
+
 The problem arises from the number of characters in Unicode, over 150,000 characters that will need more than a single byte. This gets worse when you take into account the *codespace* of Unicode, which ranges from 0 to 1,114,111 code points[^1], or `U+0000` to `U+10FFFF` using Unicode notation.
 
 UTF-32 solves this by assigning 4 bytes for each code point. Code point `84` would be stored as  `00 00 00 54` in hexadecimal. A string like `Dog` would be encoded this way:
@@ -46,7 +48,7 @@ You may notice the problem UTF-32 introduces. A lot of bytes go to waste when us
 
 Now let's look into UTF-8, which uses *variable-width* encoding.
 
-In UTF-8, the amount of bytes it takes to store a code point correspond to the range of the value. Code points from `U+0000` to `U+007F` are stored in 1 byte, ranges from `U+0080` to `U+207F` are stored in 2 bytes, and so on.
+In UTF-8, the amount of bytes it takes to store a code point correspond to the range of the value. Code points from `U+0000` to `U+007F` are stored in 1 byte, ranges from `U+0080` to `U+007F` are stored in 2 bytes, and so on.
 
 - U+00000 - U+00007F: 1 Bytes
 - U+00080 - U+0007FF: 2 Bytes
@@ -100,9 +102,33 @@ The table contains the bytes with the header bits set. The `x` bits correspond t
 
 ### Combining characters
 
-Unicode also supports special characters called *combining characters*, these are used 
+Not all character have direct visual representation (examples), but also, not all characters have a unique representation when encoded in Unicode. Believe it or not, the letters `é` and `é` don't share the same code point
 
-Until now I've described that each character starts with a leading byte and cannot be larger than 4 bytes. So you might be confused when you encounter situations like this
+```
+c = "é"
+c_utf = c.encode("utf-8")
+print("byte length", len(c_utf))    # output: byte length 2
+print(c_utf)                        # output: b'\xc3\xa9'
+
+c = "é"
+c_utf = c.encode("utf-8")
+print("byte length", len(c_utf))    # output: byte length 3
+print(c_utf)                        # output: b'e\xcc\x81'
+```
+
+What is going on? The answer to this is *combining characters*. These are special characters that modify preceding characters in order to create new variations.
+
+In the first example, we are using a *precomposed character*, a character with a dedicated code point. In this case `é` has the code point `U+00E9`. In the next example, we are creating a combination of two characters for `é`, `U+0065` + `U+0301`, that is the letter `e` and the acute diacritic `´`[^3].
+
+Most letters and symbols accept combining characters, and there is no limit to how many you can apply. This allows you to create some monstrous-looking characters that this site's font won't allow me to render properly, so I'm attaching an image
+
+![[Zalgo text!](https://en.wikipedia.org/wiki/Zalgo_text)](https://upload.wikimedia.org/wikipedia/commons/4/4a/Zalgo_text_filter.png)
+
+Now comes a new problem: How do we know if two strings are the same? They may look the same when printed but have totally different encodings. Luckily, Unicode defines *Unicode equivalence* to solve these predicaments.
+
+Code points sequences are defined as **canonically equivalent** if they look the same when printed. In the last case `é` and `é` would be an example of this type of equivalence. When code points sequences are **compatible**, they look different but can be used in the same context. It is the case of `E` and `𝔼`. You understand the meaning of the word `𝔼xistence`, but the character `𝔼` is primarily used in mathematical documents.
+
+Based on these equivalences the standard also defines *Unicode normalization*, to make sure that text sequences have the same code point equivalence. You can read more on types of normalization (and also about UTF-16 and other characters encodings I haven't mentioned) in this [article](https://mcilloni.ovh/2023/07/23/unicode-is-hard/) by Marco Cilloni.
 
 ---
 
@@ -153,7 +179,26 @@ int main(void) {
 }
 ```
 
+We can see the combining characters in action with the following code
+
+```
+int main(void) {
+    unsigned char utf[10];
+    unsigned char* p = utf;
+
+    p += CodepointToUTF8(0x0065, utf);
+    CodepointToUTF8(0x0301, p);
+
+    printf("%s\n", utf);    // OUTPUT: é
+
+    return 0;
+}
+```
+
+In here we see two code points encoded with UTF-8 one next to the other.
+
 [^1]: This doesn't mean all code points are assigned, some space is reserved for future use.
 [^2]: One of the major benefits of using UTF-8 is backwards compatibility with ASCII.
+[^3]: Note that the acute accent character I'm using (`´`) with code point `U+00B4` is not the same as the combining acute accent character, represented by code point `U+0301`.
 
 </article>

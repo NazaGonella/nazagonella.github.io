@@ -87,7 +87,7 @@ encoding.</p>
 <p>In UTF-8, the amount of bytes it takes to store a code point
 correspond to the range of the value. Code points from
 <code>U+0000</code> to <code>U+007F</code> are stored in 1 byte, ranges
-from <code>U+0080</code> to <code>U+207F</code> are stored in 2 bytes,
+from <code>U+0080</code> to <code>U+007F</code> are stored in 2 bytes,
 and so on.</p>
 <ul>
 <li>U+00000 - U+00007F: 1 Bytes</li>
@@ -206,11 +206,59 @@ role="doc-noteref"><sup>2</sup></a></p>
 leading zeroes for the remaining <code>x</code> bits.</p>
 <hr />
 <h3 id="combining-characters">Combining characters</h3>
-<p>Unicode also supports special characters called <em>combining
-characters</em>, these are used</p>
-<p>Until now I’ve described that each character starts with a leading
-byte and cannot be larger than 4 bytes. So you might be confused when
-you encounter situations like this</p>
+<p>Not all character have direct visual representation (examples), but
+also, not all characters have a unique representation when encoded in
+Unicode. Believe it or not, the letters <code>é</code> and
+<code>é</code> don’t share the same code point</p>
+<pre><code>c = &quot;é&quot;
+c_utf = c.encode(&quot;utf-8&quot;)
+print(&quot;byte length&quot;, len(c_utf))    # output: byte length 2
+print(c_utf)                        # output: b&#39;\xc3\xa9&#39;
+
+c = &quot;é&quot;
+c_utf = c.encode(&quot;utf-8&quot;)
+print(&quot;byte length&quot;, len(c_utf))    # output: byte length 3
+print(c_utf)                        # output: b&#39;e\xcc\x81&#39;</code></pre>
+<p>What is going on? The answer to this is <em>combining
+characters</em>. These are special characters that modify preceding
+characters in order to create new variations.</p>
+<p>In the first example, we are using a <em>precomposed character</em>,
+a character with a dedicated code point. In this case <code>é</code> has
+the code point <code>U+00E9</code>. In the next example, we are creating
+a combination of two characters for <code>é</code>, <code>U+0065</code>
++ <code>U+0301</code>, that is the letter <code>e</code> and the acute
+diacritic <code>´</code><a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>.</p>
+<p>Most letters and symbols accept combining characters, and there is no
+limit to how many you can apply. This allows you to create some
+monstrous-looking characters that this site’s font won’t allow me to
+render properly, so I’m attaching an image</p>
+<figure>
+<img
+src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Zalgo_text_filter.png"
+alt="Zalgo text!" />
+<figcaption aria-hidden="true"><a
+href="https://en.wikipedia.org/wiki/Zalgo_text">Zalgo
+text!</a></figcaption>
+</figure>
+<p>Now comes a new problem: How do we know if two strings are the same?
+They may look the same when printed but have totally different
+encodings. Luckily, Unicode defines <em>Unicode equivalence</em> to
+solve these predicaments.</p>
+<p>Code points sequences are defined as <strong>canonically
+equivalent</strong> if they look the same when printed. In the last case
+<code>é</code> and <code>é</code> would be an example of this type of
+equivalence. When code points sequences are <strong>compatible</strong>,
+they look different but can be used in the same context. It is the case
+of <code>E</code> and <code>𝔼</code>. You understand the meaning of the
+word <code>𝔼xistence</code>, but the character <code>𝔼</code> is
+primarily used in mathematical documents.</p>
+<p>Based on these equivalences the standard also defines <em>Unicode
+normalization</em>, to make sure that text sequences have the same code
+point equivalence. You can read more on types of normalization (and also
+about UTF-16 and other characters encodings I haven’t mentioned) in this
+<a href="https://mcilloni.ovh/2023/07/23/unicode-is-hard/">article</a>
+by Marco Cilloni.</p>
 <hr />
 <h3 id="utf-8-in-code">UTF-8 in Code</h3>
 <p>I wrote a function to decode Unicode code points to UTF-8</p>
@@ -254,6 +302,21 @@ int main(void) {
 
     return 0;
 }</code></pre>
+<p>We can see the combining characters in action with the following
+code</p>
+<pre><code>int main(void) {
+    unsigned char utf[10];
+    unsigned char* p = utf;
+
+    p += CodepointToUTF8(0x0065, utf);
+    CodepointToUTF8(0x0301, p);
+
+    printf(&quot;%s\n&quot;, utf);    // OUTPUT: é
+
+    return 0;
+}</code></pre>
+<p>In here we see two code points encoded with UTF-8 one next to the
+other.</p>
 </article>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
@@ -264,6 +327,11 @@ space is reserved for future use.<a href="#fnref1" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>One of the major benefits of using UTF-8 is backwards
 compatibility with ASCII.<a href="#fnref2" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Note that the acute accent character I’m using
+(<code>´</code>) with code point <code>U+00B4</code> is not the same as
+the combining acute accent character, represented by code point
+<code>U+0301</code>.<a href="#fnref3" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>

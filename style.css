@@ -180,6 +180,7 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
+  border: 1px solid #333333;
 }
 
 figure img {
@@ -224,7 +225,6 @@ blockquote div {
   text-align: right;
   width: 100%;
 }
-
 
 /* tables */
 
@@ -282,6 +282,14 @@ caption {
     caption-side: bottom;
     text-align: left;
     padding-top: 0.5em;
+}
+
+
+/* italics */
+/* subtle emphasis for new concepts */
+em, i {
+    font-style: italic;      /* primary cue */
+    font-weight: 500;        /* slight emphasis */
 }
 
 
