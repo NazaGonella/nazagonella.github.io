@@ -22,15 +22,14 @@ How do we represent characters in memory?
 ### Unicode is not just ASCII++
 
 You probably know ASCII, characters represented by numbers from 0 to 127; you may also know Unicode, same thing as ASCII but expanded, right?
-There is a slight difference. ASCII and Unicode are both *coded character sets*, they map abstract symbols to numeric values called *code points*. The way they differ is on how they store these code points in memory, what is called *encoding*. ASCII is both a coded character set and an encoding format. Unicode is NOT an encoding format.
+There is a slight difference. ASCII and Unicode are both *coded character sets*, they map abstract symbols to numeric values called *code points*. The way they differ is on how they store these code points in memory, what is called *encoding*. ASCII is both a coded character set and an encoding format. Unicode itself is NOT an encoding format, in fact, it has multiple encodings.
 
 ---
 
 ### Simple Ways to Encode
 
-ASCII is straightforward. These are small values; we can assign a byte for each code point, so the character with the code point `84` would be stored in a byte like `0101 0100`. The next plausible step for Unicode would be to do the same, we map the code point directly to bytes.
+ASCII is straightforward. These are small values; we can assign a byte for each code point, so the character with the code point `84` would be stored in a byte like `0101 0100`. We can extend this idea to Unicode with a naive approach, mapping the code point directly to bytes.
 
-We can replicate this for Unicode with a naive approach, mapping the code point directly to bytes.
 
 The problem arises from the number of characters in Unicode, over 150,000 characters that will need more than a single byte. This gets worse when you take into account the *codespace* of Unicode, which ranges from 0 to 1,114,111 code points[^1], or `U+0000` to `U+10FFFF` using Unicode notation.
 
@@ -55,14 +54,14 @@ In UTF-8, the amount of bytes it takes to store a code point correspond to the r
 - U+00800 - U+00FFFF: 3 Bytes
 - U+01000 - U+10FFFF: 4 Bytes
 
-The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode code point `U+1F60E` which, according to UTF-8, takes 4 bytes to store:
+The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode code point `U+1F60E` which in UTF-8 uses 4 bytes. You may imagine it encoded this way:
 
 - 00: `0000 0000`
 - 01: `0000 0001`
 - F6: `1111 0110`
 - 0E: `0000 1110`
 
-In here, we store the number `1F60E` as presented in memory. This is NOT the way UTF-8 encodes. There are 4 bytes one next to the other, and nothing to indicate this is a whole one character. How do we know if this isn't 4 characters each one taking 1 byte? Or 2 characters of 2 bytes? Let's say we want to index the third character in a string. How would we do that?
+This is a naive approach once again. This is NOT UTF-8. There are 4 bytes one next to the other, and nothing to indicate this is a whole one character. How do we know if this isn't 4 characters each one taking 1 byte? Or 2 characters of 2 bytes? Let's say we want to index the third character in a string. How would we do that?
 
 It becomes necessary to define a more complex structure when working with variable-width encoding. An ideal encoding format will make it possible to identify where a character starts and where it ends in a string.
 
@@ -79,9 +78,9 @@ Inside the parentheses are the header bits. Just by looking at the header bits w
 
 Continuation bytes start with `10`. We look at continuation bytes to validate UTF-8. If the number of continuation bytes do not correspond to those indicated by the leading byte, we know it's invalid UTF-8.
 
-Leading bytes consist of a sequence of ones followed by a zero. The number of ones indicate the total number of bytes used by the code point. In our emoji example we see the leading byte has header bits `11110`, so we can read the code point as one character of 4 bytes. This rule applies to all code points lengths except for those of 1 byte, the ASCII characters.
+Leading bytes consist of a sequence of ones followed by a zero. The number of ones indicate the total number of bytes used by the code point, including the leading byte. In our emoji example we see the leading byte has header bits `11110`, so we can read the code point as one character of 4 bytes. This rule applies to all code points lengths except for those of 1 byte, the ASCII characters.
 
-ASCII characters have a leading byte that start with zero, followed by the code point digits in binary. The letter `A` will be encoded in UTF-8 the same way as one would encode it in ASCII.[^2]
+ASCII characters have a leading byte that starts with zero, followed by the code point digits in binary. The letter `A` will be encoded in UTF-8 the same way as one would encode it in ASCII.[^2]
 
 ---
 
@@ -102,7 +101,7 @@ The table contains the bytes with the header bits set. The `x` bits correspond t
 
 ### Combining characters
 
-Not all character have direct visual representation (examples), but also, not all characters have a unique representation when encoded in Unicode. Believe it or not, the letters `é` and `é` don't share the same code point
+Not all characters have a direct visual representation (for example, control characters like the null terminator or line breaks), and not all characters have a unique representation when encoded in Unicode. Believe it or not, the letters `é` and `é` don't share the same code point
 
 ```
 c = "é"
@@ -118,7 +117,7 @@ print(c_utf)                        # output: b'e\xcc\x81'
 
 What is going on? The answer to this is *combining characters*. These are special characters that modify preceding characters in order to create new variations.
 
-In the first example, we are using a *precomposed character*, a character with a dedicated code point. In this case `é` has the code point `U+00E9`. In the next example, we are creating a combination of two characters for `é`, `U+0065` + `U+0301`, that is the letter `e` and the acute diacritic `´`[^3].
+In the first example, we are using a *precomposed character*, a character with a dedicated code point. In this case `é` has the code point `U+00E9`. In the next example, we are creating a combination of two characters for `é`, `U+0065` + `U+0301`, that is the letter `e` and the acute diacritic.
 
 Most letters and symbols accept combining characters, and there is no limit to how many you can apply. This allows you to create some monstrous-looking characters that this site's font won't allow me to render properly, so I'm attaching an image
 
@@ -126,7 +125,7 @@ Most letters and symbols accept combining characters, and there is no limit to h
 
 Now comes a new problem: How do we know if two strings are the same? They may look the same when printed but have totally different encodings. Luckily, Unicode defines *Unicode equivalence* to solve these predicaments.
 
-Code points sequences are defined as **canonically equivalent** if they look the same when printed. In the last case `é` and `é` would be an example of this type of equivalence. When code points sequences are **compatible**, they look different but can be used in the same context. It is the case of `E` and `𝔼`. You understand the meaning of the word `𝔼xistence`, but the character `𝔼` is primarily used in mathematical documents.
+Code points sequences are defined as **canonically equivalent** if they represent the same abstract character while also looking the same when displayed. In the last case `é` and `é` would be an example of this type of equivalence. When code points sequences are **compatible**, they might look similar, but are used in different contexts, as they represent different abstract characters. It is the case of `A` and `𝔸`. You understand the meaning of the word `𝔸mbiguous`, but the character `𝔸` is primarily used in mathematical texts.
 
 Based on these equivalences the standard also defines *Unicode normalization*, to make sure that text sequences have the same code point equivalence. You can read more on types of normalization (and also about UTF-16 and other characters encodings I haven't mentioned) in this [article](https://mcilloni.ovh/2023/07/23/unicode-is-hard/) by Marco Cilloni.
 
@@ -134,7 +133,7 @@ Based on these equivalences the standard also defines *Unicode normalization*, t
 
 ### UTF-8 in Code
 
-I wrote a function to decode Unicode code points to UTF-8
+This C function decodes Unicode code points to UTF-8
 
 ```
 #include <stdio.h>
@@ -142,25 +141,25 @@ I wrote a function to decode Unicode code points to UTF-8
 int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
     // codepoint: U+uvwxyz
     if (codepoint <= 0x7F) {
-        output[0] = (char)codepoint;                            // (0)yyy zzzz
+        output[0] = (unsigned char)codepoint;                            // (0)yyy zzzz
         output[1] = '\0';
         return 1;
     } else if (codepoint <= 0x7FF) {
-        output[0] = (char)(0xC0 | ((codepoint >> 6) & 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
-        output[1] = (char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0xC0 | ((codepoint >> 6) & 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
+        output[1] = (unsigned char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
         output[2] = '\0';
         return 2;
     } else if (codepoint <= 0xFFFF) {
-        output[0] = (char)(0xE0 | ((codepoint >> 12) & 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
-        output[1] = (char)(0x80 | ((codepoint >> 6) & 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[2] = (char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0xE0 | ((codepoint >> 12) & 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
+        output[1] = (unsigned char)(0x80 | ((codepoint >> 6) & 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
+        output[2] = (unsigned char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
         output[3] = '\0';
         return 3;
     } else if (codepoint <= 0x10FFFF) {
-        output[0] = (char)(0xF0 | ((codepoint >> 18) & 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
-        output[1] = (char)(0x80 | ((codepoint >> 12) & 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
-        output[2] = (char)(0x80 | ((codepoint >> 6) & 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[3] = (char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0xF0 | ((codepoint >> 18) & 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
+        output[1] = (unsigned char)(0x80 | ((codepoint >> 12) & 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
+        output[2] = (unsigned char)(0x80 | ((codepoint >> 6) & 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
+        output[3] = (unsigned char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
         output[4] = '\0';
         return 4;
     }
@@ -170,7 +169,7 @@ int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
 }
 
 int main(void) {
-    unsigned char utf[5]; // The functions assigns 5 bytes max, including null terminator
+    unsigned char utf[5]; // The functions assigns 4 bytes max, including null terminator
     CodepointToUTF8(0x1F60E, utf);
 
     printf("%s\n", utf);    //  OUTPUT: 😎
@@ -179,7 +178,7 @@ int main(void) {
 }
 ```
 
-We can see the combining characters in action with the following code
+If we encode two code points in a sequence, first a base character and then a combining character, the sequence renders as a single displayed character
 
 ```
 int main(void) {
@@ -195,10 +194,9 @@ int main(void) {
 }
 ```
 
-In here we see two code points encoded with UTF-8 one next to the other.
+Hopefully you’ll now be able to make sense of a UTF-8 byte sequence the next time you stumble upon one.
 
 [^1]: This doesn't mean all code points are assigned, some space is reserved for future use.
 [^2]: One of the major benefits of using UTF-8 is backwards compatibility with ASCII.
-[^3]: Note that the acute accent character I'm using (`´`) with code point `U+00B4` is not the same as the combining acute accent character, represented by code point `U+0301`.
 
 </article>

@@ -48,14 +48,14 @@ There is a slight difference. ASCII and Unicode are both <em>coded
 character sets</em>, they map abstract symbols to numeric values called
 <em>code points</em>. The way they differ is on how they store these
 code points in memory, what is called <em>encoding</em>. ASCII is both a
-coded character set and an encoding format. Unicode is NOT an encoding
-format.</p>
+coded character set and an encoding format. Unicode itself is NOT an
+encoding format, in fact, it has multiple encodings.</p>
 <hr />
 <h3 id="simple-ways-to-encode">Simple Ways to Encode</h3>
 <p>ASCII is straightforward. These are small values; we can assign a
 byte for each code point, so the character with the code point
 <code>84</code> would be stored in a byte like <code>0101 0100</code>.
-The next plausible step for Unicode would be to do the same, we map the
+We can extend this idea to Unicode with a naive approach, mapping the
 code point directly to bytes.</p>
 <p>The problem arises from the number of characters in Unicode, over
 150,000 characters that will need more than a single byte. This gets
@@ -96,20 +96,19 @@ and so on.</p>
 <li>U+01000 - U+10FFFF: 4 Bytes</li>
 </ul>
 <p>The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode
-code point <code>U+1F60E</code> which, according to UTF-8, takes 4 bytes
-to store:</p>
+code point <code>U+1F60E</code> which in UTF-8 uses 4 bytes. You may
+imagine it encoded this way:</p>
 <ul>
 <li>00: <code>0000 0000</code></li>
 <li>01: <code>0000 0001</code></li>
 <li>F6: <code>1111 0110</code></li>
 <li>0E: <code>0000 1110</code></li>
 </ul>
-<p>In here, we store the number <code>1F60E</code> as presented in
-memory. This is NOT the way UTF-8 encodes. There are 4 bytes one next to
-the other, and nothing to indicate this is a whole one character. How do
-we know if this isn’t 4 characters each one taking 1 byte? Or 2
-characters of 2 bytes? Let’s say we want to index the third character in
-a string. How would we do that?</p>
+<p>This is a naive approach once again. This is NOT UTF-8. There are 4
+bytes one next to the other, and nothing to indicate this is a whole one
+character. How do we know if this isn’t 4 characters each one taking 1
+byte? Or 2 characters of 2 bytes? Let’s say we want to index the third
+character in a string. How would we do that?</p>
 <p>It becomes necessary to define a more complex structure when working
 with variable-width encoding. An ideal encoding format will make it
 possible to identify where a character starts and where it ends in a
@@ -135,11 +134,11 @@ bytes do not correspond to those indicated by the leading byte, we know
 it’s invalid UTF-8.</p>
 <p>Leading bytes consist of a sequence of ones followed by a zero. The
 number of ones indicate the total number of bytes used by the code
-point. In our emoji example we see the leading byte has header bits
-<code>11110</code>, so we can read the code point as one character of 4
-bytes. This rule applies to all code points lengths except for those of
-1 byte, the ASCII characters.</p>
-<p>ASCII characters have a leading byte that start with zero, followed
+point, including the leading byte. In our emoji example we see the
+leading byte has header bits <code>11110</code>, so we can read the code
+point as one character of 4 bytes. This rule applies to all code points
+lengths except for those of 1 byte, the ASCII characters.</p>
+<p>ASCII characters have a leading byte that starts with zero, followed
 by the code point digits in binary. The letter <code>A</code> will be
 encoded in UTF-8 the same way as one would encode it in ASCII.<a
 href="#fn2" class="footnote-ref" id="fnref2"
@@ -206,10 +205,11 @@ role="doc-noteref"><sup>2</sup></a></p>
 leading zeroes for the remaining <code>x</code> bits.</p>
 <hr />
 <h3 id="combining-characters">Combining characters</h3>
-<p>Not all character have direct visual representation (examples), but
-also, not all characters have a unique representation when encoded in
-Unicode. Believe it or not, the letters <code>é</code> and
-<code>é</code> don’t share the same code point</p>
+<p>Not all characters have a direct visual representation (for example,
+control characters like the null terminator or line breaks), and not all
+characters have a unique representation when encoded in Unicode. Believe
+it or not, the letters <code>é</code> and <code>é</code> don’t share the
+same code point</p>
 <pre><code>c = &quot;é&quot;
 c_utf = c.encode(&quot;utf-8&quot;)
 print(&quot;byte length&quot;, len(c_utf))    # output: byte length 2
@@ -227,8 +227,7 @@ a character with a dedicated code point. In this case <code>é</code> has
 the code point <code>U+00E9</code>. In the next example, we are creating
 a combination of two characters for <code>é</code>, <code>U+0065</code>
 + <code>U+0301</code>, that is the letter <code>e</code> and the acute
-diacritic <code>´</code><a href="#fn3" class="footnote-ref" id="fnref3"
-role="doc-noteref"><sup>3</sup></a>.</p>
+diacritic.</p>
 <p>Most letters and symbols accept combining characters, and there is no
 limit to how many you can apply. This allows you to create some
 monstrous-looking characters that this site’s font won’t allow me to
@@ -246,13 +245,15 @@ They may look the same when printed but have totally different
 encodings. Luckily, Unicode defines <em>Unicode equivalence</em> to
 solve these predicaments.</p>
 <p>Code points sequences are defined as <strong>canonically
-equivalent</strong> if they look the same when printed. In the last case
-<code>é</code> and <code>é</code> would be an example of this type of
-equivalence. When code points sequences are <strong>compatible</strong>,
-they look different but can be used in the same context. It is the case
-of <code>E</code> and <code>𝔼</code>. You understand the meaning of the
-word <code>𝔼xistence</code>, but the character <code>𝔼</code> is
-primarily used in mathematical documents.</p>
+equivalent</strong> if they represent the same abstract character while
+also looking the same when displayed. In the last case <code>é</code>
+and <code>é</code> would be an example of this type of equivalence. When
+code points sequences are <strong>compatible</strong>, they might look
+similar, but are used in different contexts, as they represent different
+abstract characters. It is the case of <code>A</code> and
+<code>𝔸</code>. You understand the meaning of the word
+<code>𝔸mbiguous</code>, but the character <code>𝔸</code> is primarily
+used in mathematical texts.</p>
 <p>Based on these equivalences the standard also defines <em>Unicode
 normalization</em>, to make sure that text sequences have the same code
 point equivalence. You can read more on types of normalization (and also
@@ -261,31 +262,31 @@ about UTF-16 and other characters encodings I haven’t mentioned) in this
 by Marco Cilloni.</p>
 <hr />
 <h3 id="utf-8-in-code">UTF-8 in Code</h3>
-<p>I wrote a function to decode Unicode code points to UTF-8</p>
+<p>This C function decodes Unicode code points to UTF-8</p>
 <pre><code>#include &lt;stdio.h&gt;
 
 int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
     // codepoint: U+uvwxyz
     if (codepoint &lt;= 0x7F) {
-        output[0] = (char)codepoint;                            // (0)yyy zzzz
+        output[0] = (unsigned char)codepoint;                            // (0)yyy zzzz
         output[1] = &#39;\0&#39;;
         return 1;
     } else if (codepoint &lt;= 0x7FF) {
-        output[0] = (char)(0xC0 | ((codepoint &gt;&gt; 6) &amp; 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
-        output[1] = (char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0xC0 | ((codepoint &gt;&gt; 6) &amp; 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
+        output[1] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
         output[2] = &#39;\0&#39;;
         return 2;
     } else if (codepoint &lt;= 0xFFFF) {
-        output[0] = (char)(0xE0 | ((codepoint &gt;&gt; 12) &amp; 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
-        output[1] = (char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[2] = (char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0xE0 | ((codepoint &gt;&gt; 12) &amp; 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
+        output[1] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
+        output[2] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
         output[3] = &#39;\0&#39;;
         return 3;
     } else if (codepoint &lt;= 0x10FFFF) {
-        output[0] = (char)(0xF0 | ((codepoint &gt;&gt; 18) &amp; 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
-        output[1] = (char)(0x80 | ((codepoint &gt;&gt; 12) &amp; 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
-        output[2] = (char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[3] = (char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0xF0 | ((codepoint &gt;&gt; 18) &amp; 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
+        output[1] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 12) &amp; 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
+        output[2] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
+        output[3] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
         output[4] = &#39;\0&#39;;
         return 4;
     }
@@ -295,15 +296,16 @@ int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
 }
 
 int main(void) {
-    unsigned char utf[5]; // The functions assigns 5 bytes max, including null terminator
+    unsigned char utf[5]; // The functions assigns 4 bytes max, including null terminator
     CodepointToUTF8(0x1F60E, utf);
 
     printf(&quot;%s\n&quot;, utf);    //  OUTPUT: 😎
 
     return 0;
 }</code></pre>
-<p>We can see the combining characters in action with the following
-code</p>
+<p>If we encode two code points in a sequence, first a base character
+and then a combining character, the sequence renders as a single
+displayed character</p>
 <pre><code>int main(void) {
     unsigned char utf[10];
     unsigned char* p = utf;
@@ -315,8 +317,8 @@ code</p>
 
     return 0;
 }</code></pre>
-<p>In here we see two code points encoded with UTF-8 one next to the
-other.</p>
+<p>Hopefully you’ll now be able to make sense of a UTF-8 byte sequence
+the next time you stumble upon one.</p>
 </article>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
@@ -327,11 +329,6 @@ space is reserved for future use.<a href="#fnref1" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>One of the major benefits of using UTF-8 is backwards
 compatibility with ASCII.<a href="#fnref2" class="footnote-back"
-role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Note that the acute accent character I’m using
-(<code>´</code>) with code point <code>U+00B4</code> is not the same as
-the combining acute accent character, represented by code point
-<code>U+0301</code>.<a href="#fnref3" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
