@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Decoding UTF-8</title>
+  <title>Decoding the UTFs</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -29,17 +29,18 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg">
 <a class="author-name" href="/">Nazareno Gonella</a>
 <nav>
-<a class="title" href="/">BLOG</a>   
-<a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a>   
-<a class="title" href="/resume/es/">RESUME</a>
+<a class="title" href="/">Blog</a> <span class="separator"></span>
+<a class="title" href="/about/">About</a> <span
+class="separator"></span> <a class="title" href="/resume/es/">Resume</a>
 </nav>
 </header>
 <hr />
 <article>
-<h2 id="decoding-utf-8">Decoding UTF-8</h2>
+<h2 id="decoding-the-utfs">Decoding the UTFs</h2>
 <p>November 12, 2025</p>
 <hr />
 <p>How do we represent characters in memory?</p>
+<p>Some days ago I found out that JSON supports Unicode e</p>
 <hr />
 <h3 id="unicode-is-not-just-ascii">Unicode is not just ASCII++</h3>
 <p>You probably know ASCII, characters represented by numbers from 0 to
@@ -51,7 +52,7 @@ code points in memory, what is called <em>encoding</em>. ASCII is both a
 coded character set and an encoding format. Unicode itself is NOT an
 encoding format, in fact, it has multiple encodings.</p>
 <hr />
-<h3 id="simple-ways-to-encode">Simple Ways to Encode</h3>
+<h3 id="how-ascii-does-it">How ASCII does it</h3>
 <p>ASCII is straightforward. These are small values; we can assign a
 byte for each code point, so the character with the code point
 <code>84</code> would be stored in a byte like <code>0101 0100</code>.
@@ -59,14 +60,18 @@ We can extend this idea to Unicode with a naive approach, mapping the
 code point directly to bytes.</p>
 <p>The problem arises from the number of characters in Unicode, over
 150,000 characters that will need more than a single byte. This gets
-worse when you take into account the <em>codespace</em> of Unicode,
-which ranges from 0 to 1,114,111 code points<a href="#fn1"
+worse when you take into account the <em>codespace</em> of Unicode, the
+total set of possible codepoints Unicode defines for present and future
+use, which ranges from 0 to 1,114,111 code points<a href="#fn1"
 class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, or
-<code>U+0000</code> to <code>U+10FFFF</code> using Unicode notation.</p>
-<p>UTF-32 solves this by assigning 4 bytes for each code point. Code
-point <code>84</code> would be stored as <code>00 00 00 54</code> in
-hexadecimal. A string like <code>Dog</code> would be encoded this
-way:</p>
+<code>U+0000</code> to <code>U+10FFFF</code> using Unicode notation with
+the <code>U+</code> prefix.</p>
+<hr />
+<h3 id="utf-32-the-naive-approach">UTF-32: The Naive Approach</h3>
+<p>The UTF-32 encoding solves this by assigning 4 bytes for each code
+point. Code point <code>84</code> would be stored as
+<code>00 00 00 54</code> in hexadecimal. A string like <code>Dog</code>
+would be encoded this way:</p>
 <ul>
 <li>D: <code>0000 0000</code> <code>0000 0000</code>
 <code>0000 0000</code> <code>0100 0100</code></li>
@@ -81,43 +86,63 @@ in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with
 UTF-32. With this encoding, every character takes the same amount of
 bytes, so we call UTF-32 a <em>fixed-length</em> encoding.</p>
 <hr />
-<h3 id="complex-ways-to-encode">Complex Ways to Encode</h3>
+<h3 id="utf-16-and-surrogate-pairs">UTF-16 and Surrogate Pairs</h3>
+<p>UTF-16 introduces <em>variable-width</em> encoding. Every code point
+is encoded as one or two 16 bit sequences.</p>
+<p>Code points less than or equal to <code>U+FFFF</code>, corresponding
+to characters in the <em>Basic Multilingual Plane</em> (BMP), are
+directly encoded in a 16 bit unit.</p>
+<p>For code points outside the BMP (greater than <code>U+FFFF</code>),
+UTF+16 uses <em>surrogate pairs</em>, each pair consist of two 16 bit
+values, the first one being the <em>high surrogate</em> followed by the
+<em>low surrogate</em>.</p>
+<p>Surrogate pairs follow a simple formula for encoding the code
+points.</p>
+<ul>
+<li>Subtract 0x10000 to the code point (<strong>U</strong>), the result
+(<strong>U’</strong>) being a 20 bit-value in the <code>0x00000</code> -
+<code>0xFFFFF</code> range.</li>
+<li><strong>high surrogate</strong> –&gt;
+<code>0x1101100000000000</code> <em>OR</em> top ten bits of
+<strong>U’</strong></li>
+<li><strong>low surrogate</strong> –&gt; <code>0x1101110000000000</code>
+<em>OR</em> bottom ten bits of <strong>U’</strong></li>
+</ul>
+<p>So high surrogates have the form <code>0x110110xxxxxxxxxx</code> and
+low surrogates <code>0x0x110111xxxxxxxxxx</code>. The <code>x</code>
+bits are then filled with the code point value minus
+<code>0x10000</code>. This substraction allows to insert values from 0
+to 2^20 - 1, an additional 1,048,576 code points.</p>
+<hr />
+<h3 id="utf-8-this-is-the-way">UTF-8: This is the Way</h3>
 <p>Now let’s look into UTF-8, which uses <em>variable-width</em>
 encoding.</p>
-<p>In UTF-8, the amount of bytes it takes to store a code point
+<p>In UTF-8, the number of bytes it takes to store a code point
 correspond to the range of the value. Code points from
 <code>U+0000</code> to <code>U+007F</code> are stored in 1 byte, ranges
-from <code>U+0080</code> to <code>U+007F</code> are stored in 2 bytes,
+from <code>U+0080</code> to <code>U+07FF</code> are stored in 2 bytes,
 and so on.</p>
 <ul>
-<li>U+00000 - U+00007F: 1 Bytes</li>
-<li>U+00080 - U+0007FF: 2 Bytes</li>
-<li>U+00800 - U+00FFFF: 3 Bytes</li>
-<li>U+01000 - U+10FFFF: 4 Bytes</li>
+<li><code>U+00000</code> - <code>U+00007F</code>: 1 Byte</li>
+<li><code>U+00080</code> - <code>U+0007FF</code>: 2 Bytes</li>
+<li><code>U+00800</code> - <code>U+00FFFF</code>: 3 Bytes</li>
+<li><code>U+01000</code> - <code>U+10FFFF</code>: 4 Bytes</li>
 </ul>
 <p>The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode
-code point <code>U+1F60E</code> which in UTF-8 uses 4 bytes. You may
-imagine it encoded this way:</p>
-<ul>
-<li>00: <code>0000 0000</code></li>
-<li>01: <code>0000 0001</code></li>
-<li>F6: <code>1111 0110</code></li>
-<li>0E: <code>0000 1110</code></li>
-</ul>
-<p>This is a naive approach once again. This is NOT UTF-8. There are 4
-bytes one next to the other, and nothing to indicate this is a whole one
-character. How do we know if this isn’t 4 characters each one taking 1
-byte? Or 2 characters of 2 bytes? Let’s say we want to index the third
-character in a string. How would we do that?</p>
-<p>It becomes necessary to define a more complex structure when working
-with variable-width encoding. An ideal encoding format will make it
-possible to identify where a character starts and where it ends in a
-string.</p>
+code point <code>U+1F60E</code> which in UTF-8 uses 4 bytes. How would
+you encode this?</p>
+<p>If we took the same encoding as UTF-32 there would 4 bytes one next
+to the other, and nothing to indicate this is a whole one character. How
+do we know if this isn’t 4 characters each one taking 1 byte? Or 2
+characters of 2 bytes? Let’s say we want to index the third character in
+a string. How would we do that?</p>
+<p>We need to to define a more complex structure when working with
+variable-width encoding. An ideal encoding format will make it possible
+to identify where a character starts and where it ends in a string.</p>
 <p>A document with UTF-8 encoding will have every byte either be a
 <em>leading byte</em>, which indicates the start of a character as well
-as how many bytes follow it; and a <em>continuation byte</em>, which is
-used to facilitate indexing and to detect if the sequence is valid
-UTF-8.</p>
+as how many bytes follow it; or a <em>continuation byte</em>, which is
+used to help indexing and to detect if the sequence is valid UTF-8.</p>
 <p><code>U+1F60E</code> encoded with UTF-8 looks like this:</p>
 <ul>
 <li><code>(11110)000</code></li>
@@ -139,10 +164,11 @@ leading byte has header bits <code>11110</code>, so we can read the code
 point as one character of 4 bytes. This rule applies to all code points
 lengths except for those of 1 byte, the ASCII characters.</p>
 <p>ASCII characters have a leading byte that starts with zero, followed
-by the code point digits in binary. The letter <code>A</code> will be
-encoded in UTF-8 the same way as one would encode it in ASCII.<a
-href="#fn2" class="footnote-ref" id="fnref2"
-role="doc-noteref"><sup>2</sup></a></p>
+by the code point value. The letter <code>A</code> will be encoded in
+UTF-8 the same way as one would encode it in ASCII.<a href="#fn2"
+class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>The rest of the bits are the data bits. These contain the code point
+value in binary, padded with leading zeros.</p>
 <hr />
 <h3 id="the-utf-8-structure">The UTF-8 Structure</h3>
 <p>We can visualize UTF-8 with this table</p>
@@ -201,13 +227,13 @@ role="doc-noteref"><sup>2</sup></a></p>
 </tbody>
 </table>
 <p>The table contains the bytes with the header bits set. The
-<code>x</code> bits correspond to the code point value in binary, with
-leading zeroes for the remaining <code>x</code> bits.</p>
+<code>x</code> bits correspond to data bits holding the code point
+values.</p>
 <hr />
 <h3 id="combining-characters">Combining characters</h3>
 <p>Not all characters have a direct visual representation (for example,
 control characters like the null terminator or line breaks), and not all
-characters have a unique representation when encoded in Unicode. Believe
+characters have a single representation when encoded in Unicode. Believe
 it or not, the letters <code>é</code> and <code>é</code> don’t share the
 same code point</p>
 <pre><code>c = &quot;é&quot;
@@ -243,7 +269,7 @@ text!</a></figcaption>
 <p>Now comes a new problem: How do we know if two strings are the same?
 They may look the same when printed but have totally different
 encodings. Luckily, Unicode defines <em>Unicode equivalence</em> to
-solve these predicaments.</p>
+solve this issue.</p>
 <p>Code points sequences are defined as <strong>canonically
 equivalent</strong> if they represent the same abstract character while
 also looking the same when displayed. In the last case <code>é</code>

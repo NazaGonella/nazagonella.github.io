@@ -6,6 +6,10 @@ p, h1, h2, h3, h4, h5, h6, blockquote, figure, div {
     line-height: 1.4;
 }
 
+.separator::after {
+  content: ":";
+}
+
 html, body {
   box-sizing: border-box;
 }
@@ -332,6 +336,11 @@ em, i {
 
     li {
         margin-bottom: 0.25em;
+    }
+
+    .separator::after {
+      content: ":";
+      margin: 0 0.25em;
     }
 }   
 

@@ -2,23 +2,20 @@
 
 <header>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg">
-    <a class="author-name" href="/">Nazareno Gonella</a><nav><a class="title" href="/">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="/resume/es/">RESUME</a></nav>
+    <a class="author-name" href="/">Nazareno Gonella</a>
+    <nav>
+        <a class="title" href="/">Blog</a>
+        <span class="separator"></span>
+        <a class="title" href="/about/">About</a>
+        <span class="separator"></span>
+        <a class="title" href="/resume/es/">Resume</a>
+    </nav>
 </header>
 
 ---
 
-<div style="margin-top:2em;"></div>
-
-<center>
-AI engineering student sharing what I'm learning or building as I go.
-</center>
-
-<div style="margin-bottom:2em;"></div>
-
----
-
 <div class=posts>
-12/11/2025 [**Decoding UTF-8**](./posts/utf-encoding/)  
+12/11/2025 [**Decoding the UTFs**](./posts/utf-encoding/)  
 04/11/2025 [**Setting Up a Simple Blog - Handmade Static Site Generator**](/posts/simple-blog/)  
 </div>
 
