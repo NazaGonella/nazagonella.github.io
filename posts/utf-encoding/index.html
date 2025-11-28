@@ -39,8 +39,16 @@ class="separator"></span> <a class="title" href="/resume/es/">Resume</a>
 <h2 id="decoding-the-utfs">Decoding the UTFs</h2>
 <p>November 12, 2025</p>
 <hr />
-<p>How do we represent characters in memory?</p>
-<p>Some days ago I found out that JSON supports Unicode e</p>
+<p>A few days ago I started writing a JSON Parser in C. I added support
+for all data types, except for Unicode escape characters: JSON accepts
+values such as <code>\u0041</code> if you don’t feel like manually copy
+and pasting the Unicode character. When it came time to add them to my
+parser, I realized encoding Unicode characters wasn’t as easy as I
+thought it was.</p>
+<p>So I decided to dive deep into Unicode and its encodings, and write
+about what I learned in the process. I found that UTF is something some
+people don’t bother to learn about, as it’s often not necessary, but
+hopefully you’ll pick something up along the way.</p>
 <hr />
 <h3 id="unicode-is-not-just-ascii">Unicode is not just ASCII++</h3>
 <p>You probably know ASCII, characters represented by numbers from 0 to
@@ -112,10 +120,11 @@ points.</p>
 low surrogates <code>0x0x110111xxxxxxxxxx</code>. The <code>x</code>
 bits are then filled with the code point value minus
 <code>0x10000</code>. This substraction allows to insert values from 0
-to 2^20 - 1, an additional 1,048,576 code points.</p>
+to 2^20 - 1, an additional 1,048,576 code points. TODO: an additional
+what</p>
 <hr />
-<h3 id="utf-8-this-is-the-way">UTF-8: This is the Way</h3>
-<p>Now let’s look into UTF-8, which uses <em>variable-width</em>
+<h3 id="utf-8-the-standard-encoding">UTF-8: The Standard Encoding</h3>
+<p>Now let’s look into UTF-8, which also uses variable-width
 encoding.</p>
 <p>In UTF-8, the number of bytes it takes to store a code point
 correspond to the range of the value. Code points from

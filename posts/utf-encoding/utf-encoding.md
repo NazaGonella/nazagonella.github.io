@@ -22,9 +22,9 @@ November 12, 2025
 
 ---
 
-How do we represent characters in memory?
+A few days ago I started writing a JSON Parser in C. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u0041` if you don't feel like manually copy and pasting the Unicode character. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as easy as I thought it was.
 
-Some days ago I found out that JSON supports Unicode e
+So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. I found that UTF is something some people don't bother to learn about, as it's often not necessary, but hopefully you'll pick something up along the way.
 
 ---
 
@@ -70,14 +70,14 @@ Surrogate pairs follow a simple formula for encoding the code points.
 - **high surrogate** --> `0x1101100000000000` *OR* top ten bits of **U'**
 - **low surrogate**  --> `0x1101110000000000` *OR* bottom ten bits of **U'**
 
-So high surrogates have the form `0x110110xxxxxxxxxx` and low surrogates `0x0x110111xxxxxxxxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points.
+So high surrogates have the form `0x110110xxxxxxxxxx` and low surrogates `0x0x110111xxxxxxxxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points. TODO: an additional what
 
 
 ---
 
-### UTF-8: This is the Way
+### UTF-8: The Standard Encoding
 
-Now let's look into UTF-8, which uses *variable-width* encoding.
+Now let's look into UTF-8, which also uses variable-width encoding.
 
 In UTF-8, the number of bytes it takes to store a code point correspond to the range of the value. Code points from `U+0000` to `U+007F` are stored in 1 byte, ranges from `U+0080` to `U+07FF` are stored in 2 bytes, and so on.
 
