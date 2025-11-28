@@ -72,6 +72,9 @@ Surrogate pairs follow a simple formula for encoding the code points.
 
 So high surrogates have the form `0x110110xxxxxxxxxx` and low surrogates `0x0x110111xxxxxxxxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points. TODO: an additional what
 
+```
+code
+```
 
 ---
 
@@ -128,7 +131,7 @@ The table contains the bytes with the header bits set. The `x` bits correspond t
 
 ---
 
-### Combining characters
+### Bonus: Combining characters
 
 Not all characters have a direct visual representation (for example, control characters like the null terminator or line breaks), and not all characters have a single representation when encoded in Unicode. Believe it or not, the letters `é` and `é` don't share the same code point
 
