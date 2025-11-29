@@ -62,6 +62,7 @@ encoding format, in fact, it has multiple encodings.</p>
 <hr />
 <h3 id="code-structure-and-endianness">Code Structure and
 Endianness</h3>
+<p>TODO</p>
 <hr />
 <h3 id="how-ascii-does-it">How ASCII does it</h3>
 <p>ASCII is straightforward. These are small values; we can assign a
@@ -126,20 +127,21 @@ points.</p>
 <li>Subtract <code>0x10000</code> to the code point
 (<strong>U</strong>), the result (<strong>U’</strong>) being a 20
 bit-value in the <code>0x00000</code> - <code>0xFFFFF</code> range.</li>
-<li><strong>high surrogate</strong> –&gt; <code>1101</code>
-<code>1000</code> <code>0000</code> <code>0000</code> <em>OR</em> top
-ten bits of <strong>U’</strong></li>
-<li><strong>low surrogate</strong> –&gt; <code>1101</code>
-<code>1100</code> <code>0000</code> <code>0000</code> <em>OR</em> bottom
-ten bits of <strong>U’</strong></li>
+<li><strong>high surrogate</strong> –&gt;
+<code>1101</code>-<code>1000</code>-<code>0000</code>-<code>0000</code>
+<em>OR</em> top ten bits of <strong>U’</strong></li>
+<li><strong>low surrogate</strong> –&gt;
+<code>1101</code>-<code>1100</code>-<code>0000</code>-<code>0000</code>
+<em>OR</em> bottom ten bits of <strong>U’</strong></li>
 </ul>
 <p>So high surrogates have the form
 <code>1101</code>-<code>10xx</code>-<code>xxxx</code>-<code>xxxx</code>
-and low surrogates <code>1101</code> <code>11xx</code> <code>xxxx</code>
-<code>xxxx</code>. The <code>x</code> bits are then filled with the code
-point value minus <code>0x10000</code>. This substraction allows to
-insert values from 0 to 2^20 - 1, an additional 1,048,576 code points.
-TODO: an additional what</p>
+and low surrogates
+<code>1101</code>-<code>11xx</code>-<code>xxxx</code>-<code>xxxx</code>.
+The <code>x</code> bits are then filled with the code point value minus
+<code>0x10000</code>. This substraction allows to insert values from 0
+to 2^20 - 1, an additional 1,048,576 code points beyond the BMP. TODO:
+an additional what</p>
 <pre><code>int CodepointToUTF16(unsigned int codepoint, unsigned char *output) {
 
     if (codepoint &lt;= 0xFFFF) {
@@ -278,24 +280,24 @@ value in binary, padded with leading zeros.</p>
 <code>x</code> bits correspond to data bits holding the code point
 values.</p>
 <pre><code>int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
-    // codepoint: U+uvwxyz
+
     if (codepoint &lt;= 0x7F) {
-        output[0] = (unsigned char)codepoint;                            // (0)yyy zzzz
+        output[0] = (unsigned char)codepoint;
         return 1;
     } else if (codepoint &lt;= 0x7FF) {
-        output[0] = (unsigned char)(0xC0 | ((codepoint &gt;&gt; 6) &amp; 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
-        output[1] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0b11000000 | ((codepoint &gt;&gt; 6) &amp; 0x1F));    // (110)0 0000 | 000x xxxx
+        output[1] = (unsigned char)(0b10000000 | (codepoint &amp; 0x3F));           // (10)00 0000 | 00xx xxxx
         return 2;
     } else if (codepoint &lt;= 0xFFFF) {
-        output[0] = (unsigned char)(0xE0 | ((codepoint &gt;&gt; 12) &amp; 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
-        output[1] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[2] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0b11100000 | ((codepoint &gt;&gt; 12) &amp; 0x0F));   // (1110) 0000 | 0000 xxxx
+        output[1] = (unsigned char)(0b10000000 | ((codepoint &gt;&gt; 6) &amp; 0x3F));    // (10)00 0000 | 00xx xxxx
+        output[2] = (unsigned char)(0b10000000 | (codepoint &amp; 0x3F));           // (10)00 0000 | 00xx xxxx
         return 3;
     } else if (codepoint &lt;= 0x10FFFF) {
-        output[0] = (unsigned char)(0xF0 | ((codepoint &gt;&gt; 18) &amp; 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
-        output[1] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 12) &amp; 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
-        output[2] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[3] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0b11110000 | ((codepoint &gt;&gt; 18) &amp; 0x07));   // (1111 0)000 | 0000 0xxx
+        output[1] = (unsigned char)(0b10000000 | ((codepoint &gt;&gt; 12) &amp; 0x3F));   // (10)00 0000 | 00xx xxxx
+        output[2] = (unsigned char)(0b10000000 | ((codepoint &gt;&gt; 6) &amp; 0x3F));    // (10)00 0000 | 00xx xxxx
+        output[3] = (unsigned char)(0b10000000 | (codepoint &amp; 0x3F));           // (10)00 0000 | 00xx xxxx
         return 4;
     }
 
@@ -303,7 +305,7 @@ values.</p>
     return 0;
 }</code></pre>
 <hr />
-<h3 id="bonus-combining-characters">Bonus: Combining characters</h3>
+<h3 id="bonus-combining-characters">Bonus! Combining characters</h3>
 <p>Not all characters have a direct visual representation (for example,
 control characters like the null terminator or line breaks), and not all
 characters have a single representation when encoded in Unicode. Believe
@@ -355,69 +357,9 @@ abstract characters. It is the case of <code>A</code> and
 used in mathematical texts.</p>
 <p>Based on these equivalences the standard also defines <em>Unicode
 normalization</em>, to make sure that text sequences have the same code
-point equivalence. You can read more on types of normalization (and also
-about UTF-16 and other characters encodings I haven’t mentioned) in this
+point equivalence. You can read more on types of normalization in this
 <a href="https://mcilloni.ovh/2023/07/23/unicode-is-hard/">article</a>
 by Marco Cilloni.</p>
-<hr />
-<h3 id="utf-8-in-code">UTF-8 in Code</h3>
-<p>This C function decodes Unicode code points to UTF-8</p>
-<pre><code>#include &lt;stdio.h&gt;
-
-int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
-    // codepoint: U+uvwxyz
-    if (codepoint &lt;= 0x7F) {
-        output[0] = (unsigned char)codepoint;                            // (0)yyy zzzz
-        output[1] = &#39;\0&#39;;
-        return 1;
-    } else if (codepoint &lt;= 0x7FF) {
-        output[0] = (unsigned char)(0xC0 | ((codepoint &gt;&gt; 6) &amp; 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
-        output[1] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
-        output[2] = &#39;\0&#39;;
-        return 2;
-    } else if (codepoint &lt;= 0xFFFF) {
-        output[0] = (unsigned char)(0xE0 | ((codepoint &gt;&gt; 12) &amp; 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
-        output[1] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[2] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
-        output[3] = &#39;\0&#39;;
-        return 3;
-    } else if (codepoint &lt;= 0x10FFFF) {
-        output[0] = (unsigned char)(0xF0 | ((codepoint &gt;&gt; 18) &amp; 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
-        output[1] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 12) &amp; 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
-        output[2] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[3] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
-        output[4] = &#39;\0&#39;;
-        return 4;
-    }
-
-    // Invalid codepoint
-    return 0;
-}
-
-int main(void) {
-    unsigned char utf[5]; // The functions assigns 4 bytes max, including null terminator
-    CodepointToUTF8(0x1F60E, utf);
-
-    printf(&quot;%s\n&quot;, utf);    //  OUTPUT: 😎
-
-    return 0;
-}</code></pre>
-<p>If we encode two code points in a sequence, first a base character
-and then a combining character, the sequence renders as a single
-displayed character</p>
-<pre><code>int main(void) {
-    unsigned char utf[10];
-    unsigned char* p = utf;
-
-    p += CodepointToUTF8(0x0065, utf);
-    CodepointToUTF8(0x0301, p);
-
-    printf(&quot;%s\n&quot;, utf);    // OUTPUT: é
-
-    return 0;
-}</code></pre>
-<p>Hopefully you’ll now be able to make sense of a UTF-8 byte sequence
-the next time you stumble upon one.</p>
 </article>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">

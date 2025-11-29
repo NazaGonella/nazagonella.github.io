@@ -37,6 +37,8 @@ There is a slight difference. ASCII and Unicode are both *coded character sets*,
 
 ### Code Structure and Endianness
 
+TODO
+
 ---
 
 ### How ASCII does it
@@ -87,10 +89,10 @@ For code points outside the BMP (greater than `U+FFFF`), UTF+16 uses *surrogate 
 Surrogate pairs follow a simple formula for encoding the code points.
 
 - Subtract `0x10000` to the code point (**U**), the result (**U'**) being a 20 bit-value in the `0x00000` - `0xFFFFF` range.
-- **high surrogate** --> `1101` `1000` `0000` `0000` *OR* top ten bits of **U'**
-- **low surrogate**  --> `1101` `1100` `0000` `0000` *OR* bottom ten bits of **U'**
+- **high surrogate** --> `1101`-`1000`-`0000`-`0000` *OR* top ten bits of **U'**
+- **low surrogate**  --> `1101`-`1100`-`0000`-`0000` *OR* bottom ten bits of **U'**
 
-So high surrogates have the form `1101`-`10xx`-`xxxx`-`xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points. TODO: an additional what
+So high surrogates have the form `1101`-`10xx`-`xxxx`-`xxxx` and low surrogates `1101`-`11xx`-`xxxx`-`xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the BMP. TODO: an additional what
 
 ```
 int CodepointToUTF16(unsigned int codepoint, unsigned char *output) {
@@ -169,24 +171,24 @@ The table contains the bytes with the header bits set. The `x` bits correspond t
 
 ```
 int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
-    // codepoint: U+uvwxyz
+
     if (codepoint <= 0x7F) {
-        output[0] = (unsigned char)codepoint;                            // (0)yyy zzzz
+        output[0] = (unsigned char)codepoint;
         return 1;
     } else if (codepoint <= 0x7FF) {
-        output[0] = (unsigned char)(0xC0 | ((codepoint >> 6) & 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
-        output[1] = (unsigned char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0b11000000 | ((codepoint >> 6) & 0x1F));    // (110)0 0000 | 000x xxxx
+        output[1] = (unsigned char)(0b10000000 | (codepoint & 0x3F));           // (10)00 0000 | 00xx xxxx
         return 2;
     } else if (codepoint <= 0xFFFF) {
-        output[0] = (unsigned char)(0xE0 | ((codepoint >> 12) & 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
-        output[1] = (unsigned char)(0x80 | ((codepoint >> 6) & 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[2] = (unsigned char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0b11100000 | ((codepoint >> 12) & 0x0F));   // (1110) 0000 | 0000 xxxx
+        output[1] = (unsigned char)(0b10000000 | ((codepoint >> 6) & 0x3F));    // (10)00 0000 | 00xx xxxx
+        output[2] = (unsigned char)(0b10000000 | (codepoint & 0x3F));           // (10)00 0000 | 00xx xxxx
         return 3;
     } else if (codepoint <= 0x10FFFF) {
-        output[0] = (unsigned char)(0xF0 | ((codepoint >> 18) & 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
-        output[1] = (unsigned char)(0x80 | ((codepoint >> 12) & 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
-        output[2] = (unsigned char)(0x80 | ((codepoint >> 6) & 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[3] = (unsigned char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        output[0] = (unsigned char)(0b11110000 | ((codepoint >> 18) & 0x07));   // (1111 0)000 | 0000 0xxx
+        output[1] = (unsigned char)(0b10000000 | ((codepoint >> 12) & 0x3F));   // (10)00 0000 | 00xx xxxx
+        output[2] = (unsigned char)(0b10000000 | ((codepoint >> 6) & 0x3F));    // (10)00 0000 | 00xx xxxx
+        output[3] = (unsigned char)(0b10000000 | (codepoint & 0x3F));           // (10)00 0000 | 00xx xxxx
         return 4;
     }
 
@@ -197,7 +199,7 @@ int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
 
 ---
 
-### Bonus: Combining characters
+### Bonus! Combining characters
 
 Not all characters have a direct visual representation (for example, control characters like the null terminator or line breaks), and not all characters have a single representation when encoded in Unicode. Believe it or not, the letters `é` and `é` don't share the same code point
 
@@ -225,74 +227,7 @@ Now comes a new problem: How do we know if two strings are the same? They may lo
 
 Code points sequences are defined as **canonically equivalent** if they represent the same abstract character while also looking the same when displayed. In the last case `é` and `é` would be an example of this type of equivalence. When code points sequences are **compatible**, they might look similar, but are used in different contexts, as they represent different abstract characters. It is the case of `A` and `𝔸`. You understand the meaning of the word `𝔸mbiguous`, but the character `𝔸` is primarily used in mathematical texts.
 
-Based on these equivalences the standard also defines *Unicode normalization*, to make sure that text sequences have the same code point equivalence. You can read more on types of normalization (and also about UTF-16 and other characters encodings I haven't mentioned) in this [article](https://mcilloni.ovh/2023/07/23/unicode-is-hard/) by Marco Cilloni.
-
----
-
-### UTF-8 in Code
-
-This C function decodes Unicode code points to UTF-8
-
-```
-#include <stdio.h>
-
-int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
-    // codepoint: U+uvwxyz
-    if (codepoint <= 0x7F) {
-        output[0] = (unsigned char)codepoint;                            // (0)yyy zzzz
-        output[1] = '\0';
-        return 1;
-    } else if (codepoint <= 0x7FF) {
-        output[0] = (unsigned char)(0xC0 | ((codepoint >> 6) & 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
-        output[1] = (unsigned char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
-        output[2] = '\0';
-        return 2;
-    } else if (codepoint <= 0xFFFF) {
-        output[0] = (unsigned char)(0xE0 | ((codepoint >> 12) & 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
-        output[1] = (unsigned char)(0x80 | ((codepoint >> 6) & 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[2] = (unsigned char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
-        output[3] = '\0';
-        return 3;
-    } else if (codepoint <= 0x10FFFF) {
-        output[0] = (unsigned char)(0xF0 | ((codepoint >> 18) & 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
-        output[1] = (unsigned char)(0x80 | ((codepoint >> 12) & 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
-        output[2] = (unsigned char)(0x80 | ((codepoint >> 6) & 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
-        output[3] = (unsigned char)(0x80 | (codepoint & 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
-        output[4] = '\0';
-        return 4;
-    }
-
-    // Invalid codepoint
-    return 0;
-}
-
-int main(void) {
-    unsigned char utf[5]; // The functions assigns 4 bytes max, including null terminator
-    CodepointToUTF8(0x1F60E, utf);
-
-    printf("%s\n", utf);    //  OUTPUT: 😎
-
-    return 0;
-}
-```
-
-If we encode two code points in a sequence, first a base character and then a combining character, the sequence renders as a single displayed character
-
-```
-int main(void) {
-    unsigned char utf[10];
-    unsigned char* p = utf;
-
-    p += CodepointToUTF8(0x0065, utf);
-    CodepointToUTF8(0x0301, p);
-
-    printf("%s\n", utf);    // OUTPUT: é
-
-    return 0;
-}
-```
-
-Hopefully you’ll now be able to make sense of a UTF-8 byte sequence the next time you stumble upon one.
+Based on these equivalences the standard also defines *Unicode normalization*, to make sure that text sequences have the same code point equivalence. You can read more on types of normalization in this [article](https://mcilloni.ovh/2023/07/23/unicode-is-hard/) by Marco Cilloni.
 
 [^1]: This doesn't mean all code points are assigned, some space is reserved for future use.
 [^2]: One of the major benefits of using UTF-8 is backwards compatibility with ASCII.
