@@ -60,6 +60,9 @@ code points in memory, what is called <em>encoding</em>. ASCII is both a
 coded character set and an encoding format. Unicode itself is NOT an
 encoding format, in fact, it has multiple encodings.</p>
 <hr />
+<h3 id="code-structure-and-endianness">Code Structure and
+Endianness</h3>
+<hr />
 <h3 id="how-ascii-does-it">How ASCII does it</h3>
 <p>ASCII is straightforward. These are small values; we can assign a
 byte for each code point, so the character with the code point
@@ -93,6 +96,19 @@ waste when using the most common letters in the english alphabet. What
 in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with
 UTF-32. With this encoding, every character takes the same amount of
 bytes, so we call UTF-32 a <em>fixed-length</em> encoding.</p>
+<pre><code>int CodepointToUTF32(unsigned int codepoint, unsigned char *output) {
+
+    if (codepoint &gt;= 0x0 &amp;&amp; codepoint &lt;= 0x10FFFF) {
+        output[0] = codepoint &amp; 0xFF;
+        output[1] = (codepoint &gt;&gt; 8) &amp; 0xFF;
+        output[2] = (codepoint &gt;&gt; 16) &amp; 0xFF;
+        output[3] = (codepoint &gt;&gt; 24) &amp; 0xFF;
+        return 4;
+    }
+
+    // Invalid codepoint
+    return 0;
+}</code></pre>
 <hr />
 <h3 id="utf-16-and-surrogate-pairs">UTF-16 and Surrogate Pairs</h3>
 <p>UTF-16 introduces <em>variable-width</em> encoding. Every code point
@@ -103,26 +119,50 @@ directly encoded in a 16 bit unit.</p>
 <p>For code points outside the BMP (greater than <code>U+FFFF</code>),
 UTF+16 uses <em>surrogate pairs</em>, each pair consist of two 16 bit
 values, the first one being the <em>high surrogate</em> followed by the
-<em>low surrogate</em>.</p>
+<em>low surrogate</em>. TODO: explain gap</p>
 <p>Surrogate pairs follow a simple formula for encoding the code
 points.</p>
 <ul>
-<li>Subtract 0x10000 to the code point (<strong>U</strong>), the result
-(<strong>U’</strong>) being a 20 bit-value in the <code>0x00000</code> -
-<code>0xFFFFF</code> range.</li>
-<li><strong>high surrogate</strong> –&gt;
-<code>0x1101100000000000</code> <em>OR</em> top ten bits of
-<strong>U’</strong></li>
-<li><strong>low surrogate</strong> –&gt; <code>0x1101110000000000</code>
-<em>OR</em> bottom ten bits of <strong>U’</strong></li>
+<li>Subtract <code>0x10000</code> to the code point
+(<strong>U</strong>), the result (<strong>U’</strong>) being a 20
+bit-value in the <code>0x00000</code> - <code>0xFFFFF</code> range.</li>
+<li><strong>high surrogate</strong> –&gt; <code>1101</code>
+<code>1000</code> <code>0000</code> <code>0000</code> <em>OR</em> top
+ten bits of <strong>U’</strong></li>
+<li><strong>low surrogate</strong> –&gt; <code>1101</code>
+<code>1100</code> <code>0000</code> <code>0000</code> <em>OR</em> bottom
+ten bits of <strong>U’</strong></li>
 </ul>
-<p>So high surrogates have the form <code>0x110110xxxxxxxxxx</code> and
-low surrogates <code>0x0x110111xxxxxxxxxx</code>. The <code>x</code>
-bits are then filled with the code point value minus
-<code>0x10000</code>. This substraction allows to insert values from 0
-to 2^20 - 1, an additional 1,048,576 code points. TODO: an additional
-what</p>
-<pre><code>code</code></pre>
+<p>So high surrogates have the form
+<code>1101</code>-<code>10xx</code>-<code>xxxx</code>-<code>xxxx</code>
+and low surrogates <code>1101</code> <code>11xx</code> <code>xxxx</code>
+<code>xxxx</code>. The <code>x</code> bits are then filled with the code
+point value minus <code>0x10000</code>. This substraction allows to
+insert values from 0 to 2^20 - 1, an additional 1,048,576 code points.
+TODO: an additional what</p>
+<pre><code>int CodepointToUTF16(unsigned int codepoint, unsigned char *output) {
+
+    if (codepoint &lt;= 0xFFFF) {
+        if (codepoint &gt;= 0xD800 &amp;&amp; codepoint &lt;= 0xDFFF) return 0;
+        output[0] = (unsigned char)((codepoint &gt;&gt; 8) &amp; 0xFF);
+        output[1] = (unsigned char)(codepoint &amp; 0xFF);
+        return 2;
+    }
+    else if (codepoint &lt;= 0x10FFFF) {
+        unsigned int codepoint_u = codepoint - 0b10000;
+        unsigned int high = (0b110110 &lt;&lt; 10) | ((codepoint_u &gt;&gt; 10) &amp; 0b1111111111);
+        unsigned int low  = (0b110111 &lt;&lt; 10) | (codepoint_u &amp; 0b1111111111);
+
+        output[0] = (high &gt;&gt; 8) &amp; 0xFF;
+        output[1] = high &amp; 0xFF;
+        output[2] = (low &gt;&gt; 8) &amp; 0xFF;
+        output[3] = low &amp; 0xFF;
+        return 4;
+    }
+
+    // Invalid codepoint
+    return 0;
+}</code></pre>
 <hr />
 <h3 id="utf-8-the-standard-encoding">UTF-8: The Standard Encoding</h3>
 <p>Now let’s look into UTF-8, which also uses variable-width
@@ -179,8 +219,6 @@ UTF-8 the same way as one would encode it in ASCII.<a href="#fn2"
 class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <p>The rest of the bits are the data bits. These contain the code point
 value in binary, padded with leading zeros.</p>
-<hr />
-<h3 id="the-utf-8-structure">The UTF-8 Structure</h3>
 <p>We can visualize UTF-8 with this table</p>
 <table>
 <colgroup>
@@ -239,6 +277,31 @@ value in binary, padded with leading zeros.</p>
 <p>The table contains the bytes with the header bits set. The
 <code>x</code> bits correspond to data bits holding the code point
 values.</p>
+<pre><code>int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
+    // codepoint: U+uvwxyz
+    if (codepoint &lt;= 0x7F) {
+        output[0] = (unsigned char)codepoint;                            // (0)yyy zzzz
+        return 1;
+    } else if (codepoint &lt;= 0x7FF) {
+        output[0] = (unsigned char)(0xC0 | ((codepoint &gt;&gt; 6) &amp; 0x1F));   // (110)0 0000 | 000x xxyy = (110)x xxyy
+        output[1] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        return 2;
+    } else if (codepoint &lt;= 0xFFFF) {
+        output[0] = (unsigned char)(0xE0 | ((codepoint &gt;&gt; 12) &amp; 0x0F));  // (1110) 0000 | 0000 wwww = (1110) wwww
+        output[1] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
+        output[2] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        return 3;
+    } else if (codepoint &lt;= 0x10FFFF) {
+        output[0] = (unsigned char)(0xF0 | ((codepoint &gt;&gt; 18) &amp; 0x07));  // (1111 0)000 | 0000 0uvv = (1111 0)uvv
+        output[1] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 12) &amp; 0x3F));  // (10)00 0000 | 00vv wwww = (10)vv wwww
+        output[2] = (unsigned char)(0x80 | ((codepoint &gt;&gt; 6) &amp; 0x3F));   // (10)00 0000 | 00xx xxyy = (10)xx xxyy
+        output[3] = (unsigned char)(0x80 | (codepoint &amp; 0x3F));          // (10)00 0000 | 00yy zzzz = (10)yy zzzz
+        return 4;
+    }
+
+    // Invalid codepoint
+    return 0;
+}</code></pre>
 <hr />
 <h3 id="bonus-combining-characters">Bonus: Combining characters</h3>
 <p>Not all characters have a direct visual representation (for example,
