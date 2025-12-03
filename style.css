@@ -333,9 +333,9 @@ em, i {
 /* mobiles */
 
 @media (max-width: 500px) {
-  * {
-    font-size: 12px;
-  }
+    *:not(pre):not(code):not(pre *):not(code *) {
+        font-size: 12px;
+    }
 
   body {
     padding: 1em;
@@ -364,7 +364,7 @@ em, i {
 
     ul, ol {
         list-style-position: outside;
-        padding-left: 2em;  /* same as desktop */
+        padding-left: 2em;
         margin-left: 0;
     }
 
