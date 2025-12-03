@@ -18,7 +18,7 @@
 
 ## Decoding the UTFs
 
-November 12, 2025
+December 03, 2025
 
 ---
 

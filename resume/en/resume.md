@@ -20,7 +20,7 @@
 
 Artificial Intelligence Engineering Student
 
-San Fernando, Buenos Aires
+San Fernando, Buenos Aires, Argentina
 
 Tel: +543537335531 | Mail: [nazagonella2@gmail.com](mailto:nazagonella2@gmail.com)
 
