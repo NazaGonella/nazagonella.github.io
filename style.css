@@ -363,7 +363,8 @@ em, i {
     }
 
     ul, ol {
-        padding-left: 1em;
+        list-style-position: outside;
+        padding-left: 2em;  /* same as desktop */
         margin-left: 0;
     }
 
