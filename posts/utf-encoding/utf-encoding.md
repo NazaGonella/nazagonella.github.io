@@ -225,14 +225,22 @@ void PrintCodepointChar(int codepoint) {
 If we run the code in a terminal with UTF-8 encoding we get the following when printing.
 
 ```
-PrintCodepointChar(0x0040);     // OUTPUT: @
-PrintCodepointChar(0xE9);       // OUTPUT: é
-PrintCodepointChar(0x03BB);     // OUTPUT: λ
-PrintCodepointChar(0x266A);     // OUTPUT: ♪
-PrintCodepointChar(0x1F60E);    // OUTPUT: 😎
-PrintCodepointChar(0x1F40C);    // OUTPUT: 🐌
-PrintCodepointChar(0x1F697);    // OUTPUT: 🚗
-PrintCodepointChar(0x1F43B);    // OUTPUT: 🐻
+PrintCodepointChar(0x0040);
+    // OUTPUT: @
+PrintCodepointChar(0xE9);
+    // OUTPUT: é
+PrintCodepointChar(0x03BB);
+    // OUTPUT: λ
+PrintCodepointChar(0x266A);
+    // OUTPUT: ♪
+PrintCodepointChar(0x1F60E);
+    // OUTPUT: 😎
+PrintCodepointChar(0x1F40C);
+    // OUTPUT: 🐌
+PrintCodepointChar(0x1F697);
+    // OUTPUT: 🚗
+PrintCodepointChar(0x1F43B);
+    // OUTPUT: 🐻
 ```
 
 Let's change the wrapper function a little to showcase a cool Unicode feature.
@@ -255,16 +263,21 @@ In this function we define `encodedChars` as a string containing the encoded cod
 If we use this function with regular characters we get
 
 ```
-PrintCodepointCombiningChar(0x1F47D, 0x1F916);  // OUTPUT: 👽🤖
-PrintCodepointCombiningChar(0x1F355, 0x1F62D);  // OUTPUT: 🍕😭
+PrintCodepointCombiningChar(0x1F47D, 0x1F916);
+    // OUTPUT: 👽🤖
+PrintCodepointCombiningChar(0x1F355, 0x1F62D);
+    // OUTPUT: 🍕😭
 ```
 
 That was to be expected, let's try with some other characters
 
 ```
-PrintCodepointChar(0x0065);                     // OUTPUT: e
-PrintCodepointChar(0xE9);                       // OUTPUT: é
-PrintCodepointCombiningChar(0x0065, 0x0301);    // OUTPUT: é
+PrintCodepointChar(0x0065);                     
+    // OUTPUT: e
+PrintCodepointChar(0xE9);                       
+    // OUTPUT: é
+PrintCodepointCombiningChar(0x0065, 0x0301);    
+    // OUTPUT: é
 ```
 
 What exactly happened in the last line? Why was the string composed of the characters with code points `0x0065` and `0x0301` printed as a single character?
@@ -278,13 +291,17 @@ Not all characters have a direct visual representation (for example, control cha
 ```
 c = "é"
 c_utf = c.encode("utf-8")
-print("byte length", len(c_utf))    # output: byte length 2
-print(c_utf)                        # output: b'\xc3\xa9'
+print("byte length", len(c_utf))
+    # OUTPUT: byte length 2
+print(c_utf)
+    # OUTPUT: b'\xc3\xa9'
 
 c = "é"
 c_utf = c.encode("utf-8")
-print("byte length", len(c_utf))    # output: byte length 3
-print(c_utf)                        # output: b'e\xcc\x81'
+print("byte length", len(c_utf))
+    # OUTPUT: byte length 3
+print(c_utf)
+    # OUTPUT: b'e\xcc\x81'
 ```
 
 What is going on? The answer to this is *combining characters*. These are special characters that modify preceding characters in order to create new variations.
