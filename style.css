@@ -333,7 +333,7 @@ em, i {
 /* mobiles */
 
 @media (max-width: 500px) {
-    *:not(pre):not(code):not(pre *):not(code *) {
+    * {
         font-size: 12px;
     }
 
