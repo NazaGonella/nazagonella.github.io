@@ -28,16 +28,20 @@ So I decided to dive deep into Unicode and its encodings, and write about what I
 
 ---
 
+### Code Structure and Endianness
+
+For each UTF encoding there will be a function `CodepointToX` written in C that takes a code point and transforms it to its proper encoding, returning the size of the encoding in bytes.
+
+During the post I'm using a *big-endian* layout for writing sequential bytes: the most significant byte comes first. This also includes a big-endian implementation for the `CodepointToX` functions in [UTF-16](#utf-16-and-surrogate-pairs) and [UTF-32](#utf-32-the-naive-approach). You can find little-endian implementations in the [repository](github.com).
+
+The [extra](#bonus-combining-characters) section contains code written in Python.
+
+---
+
 ### Unicode is not just ASCII++
 
 You probably know ASCII, characters represented by numbers from 0 to 127; you may also know Unicode, same thing as ASCII but expanded, right?
 There is a slight difference. ASCII and Unicode are both *coded character sets*, they map abstract symbols to numeric values called *code points*. The way they differ is on how they store these code points in memory, what is called *encoding*. ASCII is both a coded character set and an encoding format. Unicode itself is NOT an encoding format, in fact, it has multiple encodings.
-
----
-
-### Code Structure and Endianness
-
-TODO
 
 ---
 
@@ -60,14 +64,16 @@ The UTF-32 encoding solves this by assigning 4 bytes for each code point. Code p
 
 You may notice the problem UTF-32 introduces. A lot of bytes go to waste when using the most common letters in the english alphabet. What in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with UTF-32. With this encoding, every character takes the same amount of bytes, so we call UTF-32 a *fixed-length* encoding.
 
+Another thing to notice is the order of the bytes, in this case we are using big-endian. This version of UTF-32 is called **UTF-32-BE**. The little-endian version is called **UTF-32-LE**.
+
 ```
-int CodepointToUTF32(unsigned int codepoint, unsigned char *output) {
+int CodepointToUTF32BE(unsigned int codepoint, unsigned char *output) {
 
     if (codepoint >= 0x0 && codepoint <= 0x10FFFF) {
-        output[0] = codepoint & 0xFF;
-        output[1] = (codepoint >> 8) & 0xFF;
-        output[2] = (codepoint >> 16) & 0xFF;
-        output[3] = (codepoint >> 24) & 0xFF;
+        output[0] = (codepoint >> 24) & 0xFF;
+        output[1] = (codepoint >> 16) & 0xFF;
+        output[2] = (codepoint >> 8) & 0xFF;
+        output[3] = codepoint & 0xFF;
         return 4;
     }
 
@@ -84,7 +90,7 @@ UTF-16 introduces *variable-width* encoding. Every code point is encoded as one 
 
 Code points less than or equal to `U+FFFF`, corresponding to characters in the *Basic Multilingual Plane* (BMP), are directly encoded in a 16 bit unit.
 
-For code points outside the BMP (greater than `U+FFFF`), UTF+16 uses *surrogate pairs*, each pair consist of two 16 bit values, the first one being the *high surrogate* followed by the *low surrogate*. TODO: explain gap
+For code points outside the BMP (greater than `U+FFFF`), UTF+16 uses *surrogate pairs*, each pair consist of two 16 bit values, the first one being the *high surrogate* followed by the *low surrogate*.
 
 Surrogate pairs follow a simple formula for encoding the code points.
 
@@ -92,13 +98,20 @@ Surrogate pairs follow a simple formula for encoding the code points.
 - **high surrogate** --> `1101`-`1000`-`0000`-`0000` *OR* top ten bits of **U'**
 - **low surrogate**  --> `1101`-`1100`-`0000`-`0000` *OR* bottom ten bits of **U'**
 
-So high surrogates have the form `1101`-`10xx`-`xxxx`-`xxxx` and low surrogates `1101`-`11xx`-`xxxx`-`xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the BMP. TODO: an additional what
+1. a
+2. b
+
+So high surrogates have the form `1101`-`10xx`-`xxxx`-`xxxx` and low surrogates `1101`-`11xx`-`xxxx`-`xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
+
+The high surrogate range is `0xD800-0xD8FF`. The low surrogate range is `0xDC00-0xDFFF`. The full surrogate block `0xD800-0xDFFF` is reserved exclusively for surrogate code points. This means that no matter the UTF form, no character can have a code point in this range.
+
+Like UTF-32, the order of the bytes determine the version of UTF-16, in this case we are describing **UTF-16BE** since it is big-endian. For little-endian it would be **UTF-16LE**.
 
 ```
-int CodepointToUTF16(unsigned int codepoint, unsigned char *output) {
+int CodepointToUTF16BE(unsigned int codepoint, unsigned char *output) {
 
     if (codepoint <= 0xFFFF) {
-        if (codepoint >= 0xD800 && codepoint <= 0xDFFF) return 0;
+        if (codepoint >= 0xD800 && codepoint <= 0xDFFF) return 0; // values reserved for surrogate code points
         output[0] = (unsigned char)((codepoint >> 8) & 0xFF);
         output[1] = (unsigned char)(codepoint & 0xFF);
         return 2;
@@ -229,7 +242,7 @@ Code points sequences are defined as **canonically equivalent** if they represen
 
 Based on these equivalences the standard also defines *Unicode normalization*, to make sure that text sequences have the same code point equivalence. You can read more on types of normalization in this [article](https://mcilloni.ovh/2023/07/23/unicode-is-hard/) by Marco Cilloni.
 
-[^1]: This doesn't mean all code points are assigned, some space is reserved for future use.
+[^1]: This doesn't mean all code points are assigned.
 [^2]: One of the major benefits of using UTF-8 is backwards compatibility with ASCII.
 
 </article>

@@ -50,6 +50,21 @@ about what I learned in the process. I found that UTF is something some
 people don’t bother to learn about, as it’s often not necessary, but
 hopefully you’ll pick something up along the way.</p>
 <hr />
+<h3 id="code-structure-and-endianness">Code Structure and
+Endianness</h3>
+<p>For each UTF encoding there will be a function
+<code>CodepointToX</code> written in C that takes a code point and
+transforms it to its proper encoding, returning the size of the encoding
+in bytes.</p>
+<p>During the post I’m using a <em>big-endian</em> layout for writing
+sequential bytes: the most significant byte comes first. This also
+includes a big-endian implementation for the <code>CodepointToX</code>
+functions in <a href="#utf-16-and-surrogate-pairs">UTF-16</a> and <a
+href="#utf-32-the-naive-approach">UTF-32</a>. You can find little-endian
+implementations in the <a href="github.com">repository</a>.</p>
+<p>The <a href="#bonus-combining-characters">extra</a> section contains
+code written in Python.</p>
+<hr />
 <h3 id="unicode-is-not-just-ascii">Unicode is not just ASCII++</h3>
 <p>You probably know ASCII, characters represented by numbers from 0 to
 127; you may also know Unicode, same thing as ASCII but expanded, right?
@@ -59,10 +74,6 @@ character sets</em>, they map abstract symbols to numeric values called
 code points in memory, what is called <em>encoding</em>. ASCII is both a
 coded character set and an encoding format. Unicode itself is NOT an
 encoding format, in fact, it has multiple encodings.</p>
-<hr />
-<h3 id="code-structure-and-endianness">Code Structure and
-Endianness</h3>
-<p>TODO</p>
 <hr />
 <h3 id="how-ascii-does-it">How ASCII does it</h3>
 <p>ASCII is straightforward. These are small values; we can assign a
@@ -97,13 +108,17 @@ waste when using the most common letters in the english alphabet. What
 in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with
 UTF-32. With this encoding, every character takes the same amount of
 bytes, so we call UTF-32 a <em>fixed-length</em> encoding.</p>
-<pre><code>int CodepointToUTF32(unsigned int codepoint, unsigned char *output) {
+<p>Another thing to notice is the order of the bytes, in this case we
+are using big-endian. This version of UTF-32 is called
+<strong>UTF-32-BE</strong>. The little-endian version is called
+<strong>UTF-32-LE</strong>.</p>
+<pre><code>int CodepointToUTF32BE(unsigned int codepoint, unsigned char *output) {
 
     if (codepoint &gt;= 0x0 &amp;&amp; codepoint &lt;= 0x10FFFF) {
-        output[0] = codepoint &amp; 0xFF;
-        output[1] = (codepoint &gt;&gt; 8) &amp; 0xFF;
-        output[2] = (codepoint &gt;&gt; 16) &amp; 0xFF;
-        output[3] = (codepoint &gt;&gt; 24) &amp; 0xFF;
+        output[0] = (codepoint &gt;&gt; 24) &amp; 0xFF;
+        output[1] = (codepoint &gt;&gt; 16) &amp; 0xFF;
+        output[2] = (codepoint &gt;&gt; 8) &amp; 0xFF;
+        output[3] = codepoint &amp; 0xFF;
         return 4;
     }
 
@@ -120,7 +135,7 @@ directly encoded in a 16 bit unit.</p>
 <p>For code points outside the BMP (greater than <code>U+FFFF</code>),
 UTF+16 uses <em>surrogate pairs</em>, each pair consist of two 16 bit
 values, the first one being the <em>high surrogate</em> followed by the
-<em>low surrogate</em>. TODO: explain gap</p>
+<em>low surrogate</em>.</p>
 <p>Surrogate pairs follow a simple formula for encoding the code
 points.</p>
 <ul>
@@ -134,18 +149,30 @@ bit-value in the <code>0x00000</code> - <code>0xFFFFF</code> range.</li>
 <code>1101</code>-<code>1100</code>-<code>0000</code>-<code>0000</code>
 <em>OR</em> bottom ten bits of <strong>U’</strong></li>
 </ul>
+<ol type="1">
+<li>a</li>
+<li>b</li>
+</ol>
 <p>So high surrogates have the form
 <code>1101</code>-<code>10xx</code>-<code>xxxx</code>-<code>xxxx</code>
 and low surrogates
 <code>1101</code>-<code>11xx</code>-<code>xxxx</code>-<code>xxxx</code>.
 The <code>x</code> bits are then filled with the code point value minus
 <code>0x10000</code>. This substraction allows to insert values from 0
-to 2^20 - 1, an additional 1,048,576 code points beyond the BMP. TODO:
-an additional what</p>
-<pre><code>int CodepointToUTF16(unsigned int codepoint, unsigned char *output) {
+to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code
+points of the BMP.</p>
+<p>The high surrogate range is <code>0xD800-0xD8FF</code>. The low
+surrogate range is <code>0xDC00-0xDFFF</code>. The full surrogate block
+<code>0xD800-0xDFFF</code> is reserved exclusively for surrogate code
+points. This means that no matter the UTF form, no character can have a
+code point in this range.</p>
+<p>Like UTF-32, the order of the bytes determine the version of UTF-16,
+in this case we are describing <strong>UTF-16BE</strong> since it is
+big-endian. For little-endian it would be <strong>UTF-16LE</strong>.</p>
+<pre><code>int CodepointToUTF16BE(unsigned int codepoint, unsigned char *output) {
 
     if (codepoint &lt;= 0xFFFF) {
-        if (codepoint &gt;= 0xD800 &amp;&amp; codepoint &lt;= 0xDFFF) return 0;
+        if (codepoint &gt;= 0xD800 &amp;&amp; codepoint &lt;= 0xDFFF) return 0; // values reserved for surrogate code points
         output[0] = (unsigned char)((codepoint &gt;&gt; 8) &amp; 0xFF);
         output[1] = (unsigned char)(codepoint &amp; 0xFF);
         return 2;
@@ -365,9 +392,8 @@ by Marco Cilloni.</p>
 role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p>This doesn’t mean all code points are assigned, some
-space is reserved for future use.<a href="#fnref1" class="footnote-back"
-role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>This doesn’t mean all code points are assigned.<a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>One of the major benefits of using UTF-8 is backwards
 compatibility with ASCII.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
