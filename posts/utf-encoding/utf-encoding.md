@@ -34,7 +34,7 @@ For each UTF encoding there will be a function `CodepointToX` written in C that 
 
 I'm using a *big-endian* layout for writing sequential bytes: the most significant byte comes first. This also includes a big-endian implementation for the `CodepointToX` functions in [UTF-16](#utf-16-and-surrogate-pairs) and [UTF-32](#utf-32-the-naive-approach). You can find little-endian implementations in the [repository](github.com).
 
-The [extra](#bonus-combining-characters) section contains code written in Python.
+The [bonus](#bonus-combining-characters) section contains code written in Python.
 
 ---
 
@@ -100,7 +100,7 @@ Surrogate pairs follow a simple formula for encoding code points.
 
 So high surrogates have the form `1101` `10xx` `xxxx` `xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
 
-The high surrogate range is `0xD800-0xD8FF`. The low surrogate range is `0xDC00-0xDFFF`. The full surrogate block `0xD800-0xDFFF` is reserved exclusively in Unicode for surrogate code points. This means that no matter the UTF form, no character can have a code point in this range.
+The high surrogate range is `0xD800-0xDBFF`. The low surrogate range is `0xDC00-0xDFFF`. The full surrogate block `0xD800-0xDFFF` is reserved exclusively in Unicode for surrogate code points. This means that no matter the UTF form, no character can have a code point in this range.
 
 Like UTF-32, the order of the bytes determine the version of UTF-16, in this case we are describing **UTF-16BE** since it's big-endian. For little-endian it would be **UTF-16LE**.
 
@@ -147,7 +147,7 @@ The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode code poin
 
 If we took the same plain encoding approach as UTF-32 there would 4 bytes one next to the other, but nothing to indicate this is a whole one character. How do we know if this isn't 4 characters each one taking 1 byte? Or 2 characters of 2 bytes? Let's say we want to index the third character in a string. How would we do that?
 
-We need to to define a more complex structure when working with variable-width encoding. An ideal encoding format will make it possible to identify where a character starts and where it ends in a string.
+We need to define a more complex structure when working with variable-width encoding. An ideal encoding format will make it possible to identify where a character starts and where it ends in a string.
 
 A document with UTF-8 encoding will have every byte either be a *leading byte*, which indicates the start of a character as well as how many bytes follow it; or a *continuation byte*, which is used to help indexing and to detect if the sequence is valid UTF-8.
 
@@ -207,9 +207,73 @@ int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
 
 ---
 
+### Encoding Code Points
+
+I will be using this wrapper to quickly print different code points.
+
+```
+void PrintCodepointChar(int codepoint) {
+    unsigned char encodedChar[5];   // a Unicode character doesn't take more than 4 bytes, the 5th byte is for the null terminator
+
+    size_t len = CodepointToUTF8(codepoint, encodedChar);
+
+    encodedChar[len] = '\0';
+    printf("%s\n", encodedChar);
+}
+```
+
+If we run the code in a terminal with UTF-8 encoding we get the following when printing.
+
+```
+    PrintCodepointChar(0x0040);     // OUTPUT: @
+    PrintCodepointChar(0xE9);       // OUTPUT: é
+    PrintCodepointChar(0x03BB);     // OUTPUT: λ
+    PrintCodepointChar(0x266A);     // OUTPUT: ♪
+    PrintCodepointChar(0x1F60E);    // OUTPUT: 😎
+    PrintCodepointChar(0x1F40C);    // OUTPUT: 🐌
+    PrintCodepointChar(0x1F697);    // OUTPUT: 🚗
+    PrintCodepointChar(0x1F43B);    // OUTPUT: 🐻
+```
+
+Let's change the wrapper function a little to showcase something cool about Unicode.
+
+```
+void PrintCodepointCombiningChar(int codepointBase, int codepointComb) {
+    unsigned char encodedChars[9];
+
+    unsigned char* p = encodedChars;
+    p += CodepointToUTF8(codepointBase, encodedChars);
+    p += CodepointToUTF8(codepointComb, p);
+
+    *p = '\0';
+    printf("%s\n", encodedChars);
+}
+```
+
+In this function we define `encodedChars` as a string containing the encoded code point `codepointBase` followed by the encoded code point `codepointComb`.
+
+If we use this function with regular characters we get
+
+```
+PrintCodepointCombiningChar(0x1F47D, 0x1F916);  // OUTPUT: 👽🤖
+PrintCodepointCombiningChar(0x1F355, 0x1F62D);  // OUTPUT: 🍕😭
+```
+
+That was to be expected, let's try with some other characters
+
+```
+PrintCodepointChar(0x0065);                     // OUTPUT: e
+PrintCodepointChar(0xE9);                       // OUTPUT: é
+PrintCodepointCombiningChar(0x0065, 0x0301);    // OUTPUT: é
+```
+
+What exactly happened in the last line? Why was the string composed of the characters with code points `0x0065` and `0x0301` printed as a single character?
+
+---
+
 ### Bonus! Combining characters
 
-Not all characters have a direct visual representation (for example, control characters like the null terminator or line breaks), and not all characters have a single representation when encoded in Unicode. Believe it or not, the letters `é` and `é` don't share the same code point
+Not all characters have a direct visual representation (for example, control characters like the null terminator or line breaks), and not all characters have a single code point when encoded in Unicode. Believe it or not, the letters `é` and `é` don't share the same code point
 
 ```
 c = "é"

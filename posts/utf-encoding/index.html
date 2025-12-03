@@ -62,7 +62,7 @@ implementation for the <code>CodepointToX</code> functions in <a
 href="#utf-16-and-surrogate-pairs">UTF-16</a> and <a
 href="#utf-32-the-naive-approach">UTF-32</a>. You can find little-endian
 implementations in the <a href="github.com">repository</a>.</p>
-<p>The <a href="#bonus-combining-characters">extra</a> section contains
+<p>The <a href="#bonus-combining-characters">bonus</a> section contains
 code written in Python.</p>
 <hr />
 <h3 id="unicode-is-not-just-ascii">Unicode is not just ASCII++</h3>
@@ -155,7 +155,7 @@ bits</em>.</li>
 <code>0x10000</code>. This substraction allows to insert values from 0
 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code
 points of the BMP.</p>
-<p>The high surrogate range is <code>0xD800-0xD8FF</code>. The low
+<p>The high surrogate range is <code>0xD800-0xDBFF</code>. The low
 surrogate range is <code>0xDC00-0xDFFF</code>. The full surrogate block
 <code>0xD800-0xDFFF</code> is reserved exclusively in Unicode for
 surrogate code points. This means that no matter the UTF form, no
@@ -209,7 +209,7 @@ bytes one next to the other, but nothing to indicate this is a whole one
 character. How do we know if this isn’t 4 characters each one taking 1
 byte? Or 2 characters of 2 bytes? Let’s say we want to index the third
 character in a string. How would we do that?</p>
-<p>We need to to define a more complex structure when working with
+<p>We need to define a more complex structure when working with
 variable-width encoding. An ideal encoding format will make it possible
 to identify where a character starts and where it ends in a string.</p>
 <p>A document with UTF-8 encoding will have every byte either be a
@@ -325,11 +325,58 @@ values.</p>
     return 0;
 }</code></pre>
 <hr />
+<h3 id="encoding-code-points">Encoding Code Points</h3>
+<p>I will be using this wrapper to quickly print different code
+points.</p>
+<pre><code>void PrintCodepointChar(int codepoint) {
+    unsigned char encodedChar[5];   // a Unicode character doesn&#39;t take more than 4 bytes, the 5th byte is for the null terminator
+
+    size_t len = CodepointToUTF8(codepoint, encodedChar);
+
+    encodedChar[len] = &#39;\0&#39;;
+    printf(&quot;%s\n&quot;, encodedChar);
+}</code></pre>
+<p>If we run the code in a terminal with UTF-8 encoding we get the
+following when printing.</p>
+<pre><code>    PrintCodepointChar(0x0040);     // OUTPUT: @
+    PrintCodepointChar(0xE9);       // OUTPUT: é
+    PrintCodepointChar(0x03BB);     // OUTPUT: λ
+    PrintCodepointChar(0x266A);     // OUTPUT: ♪
+    PrintCodepointChar(0x1F60E);    // OUTPUT: 😎
+    PrintCodepointChar(0x1F40C);    // OUTPUT: 🐌
+    PrintCodepointChar(0x1F697);    // OUTPUT: 🚗
+    PrintCodepointChar(0x1F43B);    // OUTPUT: 🐻</code></pre>
+<p>Let’s change the wrapper function a little to showcase something cool
+about Unicode.</p>
+<pre><code>void PrintCodepointCombiningChar(int codepointBase, int codepointComb) {
+    unsigned char encodedChars[9];
+
+    unsigned char* p = encodedChars;
+    p += CodepointToUTF8(codepointBase, encodedChars);
+    p += CodepointToUTF8(codepointComb, p);
+
+    *p = &#39;\0&#39;;
+    printf(&quot;%s\n&quot;, encodedChars);
+}</code></pre>
+<p>In this function we define <code>encodedChars</code> as a string
+containing the encoded code point <code>codepointBase</code> followed by
+the encoded code point <code>codepointComb</code>.</p>
+<p>If we use this function with regular characters we get</p>
+<pre><code>PrintCodepointCombiningChar(0x1F47D, 0x1F916);  // OUTPUT: 👽🤖
+PrintCodepointCombiningChar(0x1F355, 0x1F62D);  // OUTPUT: 🍕😭</code></pre>
+<p>That was to be expected, let’s try with some other characters</p>
+<pre><code>PrintCodepointChar(0x0065);                     // OUTPUT: e
+PrintCodepointChar(0xE9);                       // OUTPUT: é
+PrintCodepointCombiningChar(0x0065, 0x0301);    // OUTPUT: é</code></pre>
+<p>What exactly happened in the last line? Why was the string composed
+of the characters with code points <code>0x0065</code> and
+<code>0x0301</code> printed as a single character?</p>
+<hr />
 <h3 id="bonus-combining-characters">Bonus! Combining characters</h3>
 <p>Not all characters have a direct visual representation (for example,
 control characters like the null terminator or line breaks), and not all
-characters have a single representation when encoded in Unicode. Believe
-it or not, the letters <code>é</code> and <code>é</code> don’t share the
+characters have a single code point when encoded in Unicode. Believe it
+or not, the letters <code>é</code> and <code>é</code> don’t share the
 same code point</p>
 <pre><code>c = &quot;é&quot;
 c_utf = c.encode(&quot;utf-8&quot;)
