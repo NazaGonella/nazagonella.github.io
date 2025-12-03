@@ -43,10 +43,10 @@ class="separator"></span> <a class="title" href="/resume/es/">Resume</a>
 for all data types, except for Unicode escape characters: JSON accepts
 values such as <code>\u0041</code> if you don’t feel like manually copy
 and pasting the Unicode character. When it came time to add them to my
-parser, I realized encoding Unicode characters wasn’t as easy as I
+parser, I realized encoding Unicode characters wasn’t as simple as I
 thought it was.</p>
 <p>So I decided to dive deep into Unicode and its encodings, and write
-about what I learned in the process. I found that UTF is something some
+about what I learned in the process. I found that UTF is a topic some
 people don’t bother to learn about, as it’s often not necessary, but
 hopefully you’ll pick something up along the way.</p>
 <hr />
@@ -56,10 +56,10 @@ Endianness</h3>
 <code>CodepointToX</code> written in C that takes a code point and
 transforms it to its proper encoding, returning the size of the encoding
 in bytes.</p>
-<p>During the post I’m using a <em>big-endian</em> layout for writing
-sequential bytes: the most significant byte comes first. This also
-includes a big-endian implementation for the <code>CodepointToX</code>
-functions in <a href="#utf-16-and-surrogate-pairs">UTF-16</a> and <a
+<p>I’m using a <em>big-endian</em> layout for writing sequential bytes:
+the most significant byte comes first. This also includes a big-endian
+implementation for the <code>CodepointToX</code> functions in <a
+href="#utf-16-and-surrogate-pairs">UTF-16</a> and <a
 href="#utf-32-the-naive-approach">UTF-32</a>. You can find little-endian
 implementations in the <a href="github.com">repository</a>.</p>
 <p>The <a href="#bonus-combining-characters">extra</a> section contains
@@ -128,46 +128,40 @@ are using big-endian. This version of UTF-32 is called
 <hr />
 <h3 id="utf-16-and-surrogate-pairs">UTF-16 and Surrogate Pairs</h3>
 <p>UTF-16 introduces <em>variable-width</em> encoding. Every code point
-is encoded as one or two 16 bit sequences.</p>
-<p>Code points less than or equal to <code>U+FFFF</code>, corresponding
-to characters in the <em>Basic Multilingual Plane</em> (BMP), are
-directly encoded in a 16 bit unit.</p>
+is encoded as one or two 16 bit values, called <em>code units</em>.</p>
+<p>Code points less than or equal to <code>U+FFFF</code>, outside the
+range <code>0xD800-0xDFFF</code> (you’ll see why in a bit), correspond
+to characters in the <em>Basic Multilingual Plane</em> (BMP) and are
+directly encoded in a single 16 bit code unit.</p>
 <p>For code points outside the BMP (greater than <code>U+FFFF</code>),
-UTF+16 uses <em>surrogate pairs</em>, each pair consist of two 16 bit
-values, the first one being the <em>high surrogate</em> followed by the
-<em>low surrogate</em>.</p>
-<p>Surrogate pairs follow a simple formula for encoding the code
-points.</p>
-<ul>
-<li>Subtract <code>0x10000</code> to the code point
-(<strong>U</strong>), the result (<strong>U’</strong>) being a 20
-bit-value in the <code>0x00000</code> - <code>0xFFFFF</code> range.</li>
-<li><strong>high surrogate</strong> –&gt;
-<code>1101</code>-<code>1000</code>-<code>0000</code>-<code>0000</code>
-<em>OR</em> top ten bits of <strong>U’</strong></li>
-<li><strong>low surrogate</strong> –&gt;
-<code>1101</code>-<code>1100</code>-<code>0000</code>-<code>0000</code>
-<em>OR</em> bottom ten bits of <strong>U’</strong></li>
-</ul>
+UTF-16 uses <em>surrogate pairs</em>: each pair consists of two 16 bit
+code units, the first one being the <em>high surrogate</em> followed by
+the <em>low surrogate</em>.</p>
+<p>Surrogate pairs follow a simple formula for encoding code points.</p>
 <ol type="1">
-<li>a</li>
-<li>b</li>
+<li>Subtract <code>0x10000</code> from the code point. The result is a
+20-bit number in the range <code>0x00000-0xFFFFF</code>.</li>
+<li>The top 10 bits form the high surrogate: <code>1101</code>
+<code>1000</code> <code>0000</code> <code>0000</code> <em>OR top ten
+bits</em>.</li>
+<li>The bottom 10 bits form the low surrogate: <code>1101</code>
+<code>1100</code> <code>0000</code> <code>0000</code> <em>OR bottom ten
+bits</em>.</li>
 </ol>
-<p>So high surrogates have the form
-<code>1101</code>-<code>10xx</code>-<code>xxxx</code>-<code>xxxx</code>
-and low surrogates
-<code>1101</code>-<code>11xx</code>-<code>xxxx</code>-<code>xxxx</code>.
-The <code>x</code> bits are then filled with the code point value minus
+<p>So high surrogates have the form <code>1101</code> <code>10xx</code>
+<code>xxxx</code> <code>xxxx</code> and low surrogates <code>1101</code>
+<code>11xx</code> <code>xxxx</code> <code>xxxx</code>. The
+<code>x</code> bits are then filled with the code point value minus
 <code>0x10000</code>. This substraction allows to insert values from 0
 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code
 points of the BMP.</p>
 <p>The high surrogate range is <code>0xD800-0xD8FF</code>. The low
 surrogate range is <code>0xDC00-0xDFFF</code>. The full surrogate block
-<code>0xD800-0xDFFF</code> is reserved exclusively for surrogate code
-points. This means that no matter the UTF form, no character can have a
-code point in this range.</p>
+<code>0xD800-0xDFFF</code> is reserved exclusively in Unicode for
+surrogate code points. This means that no matter the UTF form, no
+character can have a code point in this range.</p>
 <p>Like UTF-32, the order of the bytes determine the version of UTF-16,
-in this case we are describing <strong>UTF-16BE</strong> since it is
+in this case we are describing <strong>UTF-16BE</strong> since it’s
 big-endian. For little-endian it would be <strong>UTF-16LE</strong>.</p>
 <pre><code>int CodepointToUTF16BE(unsigned int codepoint, unsigned char *output) {
 
@@ -210,11 +204,11 @@ and so on.</p>
 <p>The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode
 code point <code>U+1F60E</code> which in UTF-8 uses 4 bytes. How would
 you encode this?</p>
-<p>If we took the same encoding as UTF-32 there would 4 bytes one next
-to the other, and nothing to indicate this is a whole one character. How
-do we know if this isn’t 4 characters each one taking 1 byte? Or 2
-characters of 2 bytes? Let’s say we want to index the third character in
-a string. How would we do that?</p>
+<p>If we took the same plain encoding approach as UTF-32 there would 4
+bytes one next to the other, but nothing to indicate this is a whole one
+character. How do we know if this isn’t 4 characters each one taking 1
+byte? Or 2 characters of 2 bytes? Let’s say we want to index the third
+character in a string. How would we do that?</p>
 <p>We need to to define a more complex structure when working with
 variable-width encoding. An ideal encoding format will make it possible
 to identify where a character starts and where it ends in a string.</p>
@@ -248,7 +242,6 @@ UTF-8 the same way as one would encode it in ASCII.<a href="#fn2"
 class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <p>The rest of the bits are the data bits. These contain the code point
 value in binary, padded with leading zeros.</p>
-<p>We can visualize UTF-8 with this table</p>
 <table>
 <colgroup>
 <col style="width: 26%" />
@@ -304,7 +297,7 @@ value in binary, padded with leading zeros.</p>
 </tbody>
 </table>
 <p>The table contains the bytes with the header bits set. The
-<code>x</code> bits correspond to data bits holding the code point
+<code>x</code> bits correspond to the data bits holding code point
 values.</p>
 <pre><code>int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
 
@@ -368,7 +361,7 @@ alt="Zalgo text!" />
 href="https://en.wikipedia.org/wiki/Zalgo_text">Zalgo
 text!</a></figcaption>
 </figure>
-<p>Now comes a new problem: How do we know if two strings are the same?
+<p>Now comes a new problem: how do we know if two strings are the same?
 They may look the same when printed but have totally different
 encodings. Luckily, Unicode defines <em>Unicode equivalence</em> to
 solve this issue.</p>

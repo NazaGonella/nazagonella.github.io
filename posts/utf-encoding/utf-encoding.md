@@ -22,9 +22,9 @@ November 12, 2025
 
 ---
 
-A few days ago I started writing a JSON Parser in C. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u0041` if you don't feel like manually copy and pasting the Unicode character. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as easy as I thought it was.
+A few days ago I started writing a JSON Parser in C. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u0041` if you don't feel like manually copy and pasting the Unicode character. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I thought it was.
 
-So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. I found that UTF is something some people don't bother to learn about, as it's often not necessary, but hopefully you'll pick something up along the way.
+So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. I found that UTF is a topic some people don't bother to learn about, as it's often not necessary, but hopefully you'll pick something up along the way.
 
 ---
 
@@ -32,7 +32,7 @@ So I decided to dive deep into Unicode and its encodings, and write about what I
 
 For each UTF encoding there will be a function `CodepointToX` written in C that takes a code point and transforms it to its proper encoding, returning the size of the encoding in bytes.
 
-During the post I'm using a *big-endian* layout for writing sequential bytes: the most significant byte comes first. This also includes a big-endian implementation for the `CodepointToX` functions in [UTF-16](#utf-16-and-surrogate-pairs) and [UTF-32](#utf-32-the-naive-approach). You can find little-endian implementations in the [repository](github.com).
+I'm using a *big-endian* layout for writing sequential bytes: the most significant byte comes first. This also includes a big-endian implementation for the `CodepointToX` functions in [UTF-16](#utf-16-and-surrogate-pairs) and [UTF-32](#utf-32-the-naive-approach). You can find little-endian implementations in the [repository](github.com).
 
 The [extra](#bonus-combining-characters) section contains code written in Python.
 
@@ -86,26 +86,23 @@ int CodepointToUTF32BE(unsigned int codepoint, unsigned char *output) {
 
 ### UTF-16 and Surrogate Pairs
 
-UTF-16 introduces *variable-width* encoding. Every code point is encoded as one or two 16 bit sequences.
+UTF-16 introduces *variable-width* encoding. Every code point is encoded as one or two 16 bit values, called *code units*.
 
-Code points less than or equal to `U+FFFF`, corresponding to characters in the *Basic Multilingual Plane* (BMP), are directly encoded in a 16 bit unit.
+Code points less than or equal to `U+FFFF`, outside the range `0xD800-0xDFFF` (you'll see why in a bit), correspond to characters in the *Basic Multilingual Plane* (BMP) and are directly encoded in a single 16 bit code unit.
 
-For code points outside the BMP (greater than `U+FFFF`), UTF+16 uses *surrogate pairs*, each pair consist of two 16 bit values, the first one being the *high surrogate* followed by the *low surrogate*.
+For code points outside the BMP (greater than `U+FFFF`), UTF-16 uses *surrogate pairs*: each pair consists of two 16 bit code units, the first one being the *high surrogate* followed by the *low surrogate*.
 
-Surrogate pairs follow a simple formula for encoding the code points.
+Surrogate pairs follow a simple formula for encoding code points.
 
-- Subtract `0x10000` to the code point (**U**), the result (**U'**) being a 20 bit-value in the `0x00000` - `0xFFFFF` range.
-- **high surrogate** --> `1101`-`1000`-`0000`-`0000` *OR* top ten bits of **U'**
-- **low surrogate**  --> `1101`-`1100`-`0000`-`0000` *OR* bottom ten bits of **U'**
+1. Subtract `0x10000` from the code point. The result is a 20-bit number in the range `0x00000-0xFFFFF`.
+2. The top 10 bits form the high surrogate: `1101` `1000` `0000` `0000` *OR top ten bits*.
+3. The bottom 10 bits form the low surrogate: `1101` `1100` `0000` `0000` *OR bottom ten bits*.
 
-1. a
-2. b
+So high surrogates have the form `1101` `10xx` `xxxx` `xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
 
-So high surrogates have the form `1101`-`10xx`-`xxxx`-`xxxx` and low surrogates `1101`-`11xx`-`xxxx`-`xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
+The high surrogate range is `0xD800-0xD8FF`. The low surrogate range is `0xDC00-0xDFFF`. The full surrogate block `0xD800-0xDFFF` is reserved exclusively in Unicode for surrogate code points. This means that no matter the UTF form, no character can have a code point in this range.
 
-The high surrogate range is `0xD800-0xD8FF`. The low surrogate range is `0xDC00-0xDFFF`. The full surrogate block `0xD800-0xDFFF` is reserved exclusively for surrogate code points. This means that no matter the UTF form, no character can have a code point in this range.
-
-Like UTF-32, the order of the bytes determine the version of UTF-16, in this case we are describing **UTF-16BE** since it is big-endian. For little-endian it would be **UTF-16LE**.
+Like UTF-32, the order of the bytes determine the version of UTF-16, in this case we are describing **UTF-16BE** since it's big-endian. For little-endian it would be **UTF-16LE**.
 
 ```
 int CodepointToUTF16BE(unsigned int codepoint, unsigned char *output) {
@@ -148,7 +145,7 @@ In UTF-8, the number of bytes it takes to store a code point correspond to the r
 
 The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode code point `U+1F60E` which in UTF-8 uses 4 bytes. How would you encode this?
 
-If we took the same encoding as UTF-32 there would 4 bytes one next to the other, and nothing to indicate this is a whole one character. How do we know if this isn't 4 characters each one taking 1 byte? Or 2 characters of 2 bytes? Let's say we want to index the third character in a string. How would we do that?
+If we took the same plain encoding approach as UTF-32 there would 4 bytes one next to the other, but nothing to indicate this is a whole one character. How do we know if this isn't 4 characters each one taking 1 byte? Or 2 characters of 2 bytes? Let's say we want to index the third character in a string. How would we do that?
 
 We need to to define a more complex structure when working with variable-width encoding. An ideal encoding format will make it possible to identify where a character starts and where it ends in a string.
 
@@ -171,8 +168,6 @@ ASCII characters have a leading byte that starts with zero, followed by the code
 
 The rest of the bits are the data bits. These contain the code point value in binary, padded with leading zeros.
 
-We can visualize UTF-8 with this table
-
 | First code point | Last code point | Byte 1 | Byte 2 | Byte 3 | Byte 4 |
 |------------------+-----------------+--------+--------+--------+--------|
 | U+0000   | U+007F   | 0xxxxxxx |-|-|-|
@@ -180,7 +175,7 @@ We can visualize UTF-8 with this table
 | U+0800   | U+FFFF   | 1110xxxx | 10xxxxxx | 10xxxxxx |-|
 | U+010000 | U+10FFFF | 11110xxx | 10xxxxxx | 10xxxxxx | 10xxxxxx |
 
-The table contains the bytes with the header bits set. The `x` bits correspond to data bits holding the code point values.
+The table contains the bytes with the header bits set. The `x` bits correspond to the data bits holding code point values.
 
 ```
 int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
@@ -236,7 +231,7 @@ Most letters and symbols accept combining characters, and there is no limit to h
 
 ![[Zalgo text!](https://en.wikipedia.org/wiki/Zalgo_text)](https://upload.wikimedia.org/wikipedia/commons/4/4a/Zalgo_text_filter.png)
 
-Now comes a new problem: How do we know if two strings are the same? They may look the same when printed but have totally different encodings. Luckily, Unicode defines *Unicode equivalence* to solve this issue.
+Now comes a new problem: how do we know if two strings are the same? They may look the same when printed but have totally different encodings. Luckily, Unicode defines *Unicode equivalence* to solve this issue.
 
 Code points sequences are defined as **canonically equivalent** if they represent the same abstract character while also looking the same when displayed. In the last case `é` and `é` would be an example of this type of equivalence. When code points sequences are **compatible**, they might look similar, but are used in different contexts, as they represent different abstract characters. It is the case of `A` and `𝔸`. You understand the meaning of the word `𝔸mbiguous`, but the character `𝔸` is primarily used in mathematical texts.
 
