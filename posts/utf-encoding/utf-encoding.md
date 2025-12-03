@@ -1,4 +1,4 @@
-%Decoding the UTFs
+%Decoding UTFs
 
 <header>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg">
@@ -16,13 +16,13 @@
 
 <article>
 
-## Decoding the UTFs
+## Decoding UTFs
 
 December 03, 2025
 
 ---
 
-I recently started building a JSON parser in C as a small project. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u0041` if you don't feel like manually copy-pasting them. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I had expected.
+I recently started building a JSON parser in C as a small project. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u03C0` if you don't feel like manually copy-pasting the character with code point `U+03C0`. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I had expected.
 
 So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. I found that UTF is a topic some people don't bother to learn about, as it's often not relevant to the average programmer, but hopefully you'll pick something up along the way.
 
@@ -95,8 +95,8 @@ For code points outside the BMP (greater than `U+FFFF`), UTF-16 uses *surrogate 
 Surrogate pairs follow a simple formula for encoding code points.
 
 1. Subtract `0x10000` from the code point. The result is a 20-bit number in the range `0x00000-0xFFFFF`.
-2. The top 10 bits form the high surrogate: `1101` `1000` `0000` `0000` *OR top ten bits*.
-3. The bottom 10 bits form the low surrogate: `1101` `1100` `0000` `0000` *OR bottom ten bits*.
+2. The top 10 bits make the high surrogate: `1101` `1000` `0000` `0000` *OR top ten bits*.
+3. The bottom 10 bits make the low surrogate: `1101` `1100` `0000` `0000` *OR bottom ten bits*.
 
 So high surrogates have the form `1101` `10xx` `xxxx` `xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This subtraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
 
@@ -151,7 +151,7 @@ We need to define a more complex structure when working with variable-width enco
 
 A document with UTF-8 encoding will have every byte either be a *leading byte*, which indicates the start of a character as well as how many bytes follow it; or a *continuation byte*, which is used to help indexing and to detect if the sequence is valid UTF-8.
 
-`U+1F60E` encoded with UTF-8 looks like this:
+`U+1F60E` (or `0001 1111 0110 0000 1110` in binary) encoded with UTF-8 looks like this:
 
 - `(11110)000`
 - `(10)011111`
