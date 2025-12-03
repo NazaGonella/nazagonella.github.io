@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/stackoverflow-light.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/go.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/stackoverflow-light.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/go.min.js"></script>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -341,14 +341,22 @@ points.</p>
 }</code></pre>
 <p>If we run the code in a terminal with UTF-8 encoding we get the
 following when printing.</p>
-<pre><code>PrintCodepointChar(0x0040);     // OUTPUT: @
-PrintCodepointChar(0xE9);       // OUTPUT: é
-PrintCodepointChar(0x03BB);     // OUTPUT: λ
-PrintCodepointChar(0x266A);     // OUTPUT: ♪
-PrintCodepointChar(0x1F60E);    // OUTPUT: 😎
-PrintCodepointChar(0x1F40C);    // OUTPUT: 🐌
-PrintCodepointChar(0x1F697);    // OUTPUT: 🚗
-PrintCodepointChar(0x1F43B);    // OUTPUT: 🐻</code></pre>
+<pre><code>PrintCodepointChar(0x0040);
+    // OUTPUT: @
+PrintCodepointChar(0xE9);
+    // OUTPUT: é
+PrintCodepointChar(0x03BB);
+    // OUTPUT: λ
+PrintCodepointChar(0x266A);
+    // OUTPUT: ♪
+PrintCodepointChar(0x1F60E);
+    // OUTPUT: 😎
+PrintCodepointChar(0x1F40C);
+    // OUTPUT: 🐌
+PrintCodepointChar(0x1F697);
+    // OUTPUT: 🚗
+PrintCodepointChar(0x1F43B);
+    // OUTPUT: 🐻</code></pre>
 <p>Let’s change the wrapper function a little to showcase a cool Unicode
 feature.</p>
 <pre><code>void PrintCodepointCombiningChar(int codepointBase, int codepointComb) {
@@ -365,12 +373,17 @@ feature.</p>
 containing the encoded code point <code>codepointBase</code> followed by
 the encoded code point <code>codepointComb</code>.</p>
 <p>If we use this function with regular characters we get</p>
-<pre><code>PrintCodepointCombiningChar(0x1F47D, 0x1F916);  // OUTPUT: 👽🤖
-PrintCodepointCombiningChar(0x1F355, 0x1F62D);  // OUTPUT: 🍕😭</code></pre>
+<pre><code>PrintCodepointCombiningChar(0x1F47D, 0x1F916);
+    // OUTPUT: 👽🤖
+PrintCodepointCombiningChar(0x1F355, 0x1F62D);
+    // OUTPUT: 🍕😭</code></pre>
 <p>That was to be expected, let’s try with some other characters</p>
-<pre><code>PrintCodepointChar(0x0065);                     // OUTPUT: e
-PrintCodepointChar(0xE9);                       // OUTPUT: é
-PrintCodepointCombiningChar(0x0065, 0x0301);    // OUTPUT: é</code></pre>
+<pre><code>PrintCodepointChar(0x0065);                     
+    // OUTPUT: e
+PrintCodepointChar(0xE9);                       
+    // OUTPUT: é
+PrintCodepointCombiningChar(0x0065, 0x0301);    
+    // OUTPUT: é</code></pre>
 <p>What exactly happened in the last line? Why was the string composed
 of the characters with code points <code>0x0065</code> and
 <code>0x0301</code> printed as a single character?</p>
@@ -383,13 +396,17 @@ or not, the letters <code>é</code> and <code>é</code> don’t share the
 same code point</p>
 <pre><code>c = &quot;é&quot;
 c_utf = c.encode(&quot;utf-8&quot;)
-print(&quot;byte length&quot;, len(c_utf))    # output: byte length 2
-print(c_utf)                        # output: b&#39;\xc3\xa9&#39;
+print(&quot;byte length&quot;, len(c_utf))
+    # OUTPUT: byte length 2
+print(c_utf)
+    # OUTPUT: b&#39;\xc3\xa9&#39;
 
 c = &quot;é&quot;
 c_utf = c.encode(&quot;utf-8&quot;)
-print(&quot;byte length&quot;, len(c_utf))    # output: byte length 3
-print(c_utf)                        # output: b&#39;e\xcc\x81&#39;</code></pre>
+print(&quot;byte length&quot;, len(c_utf))
+    # OUTPUT: byte length 3
+print(c_utf)
+    # OUTPUT: b&#39;e\xcc\x81&#39;</code></pre>
 <p>What is going on? The answer to this is <em>combining
 characters</em>. These are special characters that modify preceding
 characters in order to create new variations.</p>
