@@ -6,6 +6,10 @@ p, h1, h2, h3, h4, h5, h6, blockquote, figure, div {
     line-height: 1.4;
 }
 
+.separator::after {
+  content: ":";
+}
+
 html, body {
   box-sizing: border-box;
 }
@@ -14,20 +18,53 @@ html, body {
   box-sizing: inherit;
 }
 
+/*
+#dark-mode-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: 48p;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9999;
+}
+
+#dark-mode-toggle svg {
+    width: 24px;
+    height: 24px;
+    stroke: #333;
+}
+*/
+
 html {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  background-color: #FDF0D8;
-  background-color: #6B6D76;
-  background-color: #75756B;
-  background-color: #F4F6F0;
+  background-attachment: fixed;
+  background-repeat: repeat;
     /*
     background-color: #547b5d;
     background-image: url('/assets/topography.svg');
+    background-color: #FDF0D8;
+    background-color: #6B6D76;
+    background-color: #75756B;
+    background-color: #F4F6F0;
+    background-color: #2589BD;
+    background-color: #187795;
+    background-color: #496BC1;
+    background-color: #4059AD;
+    background-color: #4062BB;
+    background-color: #f4f6f0;
+    background-image: url('/assets/graph-paper.svg');
     */
-background-color: #f4f6f0;
-background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ff0000' fill-opacity='0.08'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-color: #5B73C2;
+  background-image: url('/assets/graph-paper.svg');
 }
 
 body {
@@ -180,6 +217,7 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
+  border: 1px solid #333333;
 }
 
 figure img {
@@ -224,7 +262,6 @@ blockquote div {
   text-align: right;
   width: 100%;
 }
-
 
 /* tables */
 
@@ -285,6 +322,14 @@ caption {
 }
 
 
+/* italics */
+/* subtle emphasis for new concepts */
+em, i {
+    font-style: italic;      /* primary cue */
+    font-weight: 500;        /* slight emphasis */
+}
+
+
 /* mobiles */
 
 @media (max-width: 500px) {
@@ -324,6 +369,11 @@ caption {
 
     li {
         margin-bottom: 0.25em;
+    }
+
+    .separator::after {
+      content: ":";
+      margin: 0 0.25em;
     }
 }   
 

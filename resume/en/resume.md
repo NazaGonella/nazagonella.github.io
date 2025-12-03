@@ -2,7 +2,14 @@
 
 <header>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg">
-    <a class="author-name" href="/">Nazareno Gonella</a><nav><a class="title" href="/">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="/resume/">RESUME</a></nav>
+    <a class="author-name" href="/">Nazareno Gonella</a>
+    <nav>
+        <a class="title" href="/">Blog</a>
+        <span class="separator"></span>
+        <a class="title" href="/about/">About</a>
+        <span class="separator"></span>
+        <a class="title" href="/resume/es/">Resume</a>
+    </nav>
 </header>
 
 ---
@@ -13,7 +20,7 @@
 
 Artificial Intelligence Engineering Student
 
-San Fernando, Buenos Aires
+San Fernando, Buenos Aires, Argentina
 
 Tel: +543537335531 | Mail: [nazagonella2@gmail.com](mailto:nazagonella2@gmail.com)
 
