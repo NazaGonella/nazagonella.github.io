@@ -62,7 +62,7 @@ The UTF-32 encoding solves this by assigning 4 bytes for each code point. Code p
 - o: `0000 0000` `0000 0000` `0000 0000` `0110 1111`
 - g: `0000 0000` `0000 0000` `0000 0000` `0110 0111`
 
-You may notice the problem UTF-32 introduces. A lot of bytes go to waste when using the most common letters in the english alphabet. What in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with UTF-32. With this encoding, every character takes the same amount of bytes, so we call UTF-32 a *fixed-length* encoding.
+You may notice the problem UTF-32 introduces. A lot of bytes go to waste when using the most common letters in the English alphabet. What in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with UTF-32. With this encoding, every character takes the same amount of bytes, so we call UTF-32 a *fixed-length* encoding.
 
 Another thing to notice is the order of the bytes, in this case we are using big-endian. This version of UTF-32 is called **UTF-32-BE**. The little-endian version is called **UTF-32-LE**.
 
@@ -77,7 +77,7 @@ int CodepointToUTF32BE(unsigned int codepoint, unsigned char *output) {
         return 4;
     }
 
-    // Invalid codepoint
+    // invalid codepoint
     return 0;
 }
 ```
@@ -98,7 +98,7 @@ Surrogate pairs follow a simple formula for encoding code points.
 2. The top 10 bits form the high surrogate: `1101` `1000` `0000` `0000` *OR top ten bits*.
 3. The bottom 10 bits form the low surrogate: `1101` `1100` `0000` `0000` *OR bottom ten bits*.
 
-So high surrogates have the form `1101` `10xx` `xxxx` `xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This substraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
+So high surrogates have the form `1101` `10xx` `xxxx` `xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This subtraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
 
 The high surrogate range is `0xD800-0xDBFF`. The low surrogate range is `0xDC00-0xDFFF`. The full surrogate block `0xD800-0xDFFF` is reserved exclusively in Unicode for surrogate code points. This means that no matter the UTF form, no character can have a code point in this range.
 
@@ -125,7 +125,7 @@ int CodepointToUTF16BE(unsigned int codepoint, unsigned char *output) {
         return 4;
     }
 
-    // Invalid codepoint
+    // invalid codepoint
     return 0;
 }
 ```
@@ -200,7 +200,7 @@ int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
         return 4;
     }
 
-    // Invalid codepoint
+    // invalid codepoint
     return 0;
 }
 ```
@@ -225,17 +225,17 @@ void PrintCodepointChar(int codepoint) {
 If we run the code in a terminal with UTF-8 encoding we get the following when printing.
 
 ```
-    PrintCodepointChar(0x0040);     // OUTPUT: @
-    PrintCodepointChar(0xE9);       // OUTPUT: é
-    PrintCodepointChar(0x03BB);     // OUTPUT: λ
-    PrintCodepointChar(0x266A);     // OUTPUT: ♪
-    PrintCodepointChar(0x1F60E);    // OUTPUT: 😎
-    PrintCodepointChar(0x1F40C);    // OUTPUT: 🐌
-    PrintCodepointChar(0x1F697);    // OUTPUT: 🚗
-    PrintCodepointChar(0x1F43B);    // OUTPUT: 🐻
+PrintCodepointChar(0x0040);     // OUTPUT: @
+PrintCodepointChar(0xE9);       // OUTPUT: é
+PrintCodepointChar(0x03BB);     // OUTPUT: λ
+PrintCodepointChar(0x266A);     // OUTPUT: ♪
+PrintCodepointChar(0x1F60E);    // OUTPUT: 😎
+PrintCodepointChar(0x1F40C);    // OUTPUT: 🐌
+PrintCodepointChar(0x1F697);    // OUTPUT: 🚗
+PrintCodepointChar(0x1F43B);    // OUTPUT: 🐻
 ```
 
-Let's change the wrapper function a little to showcase something cool about Unicode.
+Let's change the wrapper function a little to showcase a cool Unicode feature.
 
 ```
 void PrintCodepointCombiningChar(int codepointBase, int codepointComb) {
@@ -299,7 +299,7 @@ Now comes a new problem: how do we know if two strings are the same? They may lo
 
 Code points sequences are defined as **canonically equivalent** if they represent the same abstract character while also looking the same when displayed. In the last case `é` and `é` would be an example of this type of equivalence. When code points sequences are **compatible**, they might look similar, but are used in different contexts, as they represent different abstract characters. It is the case of `A` and `𝔸`. You understand the meaning of the word `𝔸mbiguous`, but the character `𝔸` is primarily used in mathematical texts.
 
-Based on these equivalences the standard also defines *Unicode normalization*, to make sure that text sequences have the same code point equivalence. You can read more on types of normalization in this [article](https://mcilloni.ovh/2023/07/23/unicode-is-hard/) by Marco Cilloni.
+Based on these equivalences the standard also defines *Unicode normalization*, to make sure that text sequences have the same code point equivalence. Diving into this topic will mean going out of the scope of this post, but you can read more on types of normalization in this [article](https://mcilloni.ovh/2023/07/23/unicode-is-hard/#unicode-normalization) by Marco Cilloni.
 
 [^1]: This doesn't mean all code points are assigned.
 [^2]: One of the major benefits of using UTF-8 is backwards compatibility with ASCII.

@@ -104,7 +104,7 @@ would be encoded this way:</p>
 <code>0000 0000</code> <code>0110 0111</code></li>
 </ul>
 <p>You may notice the problem UTF-32 introduces. A lot of bytes go to
-waste when using the most common letters in the english alphabet. What
+waste when using the most common letters in the English alphabet. What
 in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with
 UTF-32. With this encoding, every character takes the same amount of
 bytes, so we call UTF-32 a <em>fixed-length</em> encoding.</p>
@@ -122,7 +122,7 @@ are using big-endian. This version of UTF-32 is called
         return 4;
     }
 
-    // Invalid codepoint
+    // invalid codepoint
     return 0;
 }</code></pre>
 <hr />
@@ -152,8 +152,8 @@ bits</em>.</li>
 <code>xxxx</code> <code>xxxx</code> and low surrogates <code>1101</code>
 <code>11xx</code> <code>xxxx</code> <code>xxxx</code>. The
 <code>x</code> bits are then filled with the code point value minus
-<code>0x10000</code>. This substraction allows to insert values from 0
-to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code
+<code>0x10000</code>. This subtraction allows to insert values from 0 to
+2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code
 points of the BMP.</p>
 <p>The high surrogate range is <code>0xD800-0xDBFF</code>. The low
 surrogate range is <code>0xDC00-0xDFFF</code>. The full surrogate block
@@ -183,7 +183,7 @@ big-endian. For little-endian it would be <strong>UTF-16LE</strong>.</p>
         return 4;
     }
 
-    // Invalid codepoint
+    // invalid codepoint
     return 0;
 }</code></pre>
 <hr />
@@ -321,7 +321,7 @@ values.</p>
         return 4;
     }
 
-    // Invalid codepoint
+    // invalid codepoint
     return 0;
 }</code></pre>
 <hr />
@@ -338,16 +338,16 @@ points.</p>
 }</code></pre>
 <p>If we run the code in a terminal with UTF-8 encoding we get the
 following when printing.</p>
-<pre><code>    PrintCodepointChar(0x0040);     // OUTPUT: @
-    PrintCodepointChar(0xE9);       // OUTPUT: é
-    PrintCodepointChar(0x03BB);     // OUTPUT: λ
-    PrintCodepointChar(0x266A);     // OUTPUT: ♪
-    PrintCodepointChar(0x1F60E);    // OUTPUT: 😎
-    PrintCodepointChar(0x1F40C);    // OUTPUT: 🐌
-    PrintCodepointChar(0x1F697);    // OUTPUT: 🚗
-    PrintCodepointChar(0x1F43B);    // OUTPUT: 🐻</code></pre>
-<p>Let’s change the wrapper function a little to showcase something cool
-about Unicode.</p>
+<pre><code>PrintCodepointChar(0x0040);     // OUTPUT: @
+PrintCodepointChar(0xE9);       // OUTPUT: é
+PrintCodepointChar(0x03BB);     // OUTPUT: λ
+PrintCodepointChar(0x266A);     // OUTPUT: ♪
+PrintCodepointChar(0x1F60E);    // OUTPUT: 😎
+PrintCodepointChar(0x1F40C);    // OUTPUT: 🐌
+PrintCodepointChar(0x1F697);    // OUTPUT: 🚗
+PrintCodepointChar(0x1F43B);    // OUTPUT: 🐻</code></pre>
+<p>Let’s change the wrapper function a little to showcase a cool Unicode
+feature.</p>
 <pre><code>void PrintCodepointCombiningChar(int codepointBase, int codepointComb) {
     unsigned char encodedChars[9];
 
@@ -424,8 +424,10 @@ abstract characters. It is the case of <code>A</code> and
 used in mathematical texts.</p>
 <p>Based on these equivalences the standard also defines <em>Unicode
 normalization</em>, to make sure that text sequences have the same code
-point equivalence. You can read more on types of normalization in this
-<a href="https://mcilloni.ovh/2023/07/23/unicode-is-hard/">article</a>
+point equivalence. Diving into this topic will mean going out of the
+scope of this post, but you can read more on types of normalization in
+this <a
+href="https://mcilloni.ovh/2023/07/23/unicode-is-hard/#unicode-normalization">article</a>
 by Marco Cilloni.</p>
 </article>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
