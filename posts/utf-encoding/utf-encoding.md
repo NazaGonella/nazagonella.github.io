@@ -22,7 +22,7 @@ December 03, 2025
 
 ---
 
-A few days ago I started writing a JSON Parser in C. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u0041` if you don't feel like manually copy and pasting the Unicode character. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I thought it was.
+I recently started building a JSON parser in C as a small project. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u0041` if you don't feel like manually copy-pasting them. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I had expected.
 
 So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. I found that UTF is a topic some people don't bother to learn about, as it's often not necessary, but hopefully you'll pick something up along the way.
 

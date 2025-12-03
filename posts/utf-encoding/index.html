@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/stackoverflow-light.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/go.min.js"></script>
+
+<link rel="stylesheet" href="/scripts/highlight/styles/stackoverflow-light.css">
+<script src="/scripts/highlight/highlight.min.js"></script>
+
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -42,12 +43,12 @@ class="separator"></span> <a class="title" href="/resume/es/">Resume</a>
 <h2 id="decoding-the-utfs">Decoding the UTFs</h2>
 <p>December 03, 2025</p>
 <hr />
-<p>A few days ago I started writing a JSON Parser in C. I added support
-for all data types, except for Unicode escape characters: JSON accepts
-values such as <code>\u0041</code> if you don’t feel like manually copy
-and pasting the Unicode character. When it came time to add them to my
-parser, I realized encoding Unicode characters wasn’t as simple as I
-thought it was.</p>
+<p>I recently started building a JSON parser in C as a small project. I
+added support for all data types, except for Unicode escape characters:
+JSON accepts values such as <code>\u0041</code> if you don’t feel like
+manually copy-pasting them. When it came time to add them to my parser,
+I realized encoding Unicode characters wasn’t as simple as I had
+expected.</p>
 <p>So I decided to dive deep into Unicode and its encodings, and write
 about what I learned in the process. I found that UTF is a topic some
 people don’t bother to learn about, as it’s often not necessary, but
