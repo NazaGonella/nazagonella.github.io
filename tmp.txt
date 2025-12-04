@@ -20,3 +20,9 @@
 </div>
 
 ---
+
+
+<link rel="stylesheet" href="/scripts/highlight/styles/my-style.css">
+<script src="/scripts/highlight/highlight.min.js"></script>
+
+<script>hljs.highlightAll();</script>
