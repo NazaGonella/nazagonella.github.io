@@ -22,7 +22,7 @@ December 03, 2025
 
 ---
 
-I recently started building a JSON parser in C as a small project. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u03C0` if you don't feel like manually copy-pasting the character with code point `U+03C0`. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I had expected.
+As a small project, I started building a simple JSON parser in C. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u03C0` if you don't feel like manually copy-pasting the character with code point `U+03C0`. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I had expected.
 
 So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. I found that UTF is a topic some people don't bother to learn about, as it's often not relevant to the average programmer, but hopefully you'll pick something up along the way.
 
@@ -30,7 +30,7 @@ So I decided to dive deep into Unicode and its encodings, and write about what I
 
 ### Code Structure and Endianness
 
-For each UTF encoding there will be a function `CodepointToX` written in C that takes a code point and transforms it to its proper encoding, returning the size of the encoding in bytes.
+In each UTF encoding section, there will be a function named `CodepointToX` written in C that takes a code point and transforms it to its proper encoding, returning the size of the encoding in bytes.
 
 I'm using a *big-endian* layout for writing sequential bytes: the most significant byte comes first. This also includes a big-endian implementation for the `CodepointToX` functions in [UTF-16](#utf-16-and-surrogate-pairs) and [UTF-32](#utf-32-the-naive-approach). You can find little-endian implementations in the [repository](github.com).
 

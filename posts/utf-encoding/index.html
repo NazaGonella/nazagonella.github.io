@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-
-  <link rel="stylesheet" href="/scripts/highlight/styles/stackoverflow-light.css">
-  <script src="/scripts/highlight/highlight.min.js"></script>
-
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -43,7 +39,7 @@ class="separator"></span> <a class="title" href="/resume/es/">Resume</a>
 <h2 id="decoding-utfs">Decoding UTFs</h2>
 <p>December 03, 2025</p>
 <hr />
-<p>I recently started building a JSON parser in C as a small project. I
+<p>As a small project, I started building a simple JSON parser in C. I
 added support for all data types, except for Unicode escape characters:
 JSON accepts values such as <code>\u03C0</code> if you don’t feel like
 manually copy-pasting the character with code point <code>U+03C0</code>.
@@ -57,7 +53,7 @@ way.</p>
 <hr />
 <h3 id="code-structure-and-endianness">Code Structure and
 Endianness</h3>
-<p>For each UTF encoding there will be a function
+<p>In each UTF encoding section, there will be a function named
 <code>CodepointToX</code> written in C that takes a code point and
 transforms it to its proper encoding, returning the size of the encoding
 in bytes.</p>
@@ -464,6 +460,5 @@ compatibility with ASCII.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
-<script>hljs.highlightAll();</script>
 </body>
 </html>
