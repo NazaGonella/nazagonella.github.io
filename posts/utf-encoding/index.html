@@ -46,10 +46,8 @@ manually copy-pasting the character with code point <code>U+03C0</code>.
 When it came time to add them to my parser, I realized encoding Unicode
 characters wasn’t as simple as I had expected.</p>
 <p>So I decided to dive deep into Unicode and its encodings, and write
-about what I learned in the process. I found that UTF is a topic some
-people don’t bother to learn about, as it’s often not relevant to the
-average programmer, but hopefully you’ll pick something up along the
-way.</p>
+about what I learned in the process. Hopefully you’ll also pick
+something up along the way.</p>
 <hr />
 <h3 id="code-structure-and-endianness">Code Structure and
 Endianness</h3>
@@ -62,7 +60,8 @@ the most significant byte comes first. This also includes a big-endian
 implementation for the <code>CodepointToX</code> functions in <a
 href="#utf-16-and-surrogate-pairs">UTF-16</a> and <a
 href="#utf-32-the-naive-approach">UTF-32</a>. You can find little-endian
-implementations in the <a href="github.com">repository</a>.</p>
+implementations in the <a
+href="https://github.com/NazaGonella/utf-encodings">repository</a>.</p>
 <p>The <a href="#bonus-combining-characters">bonus</a> section contains
 code written in Python.</p>
 <hr />
@@ -142,12 +141,12 @@ the <em>low surrogate</em>.</p>
 <ol type="1">
 <li>Subtract <code>0x10000</code> from the code point. The result is a
 20-bit number in the range <code>0x00000-0xFFFFF</code>.</li>
-<li>The top 10 bits make the high surrogate: <code>1101</code>
-<code>1000</code> <code>0000</code> <code>0000</code> <em>OR top ten
-bits</em>.</li>
-<li>The bottom 10 bits make the low surrogate: <code>1101</code>
-<code>1100</code> <code>0000</code> <code>0000</code> <em>OR bottom ten
-bits</em>.</li>
+<li>To make the <strong>high surrogate</strong>, take the <em>top</em>
+10 bits of the 20-bit number and add the prefix <code>110110</code> (hex
+<code>0xD800</code>).</li>
+<li>To make the <strong>low surrogate</strong>, take the <em>bottom</em>
+10 bits of the 20-bit number and add the prefix <code>110111</code> (hex
+<code>0xDC00</code>).</li>
 </ol>
 <p>So high surrogates have the form <code>1101</code> <code>10xx</code>
 <code>xxxx</code> <code>xxxx</code> and low surrogates <code>1101</code>
@@ -205,18 +204,18 @@ and so on.</p>
 <p>The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode
 code point <code>U+1F60E</code> which in UTF-8 uses 4 bytes. How would
 you encode this?</p>
-<p>If we took the same plain encoding approach as UTF-32 there would 4
-bytes one next to the other, but nothing to indicate this is a whole one
-character. How do we know if this isn’t 4 characters each one taking 1
-byte? Or 2 characters of 2 bytes? Let’s say we want to index the third
-character in a string. How would we do that?</p>
+<p>If we took the same plain encoding approach as UTF-32 there would be
+4 bytes one next to the other, but nothing to indicate that those 4
+bytes make a single character. How do we know if this isn’t 4 characters
+each one taking 1 byte? Or 2 characters of 2 bytes? Let’s say we want to
+index the third character in a string. How would we do that?</p>
 <p>We need to define a more complex structure when working with
 variable-width encoding. An ideal encoding format will make it possible
 to identify where a character starts and where it ends in a string.</p>
 <p>A document with UTF-8 encoding will have every byte either be a
 <em>leading byte</em>, which indicates the start of a character as well
-as how many bytes follow it; or a <em>continuation byte</em>, which is
-used to help indexing and to detect if the sequence is valid UTF-8.</p>
+as how many bytes follow it, or a <em>continuation byte</em>, which
+allows validating the sequence.</p>
 <p><code>U+1F60E</code> (or <code>0001 1111 0110 0000 1110</code> in
 binary) encoded with UTF-8 looks like this:</p>
 <ul>
@@ -393,19 +392,18 @@ control characters like the null terminator or line breaks), and not all
 characters have a single code point when encoded in Unicode. Believe it
 or not, the letters <code>é</code> and <code>é</code> don’t share the
 same code point</p>
-<pre><code>c = &quot;é&quot;
-c_utf = c.encode(&quot;utf-8&quot;)
-print(&quot;byte length&quot;, len(c_utf))
-    # OUTPUT: byte length 2
-print(c_utf)
-    # OUTPUT: b&#39;\xc3\xa9&#39;
+<pre><code>char1 = &quot;é&quot;.encode(&quot;utf-8&quot;)
+char2 = &quot;é&quot;.encode(&quot;utf-8&quot;)
 
-c = &quot;é&quot;
-c_utf = c.encode(&quot;utf-8&quot;)
-print(&quot;byte length&quot;, len(c_utf))
-    # OUTPUT: byte length 3
-print(c_utf)
-    # OUTPUT: b&#39;e\xcc\x81&#39;</code></pre>
+print(&quot;char 1 byte length:&quot;, len(char1))
+print(&quot;char 2 byte length&quot;, len(char2))
+print(&quot;char 1 bytes:&quot;, char1)
+print(&quot;char 2 bytes:&quot;, char2)
+    # OUTPUT:
+    # char 1 byte length: 2
+    # char 2 byte length 3
+    # char 1 bytes: b&#39;\xc3\xa9&#39;
+    # char 2 bytes: b&#39;e\xcc\x81&#39;</code></pre>
 <p>What is going on? The answer to this is <em>combining
 characters</em>. These are special characters that modify preceding
 characters in order to create new variations.</p>
@@ -414,7 +412,7 @@ a character with a dedicated code point. In this case <code>é</code> has
 the code point <code>U+00E9</code>. In the next example, we are creating
 a combination of two characters for <code>é</code>, <code>U+0065</code>
 + <code>U+0301</code>, that is the letter <code>e</code> and the acute
-diacritic.</p>
+diacritic. This is called a <em>decomposed</em> character.</p>
 <p>Most letters and symbols accept combining characters, and there is no
 limit to how many you can apply. This allows you to create some
 monstrous-looking characters that this site’s font won’t allow me to
@@ -431,21 +429,19 @@ text!</a></figcaption>
 They may look the same when printed but have totally different
 encodings. Luckily, Unicode defines <em>Unicode equivalence</em> to
 solve this issue.</p>
-<p>Code points sequences are defined as <strong>canonically
+<p>Code point sequences are defined as <strong>canonically
 equivalent</strong> if they represent the same abstract character while
 also looking the same when displayed. In the last case <code>é</code>
-and <code>é</code> would be an example of this type of equivalence. When
-code points sequences are <strong>compatible</strong>, they might look
-similar, but are used in different contexts, as they represent different
-abstract characters. It is the case of <code>A</code> and
-<code>𝔸</code>. You understand the meaning of the word
-<code>𝔸mbiguous</code>, but the character <code>𝔸</code> is primarily
-used in mathematical texts.</p>
+(precomposed) and <code>é</code> (decomposed) would be an example of
+this type of equivalence. When code point sequences are
+<strong>compatibility equivalent</strong>, they might look similar, but
+are used in different contexts, as they represent different abstract
+characters. It is the case of <code>A</code> and <code>𝔸</code>. You
+understand the meaning of the word <code>𝔸mbiguous</code>, but that is
+not how the character is usually used.</p>
 <p>Based on these equivalences the standard also defines <em>Unicode
-normalization</em>, to make sure that text sequences have the same code
-point equivalence. Diving into this topic will mean going out of the
-scope of this post, but you can read more on types of normalization in
-this <a
+normalization</em>, to make sure that equivalent text sequences have
+consistent encodings. You can read further on this topic in this <a
 href="https://mcilloni.ovh/2023/07/23/unicode-is-hard/#unicode-normalization">article</a>
 by Marco Cilloni.</p>
 </article>
