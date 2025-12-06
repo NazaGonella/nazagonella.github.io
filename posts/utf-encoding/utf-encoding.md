@@ -24,7 +24,7 @@ December 03, 2025
 
 As a small project, I started building a simple JSON parser in C. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u03C0` if you don't feel like manually copy-pasting the character with code point `U+03C0`. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I had expected.
 
-So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. I found that UTF is a topic some people don't bother to learn about, as it's often not relevant to the average programmer, but hopefully you'll pick something up along the way.
+So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. Hopefully you'll also pick something up along the way.
 
 ---
 
@@ -32,7 +32,7 @@ So I decided to dive deep into Unicode and its encodings, and write about what I
 
 In each UTF encoding section, there will be a function named `CodepointToX` written in C that takes a code point and transforms it to its proper encoding, returning the size of the encoding in bytes.
 
-I'm using a *big-endian* layout for writing sequential bytes: the most significant byte comes first. This also includes a big-endian implementation for the `CodepointToX` functions in [UTF-16](#utf-16-and-surrogate-pairs) and [UTF-32](#utf-32-the-naive-approach). You can find little-endian implementations in the [repository](github.com).
+I'm using a *big-endian* layout for writing sequential bytes: the most significant byte comes first. This also includes a big-endian implementation for the `CodepointToX` functions in [UTF-16](#utf-16-and-surrogate-pairs) and [UTF-32](#utf-32-the-naive-approach). You can find little-endian implementations in the [repository](https://github.com/NazaGonella/utf-encodings).
 
 The [bonus](#bonus-combining-characters) section contains code written in Python.
 
@@ -95,8 +95,9 @@ For code points outside the BMP (greater than `U+FFFF`), UTF-16 uses *surrogate 
 Surrogate pairs follow a simple formula for encoding code points.
 
 1. Subtract `0x10000` from the code point. The result is a 20-bit number in the range `0x00000-0xFFFFF`.
-2. The top 10 bits make the high surrogate: `1101` `1000` `0000` `0000` *OR top ten bits*.
-3. The bottom 10 bits make the low surrogate: `1101` `1100` `0000` `0000` *OR bottom ten bits*.
+2. To make the **high surrogate**, take the *top* 10 bits of the 20-bit number and add the prefix `110110` (hex `0xD800`).
+3. To make the **low surrogate**, take the *bottom* 10 bits of the 20-bit number and add the prefix `110111` (hex `0xDC00`).
+
 
 So high surrogates have the form `1101` `10xx` `xxxx` `xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This subtraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
 
@@ -145,11 +146,11 @@ In UTF-8, the number of bytes it takes to store a code point correspond to the r
 
 The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode code point `U+1F60E` which in UTF-8 uses 4 bytes. How would you encode this?
 
-If we took the same plain encoding approach as UTF-32 there would 4 bytes one next to the other, but nothing to indicate this is a whole one character. How do we know if this isn't 4 characters each one taking 1 byte? Or 2 characters of 2 bytes? Let's say we want to index the third character in a string. How would we do that?
+If we took the same plain encoding approach as UTF-32 there would be 4 bytes one next to the other, but nothing to indicate that those 4 bytes make a single character. How do we know if this isn't 4 characters each one taking 1 byte? Or 2 characters of 2 bytes? Let's say we want to index the third character in a string. How would we do that?
 
 We need to define a more complex structure when working with variable-width encoding. An ideal encoding format will make it possible to identify where a character starts and where it ends in a string.
 
-A document with UTF-8 encoding will have every byte either be a *leading byte*, which indicates the start of a character as well as how many bytes follow it; or a *continuation byte*, which is used to help indexing and to detect if the sequence is valid UTF-8.
+A document with UTF-8 encoding will have every byte either be a *leading byte*, which indicates the start of a character as well as how many bytes follow it, or a *continuation byte*, which allows validating the sequence.
 
 `U+1F60E` (or `0001 1111 0110 0000 1110` in binary) encoded with UTF-8 looks like this:
 
@@ -289,24 +290,23 @@ What exactly happened in the last line? Why was the string composed of the chara
 Not all characters have a direct visual representation (for example, control characters like the null terminator or line breaks), and not all characters have a single code point when encoded in Unicode. Believe it or not, the letters `é` and `é` don't share the same code point
 
 ```
-c = "é"
-c_utf = c.encode("utf-8")
-print("byte length", len(c_utf))
-    # OUTPUT: byte length 2
-print(c_utf)
-    # OUTPUT: b'\xc3\xa9'
+char1 = "é".encode("utf-8")
+char2 = "é".encode("utf-8")
 
-c = "é"
-c_utf = c.encode("utf-8")
-print("byte length", len(c_utf))
-    # OUTPUT: byte length 3
-print(c_utf)
-    # OUTPUT: b'e\xcc\x81'
+print("char 1 byte length:", len(char1))
+print("char 2 byte length", len(char2))
+print("char 1 bytes:", char1)
+print("char 2 bytes:", char2)
+    # OUTPUT:
+    # char 1 byte length: 2
+    # char 2 byte length 3
+    # char 1 bytes: b'\xc3\xa9'
+    # char 2 bytes: b'e\xcc\x81'
 ```
 
 What is going on? The answer to this is *combining characters*. These are special characters that modify preceding characters in order to create new variations.
 
-In the first example, we are using a *precomposed character*, a character with a dedicated code point. In this case `é` has the code point `U+00E9`. In the next example, we are creating a combination of two characters for `é`, `U+0065` + `U+0301`, that is the letter `e` and the acute diacritic.
+In the first example, we are using a *precomposed character*, a character with a dedicated code point. In this case `é` has the code point `U+00E9`. In the next example, we are creating a combination of two characters for `é`, `U+0065` + `U+0301`, that is the letter `e` and the acute diacritic. This is called a *decomposed* character.
 
 Most letters and symbols accept combining characters, and there is no limit to how many you can apply. This allows you to create some monstrous-looking characters that this site's font won't allow me to render properly, so I'm attaching an image
 
@@ -314,9 +314,9 @@ Most letters and symbols accept combining characters, and there is no limit to h
 
 Now comes a new problem: how do we know if two strings are the same? They may look the same when printed but have totally different encodings. Luckily, Unicode defines *Unicode equivalence* to solve this issue.
 
-Code points sequences are defined as **canonically equivalent** if they represent the same abstract character while also looking the same when displayed. In the last case `é` and `é` would be an example of this type of equivalence. When code points sequences are **compatible**, they might look similar, but are used in different contexts, as they represent different abstract characters. It is the case of `A` and `𝔸`. You understand the meaning of the word `𝔸mbiguous`, but the character `𝔸` is primarily used in mathematical texts.
+Code point sequences are defined as **canonically equivalent** if they represent the same abstract character while also looking the same when displayed. In the last case `é` (precomposed) and `é` (decomposed) would be an example of this type of equivalence. When code point sequences are **compatibility equivalent**, they might look similar, but are used in different contexts, as they represent different abstract characters. It is the case of `A` and `𝔸`. You understand the meaning of the word `𝔸mbiguous`, but that is not how the character is usually used.
 
-Based on these equivalences the standard also defines *Unicode normalization*, to make sure that text sequences have the same code point equivalence. Diving into this topic will mean going out of the scope of this post, but you can read more on types of normalization in this [article](https://mcilloni.ovh/2023/07/23/unicode-is-hard/#unicode-normalization) by Marco Cilloni.
+Based on these equivalences the standard also defines *Unicode normalization*, to make sure that equivalent text sequences have consistent encodings. You can read further on this topic in this [article](https://mcilloni.ovh/2023/07/23/unicode-is-hard/#unicode-normalization) by Marco Cilloni.
 
 [^1]: This doesn't mean all code points are assigned.
 [^2]: One of the major benefits of using UTF-8 is backwards compatibility with ASCII.
