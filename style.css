@@ -18,53 +18,12 @@ html, body {
   box-sizing: inherit;
 }
 
-/*
-#dark-mode-toggle {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    width: 48p;
-    height: 48px;
-    border-radius: 50%;
-    border: none;
-    background-color: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 9999;
-}
-
-#dark-mode-toggle svg {
-    width: 24px;
-    height: 24px;
-    stroke: #333;
-}
-*/
-
 html {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
   background-attachment: fixed;
   background-repeat: repeat;
-    /*
-    background-color: #547b5d;
-    background-image: url('/assets/topography.svg');
-    background-color: #FDF0D8;
-    background-color: #6B6D76;
-    background-color: #75756B;
-    background-color: #2589BD;
-    background-color: #187795;
-    background-color: #496BC1;
-    background-color: #4059AD;
-    background-color: #4062BB;
-    background-color: #f4f6f0;
-    background-image: url('/assets/graph-paper.svg');
-    background-color: #5B73C2;
-  background-image: url('/assets/graph-paper.svg');
-  background-color: #333333;
-    */
     background-color: #F4F6F0;
     background-color: #FAFAFA;
     background-color: #333333;
@@ -72,13 +31,6 @@ html {
 
 body {
   background: #fafafa;
-  /*
-  color: #201E1F;
-  */
-  /*
-  font-family: "Fira Code Medium", "Fira Code", "DejaVu Sans Mono", "Ubuntu Mono", "Courier New", "Hack", monospace;
-  font-family: "Courier New", "DejaVu Sans Mono", monospace;
-*/
   font-family: Consolas, Monaco, "DejaVu Sans Mono", "Courier New", monospace;
   font-size: 17px;
   line-height: 1.5;
@@ -90,9 +42,6 @@ body {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   */
   font-weight: 400;
-  /*
-  color: #1F1F1F;
-  */
   color: #333333;
   border: 1px solid #cccccc;
 }
@@ -144,9 +93,6 @@ header .title {
 /* typography */
 
 p {
-    /*
-  color: #323234;
-    */
   text-align: justify;
 }
 
@@ -275,28 +221,6 @@ blockquote div {
 
 /* tables */
 
-/*
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 1em 0;
-}
-
-table, th, td {
-    border: 1px solid #666;
-}
-
-th, td {
-    padding: 0.5em 1em;
-    text-align: left;
-}
-
-th {
-    background-color: #eee;
-}
-*/
-
-/* tables */
 table {
     border-collapse: collapse;
     width: 100%;
@@ -333,10 +257,9 @@ caption {
 
 
 /* italics */
-/* subtle emphasis for new concepts */
 em, i {
-    font-style: italic;      /* primary cue */
-    font-weight: 500;        /* slight emphasis */
+    font-style: italic;
+    font-weight: 500;
 }
 
 
@@ -367,9 +290,9 @@ em, i {
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        border: none;          /* removes outer border */
-        box-shadow: none;      /* removes any shadow */
-        padding: 0;            /* optional: remove extra space */
+        border: none;
+        box-shadow: none;
+        padding: 0;
     }
 
     ul, ol {
