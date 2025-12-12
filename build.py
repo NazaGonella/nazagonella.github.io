@@ -4,7 +4,9 @@ import os
 import subprocess
 from pathlib import Path
 
-css_path : Path = Path("style.css").resolve()      # absolute path to CSS
+css_path : Path = Path("style.css").resolve()
+
+template_path : Path = Path("template.html").resolve()
 
 ignored_mds = [Path("./README.md")]         # will not apply to ALL Markdown files
 
@@ -23,6 +25,7 @@ for md, html in paired_files:
 
     relative_path_css : str = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
 
+    """
     subprocess.run([
         "pandoc",
         "-s", str(md),
@@ -31,5 +34,16 @@ for md, html in paired_files:
         "-V", "title=",
         "-f", "markdown+pipe_tables"
     ])
+    """
+
+    subprocess.run([
+        "pandoc", "-s", str(md),
+        "-o", str(html),
+        "--css", relative_path_css,
+        "--template", "template.html",
+        "-f", "markdown+pipe_tables"
+    ])
+
+    #pandoc home.md -o index.html --template=template.html
 
     print(md, "->", html)
