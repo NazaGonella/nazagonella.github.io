@@ -37,14 +37,15 @@ class="separator"></span> <a class="title" href="/resume/es/">Resume</a>
 <hr />
 <article>
 <h2 id="decoding-utfs">Decoding UTFs</h2>
-<p>December 03, 2025</p>
+<p>December 07, 2025</p>
 <hr />
 <p>As a small project, I started building a simple JSON parser in C. I
-added support for all data types, except for Unicode escape characters:
-JSON accepts values such as <code>\u03C0</code> if you don’t feel like
-manually copy-pasting the character with code point <code>U+03C0</code>.
-When it came time to add them to my parser, I realized encoding Unicode
-characters wasn’t as simple as I had expected.</p>
+added support for all data types, except for Unicode escape characters
+(JSON accepts values such as <code>\u03C0</code> if you don’t feel like
+manually copy-pasting the character with code point
+<code>U+03C0</code>). When it came time to add them to my parser, I
+realized encoding Unicode characters wasn’t as simple as I had
+expected.</p>
 <p>So I decided to dive deep into Unicode and its encodings, and write
 about what I learned in the process. Hopefully you’ll also pick
 something up along the way.</p>
@@ -151,10 +152,10 @@ the <em>low surrogate</em>.</p>
 <p>So high surrogates have the form <code>1101</code> <code>10xx</code>
 <code>xxxx</code> <code>xxxx</code> and low surrogates <code>1101</code>
 <code>11xx</code> <code>xxxx</code> <code>xxxx</code>. The
-<code>x</code> bits are then filled with the code point value minus
-<code>0x10000</code>. This subtraction allows to insert values from 0 to
-2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code
-points of the BMP.</p>
+<code>x</code> bits are the data (or payload) bits carrying the code
+point value minus <code>0x10000</code>. This subtraction allows to
+insert values from 0 to 2^20 - 1, an additional 1,048,576 code points
+beyond the 65,536 code points of the BMP.</p>
 <p>The high surrogate range is <code>0xD800-0xDBFF</code>. The low
 surrogate range is <code>0xDC00-0xDFFF</code>. The full surrogate block
 <code>0xD800-0xDFFF</code> is reserved exclusively in Unicode for
