@@ -24,14 +24,7 @@ date_header : datetime = datetime.now().strftime("%B {S}, %Y").replace('{S}', st
 
 header : str = f"""%{post_title}
 
-<header>
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg">
-    <a class="author-name" href="/">Nazareno Gonella</a><nav><a class="title" href="/">BLOG</a> &nbsp;&nbsp; <a class="title" href="mailto:nazagonella2@gmail.com">CONTACT</a> &nbsp;&nbsp; <a class="title" href="/resume/es/">RESUME</a></nav>
-</header>
-
-<hr />
-
-<article>
+---
 
 ## {post_title}
 
@@ -39,7 +32,6 @@ header : str = f"""%{post_title}
 
 ---
 
-</article>
 """
 
 with open(f"{posts_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") as f:
@@ -50,7 +42,7 @@ with open(f"{posts_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") as 
 
 home_path : str = "./home.md"
 date_entry : datetime = datetime.now().strftime("%d/%m/%Y")
-post_entry : str = f"{date_entry} [**{post_title}**]({posts_path}/{file_name}/)  \n"
+post_entry : str = f"\n{date_entry} [{post_title}]({posts_path[1:]}/{file_name}/)  \n"
 
 anchor = "<div class=posts>"
 
