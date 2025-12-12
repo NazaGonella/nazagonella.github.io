@@ -1,10 +1,6 @@
 %Decoding UTFs
-
----
-
-## Decoding UTFs
-
-December 07, 2025
+%Nazareno Gonella
+%December 07, 2025
 
 ---
 
