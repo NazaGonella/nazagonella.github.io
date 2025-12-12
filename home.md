@@ -1,4 +1,8 @@
-% Nazareno Gonella
+---
+title: Nazareno Gonella
+author: Nazareno Gonella
+template: template-home.html
+---
 
 ---
 

@@ -1,6 +1,9 @@
-%Setting Up a Simple Blog - Handmade Static Site Generator
-%Nazareno Gonella
-%November 04, 2025
+---
+title: Setting Up a Simple Blog - Handmade Static Site Generator
+author: Nazareno Gonella
+date: November 04, 2025
+template: template.html
+---
 
 ---
 

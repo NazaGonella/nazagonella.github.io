@@ -24,6 +24,7 @@ for md, html in paired_files:
             continue
 
     relative_path_css : str = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
+    template_to_use = "template-home.html" if md.name == "home.md" else "template.html"
 
     """
     subprocess.run([
@@ -40,10 +41,8 @@ for md, html in paired_files:
         "pandoc", "-s", str(md),
         "-o", str(html),
         "--css", relative_path_css,
-        "--template", "template.html",
+        "--template", template_to_use,
         "-f", "markdown+pipe_tables"
     ])
-
-    #pandoc home.md -o index.html --template=template.html
 
     print(md, "->", html)

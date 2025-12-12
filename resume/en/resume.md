@@ -1,4 +1,8 @@
-% Resume | Nazareno Gonella
+---
+title: Resume | Nazareno Gonella
+author: Nazareno Gonella
+template: template-home.html
+---
 
 ---
 

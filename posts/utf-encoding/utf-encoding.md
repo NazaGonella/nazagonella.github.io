@@ -1,6 +1,9 @@
-%Decoding UTFs
-%Nazareno Gonella
-%December 07, 2025
+---
+title: Decoding UTFs
+author: Nazareno Gonella
+date: December 07, 2025
+template: template.html
+---
 
 ---
 
