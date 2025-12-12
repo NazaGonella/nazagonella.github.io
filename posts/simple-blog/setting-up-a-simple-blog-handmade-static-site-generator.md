@@ -2,8 +2,6 @@
 
 ---
 
-<article>
-
 ## Setting Up a Simple Blog - Handmade Static Site Generator
 
 November 04, 2025
@@ -193,5 +191,3 @@ Now it's a matter of time to see how well this framework holds up for me.
 [^1]: It would make more sense for the date to be the day it's published, added to the TODO list.
 [^2]: This assumes the .vimrc or .exrc files are in the same directory as build.py.
 [^3]: Reading Fabien Sanglard's post [All you may need is HTML](https://fabiensanglard.net/html/index.html) may have had an effect on this decision.
-
-</article>

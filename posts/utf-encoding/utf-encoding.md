@@ -2,8 +2,6 @@
 
 ---
 
-<article>
-
 ## Decoding UTFs
 
 December 07, 2025
@@ -308,5 +306,3 @@ Based on these equivalences the standard also defines *Unicode normalization*, t
 
 [^1]: This doesn't mean all code points are assigned.
 [^2]: One of the major benefits of using UTF-8 is backwards compatibility with ASCII.
-
-</article>
