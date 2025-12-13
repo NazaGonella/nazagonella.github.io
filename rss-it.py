@@ -19,6 +19,7 @@ with open("feed.xml", "w", encoding="utf-8") as f:
         "-t", "Naza Gonella Blog",
         "-d", "Hello and welcome to my feed!!",
         "-l", "https://ngonella.com/",
+        "-w", "nazagonella2@gmail.com (Nazareno Gonella)",
         *md_string
     ],
     stdout=f, check=True)
