@@ -1,3 +1,25 @@
+/* colors */
+
+:root {
+  /* --color_highlight: #D72638; */
+  --color_highlight: #EC7D10;
+  /* --color_highlight: #FF8811; */
+  /* --color_highlight: #FF7700; */
+  /* --color_highlight: #58B09C; */
+  /* --color_highlight: #3BC14A; */
+  /* --color_highlight: #3ABB49; */
+  /* --color_highlight: #35AC43; */
+  /* --color_highlight: #F4AC45; */
+  /* --color_highlight: #FA7921; */
+  --color_plain_text: #333333;
+  /* --color_background: #59656F; */
+  /* --color_background: #333333; */
+  --color_background: #2B2D42;
+  /* --color_background: #4C5B61; */
+  --color_white: #FAFAFA;
+  --color_gray: #CCCCCC;
+}
+
 /* base layout */
 
 p, h1, h2, h3, h4, h5, h6, blockquote, figure, div {
@@ -31,11 +53,11 @@ html {
   background-repeat: repeat;
     background-color: #F4F6F0;
     background-color: #FAFAFA;
-    background-color: #333333;
+    background-color: var(--color_background);
 }
 
 body {
-  background: #fafafa;
+  background: var(--color_white);
   font-family: Consolas, Monaco, "DejaVu Sans Mono", "Courier New", monospace;
   font-size: 17px;
   line-height: 1.5;
@@ -47,8 +69,8 @@ body {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   */
   font-weight: 400;
-  color: #333333;
-  border: 1px solid #cccccc;
+  color: var(--color_plain_text);
+  border: 1px solid var(--color_gray);
 }
 
 
@@ -71,27 +93,19 @@ header > nav {
   line-height: 1.5;
 }
 
+/*COLORS*/
+
 header .author-name {
-  color: #D72638;
-  color: black;
-  color: #333333;
+  color: var(--color_plain_text);
 }
 
 header .author-name:hover {
-  color: blue;
-  color: #028090;
-  color: #1B9AAA;
-  color: red;
-  color: #D72638;
+  color: var(--color_highlight);
 }
 
 header .title {
   text-decoration: none;
-  color: blue;
-  color: #028090;
-  color: #1B9AAA;
-  color: red;
-  color: #D72638;
+  color: var(--color_highlight);
 }
 
 
@@ -120,7 +134,7 @@ a:not(.author-name):not(.title) {
   color: #028090;
   color: #1B9AAA;
   color: red;
-  color: #D72638;
+  color: var(--color_highlight);
 }
 
 a:hover {
@@ -174,7 +188,7 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
-  border: 1px solid #333333;
+  border: 1px solid var(--color_plain_text);
 }
 
 figure img {
@@ -193,7 +207,7 @@ img.pixel, canvas.pixel {
 hr {
   display: block;
   border: 0;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--color_gray);
   padding: 0;
   /*
   margin-top: 1em;
@@ -210,7 +224,7 @@ blockquote {
     /*
   margin: 1.0em 8px;
      * */
-  border-left: 4px solid #ccc;
+  border-left: 4px solid var(--color_gray);
   padding: 0.05em 8px;
 }
 

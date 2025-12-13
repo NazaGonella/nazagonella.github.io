@@ -1,9 +1,14 @@
+#!/bin/python
+
 import os
+import sys
 import subprocess
 from pathlib import Path
 
 css_path: Path = Path("style.css").resolve()
 ignored_mds = [Path("./README.md")]
+
+rebuild_all = "--all" in sys.argv
 
 markdown_files = [md for md in Path(".").rglob("*.md") if md not in ignored_mds]
 paired_files = [(md, md.parent / "index.html") for md in markdown_files]
@@ -11,8 +16,9 @@ paired_files = [(md, md.parent / "index.html") for md in markdown_files]
 print("### BUILD ###")
 
 for md, html in paired_files:
-    if html.exists() and html.stat().st_mtime > md.stat().st_mtime:
-        continue
+    if not rebuild_all:
+        if html.exists() and html.stat().st_mtime > md.stat().st_mtime:
+            continue
 
     relative_path_css = os.path.relpath(css_path, start=html.parent)
 
