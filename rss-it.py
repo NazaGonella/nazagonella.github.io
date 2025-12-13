@@ -13,7 +13,7 @@ for md in markdown_files:
 
 print("")
 
-with open("rss.xml", "w", encoding="utf-8") as f:
+with open("feed.xml", "w", encoding="utf-8") as f:
     subprocess.run([
         "pandoc-rss", "-s",
         "-t", "Naza Gonella",

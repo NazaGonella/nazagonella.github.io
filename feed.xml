@@ -9,13 +9,6 @@
 <docs>https://www.rssboard.org/rss-specification</docs>
 <generator>pandoc-rss</generator>
 <item>
-<title>Hola Esto Es un Test</title>
-<pubDate>Sat, 13 Dec 2025 00:00:00 +0000</pubDate>
-<guid>https://ngonella.com/hola-test.html</guid>
-<description><![CDATA[<hr />
-<p>HOAL BUENASSSS</p>]]></description>
-</item>
-<item>
 <title>Decoding UTFs</title>
 <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
 <guid>https://ngonella.com/utf-encoding.html</guid>
