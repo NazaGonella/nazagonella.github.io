@@ -1,28 +1,13 @@
-%Decoding UTFs
-
-<header>
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg">
-    <a class="author-name" href="/">Nazareno Gonella</a>
-    <nav>
-        <a class="title" href="/">Blog</a>
-        <span class="separator"></span>
-        <a class="title" href="/about/">About</a>
-        <span class="separator"></span>
-        <a class="title" href="/resume/es/">Resume</a>
-    </nav>
-</header>
+---
+title: Decoding UTFs
+author: Nazareno Gonella
+date: December 07, 2025
+template: template.html
+---
 
 ---
 
-<article>
-
-## Decoding UTFs
-
-December 03, 2025
-
----
-
-As a small project, I started building a simple JSON parser in C. I added support for all data types, except for Unicode escape characters: JSON accepts values such as `\u03C0` if you don't feel like manually copy-pasting the character with code point `U+03C0`. When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I had expected.
+As a small project, I started building a simple JSON parser in C. I added support for all data types, except for Unicode escape characters (JSON accepts values such as `\u03C0` if you don't feel like manually copy-pasting the character with code point `U+03C0`). When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I had expected.
 
 So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. Hopefully you'll also pick something up along the way.
 
@@ -99,7 +84,7 @@ Surrogate pairs follow a simple formula for encoding code points.
 3. To make the **low surrogate**, take the *bottom* 10 bits of the 20-bit number and add the prefix `110111` (hex `0xDC00`).
 
 
-So high surrogates have the form `1101` `10xx` `xxxx` `xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are then filled with the code point value minus `0x10000`. This subtraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
+So high surrogates have the form `1101` `10xx` `xxxx` `xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are the data (or payload) bits carrying the code point value minus `0x10000`. This subtraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
 
 The high surrogate range is `0xD800-0xDBFF`. The low surrogate range is `0xDC00-0xDFFF`. The full surrogate block `0xD800-0xDFFF` is reserved exclusively in Unicode for surrogate code points. This means that no matter the UTF form, no character can have a code point in this range.
 
@@ -320,5 +305,3 @@ Based on these equivalences the standard also defines *Unicode normalization*, t
 
 [^1]: This doesn't mean all code points are assigned.
 [^2]: One of the major benefits of using UTF-8 is backwards compatibility with ASCII.
-
-</article>

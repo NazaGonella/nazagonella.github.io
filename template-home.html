@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Nazareno Gonella</title>
+  <title>$title$</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 
@@ -24,14 +24,14 @@
 
   <main>
     <article>
-      <hr />
-      <div class="posts">
-      <p>04/11/2025 <a href="/posts/simple-blog/">Setting Up a Simple
-      Blog - Handmade Static Site Generator</a></p>
-      </div>
-      <hr />
+      $body$
     </article>
   </main>
 
-  </body>
+  $for(footnotes)$
+  <div class="footnotes">
+    $footnotes$
+  </div>
+  $endfor$
+</body>
 </html>

@@ -1,34 +1,44 @@
-#!/usr/bin/env python3
+#!/bin/python
 
 import os
+import sys
 import subprocess
 from pathlib import Path
 
-css_path : Path = Path("style.css").resolve()      # absolute path to CSS
+css_path: Path = Path("style.css").resolve()
+ignored_mds = [Path("./README.md")]
 
-ignored_mds = [Path("./README.md")]         # will not apply to ALL Markdown files
+rebuild_all = "--all" in sys.argv
 
 markdown_files = [md for md in Path(".").rglob("*.md") if md not in ignored_mds]
-
-paired_files = [(md, md.parent / "index.html") for md in markdown_files if md not in ignored_mds]   # target: index.html file in the same directory
+paired_files = [(md, md.parent / "index.html") for md in markdown_files]
 
 print("### BUILD ###")
 
 for md, html in paired_files:
-    mod_time_md = md.stat().st_mtime
-    if html.exists():
-        mod_time_html = html.stat().st_mtime
-        if mod_time_html >  mod_time_md:
+    if not rebuild_all:
+        if html.exists() and html.stat().st_mtime > md.stat().st_mtime:
             continue
 
-    relative_path_css : str = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
+    relative_path_css = os.path.relpath(css_path, start=html.parent)
+
+    # extract front matter manually
+    template_to_use = "template.html"  # default
+    with md.open("r", encoding="utf-8") as f:
+        lines = f.readlines()
+        if lines[0].strip() == "---":
+            for line in lines[1:]:
+                line = line.strip()
+                if line == "---":
+                    break
+                if line.startswith("template:"):
+                    template_to_use = line.split(":", 1)[1].strip()
 
     subprocess.run([
-        "pandoc",
-        "-s", str(md),
+        "pandoc", "-s", str(md),
         "-o", str(html),
         "--css", relative_path_css,
-        "-V", "title=",
+        "--template", template_to_use,
         "-f", "markdown+pipe_tables"
     ])
 

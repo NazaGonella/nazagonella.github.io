@@ -1,24 +1,9 @@
-%Setting Up a Simple Blog - Handmade Static Site Generator
-
-<header>
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg">
-    <a class="author-name" href="/">Nazareno Gonella</a>
-    <nav>
-        <a class="title" href="/">Blog</a>
-        <span class="separator"></span>
-        <a class="title" href="/about/">About</a>
-        <span class="separator"></span>
-        <a class="title" href="/resume/es/">Resume</a>
-    </nav>
-</header>
-
 ---
-
-<article>
-
-## Setting Up a Simple Blog - Handmade Static Site Generator
-
-November 04, 2025
+title: Setting Up a Simple Blog - Handmade Static Site Generator
+author: Nazareno Gonella
+date: November 04, 2025
+template: template.html
+---
 
 ---
 
@@ -205,5 +190,3 @@ Now it's a matter of time to see how well this framework holds up for me.
 [^1]: It would make more sense for the date to be the day it's published, added to the TODO list.
 [^2]: This assumes the .vimrc or .exrc files are in the same directory as build.py.
 [^3]: Reading Fabien Sanglard's post [All you may need is HTML](https://fabiensanglard.net/html/index.html) may have had an effect on this decision.
-
-</article>
