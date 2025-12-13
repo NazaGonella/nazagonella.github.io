@@ -16,8 +16,8 @@ print("")
 with open("feed.xml", "w", encoding="utf-8") as f:
     subprocess.run([
         "pandoc-rss", "-s",
-        "-t", "Naza Gonella",
-        "-d", "Hello and welcome to the feed!!",
+        "-t", "Naza Gonella Blog",
+        "-d", "Hello and welcome to my feed!!",
         "-l", "https://ngonella.com/",
         *md_string
     ],
