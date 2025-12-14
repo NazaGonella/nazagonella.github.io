@@ -2,7 +2,7 @@
 
 :root {
   /* --color_highlight: #D72638; */
-  --color_highlight: #EC7D10;
+  /* --color_highlight: #EC7D10; */
   /* --color_highlight: #FF8811; */
   /* --color_highlight: #FF7700; */
   /* --color_highlight: #58B09C; */
@@ -11,6 +11,8 @@
   /* --color_highlight: #35AC43; */
   /* --color_highlight: #F4AC45; */
   /* --color_highlight: #FA7921; */
+  /* --color_highlight: #E57A10; */
+  --color_highlight: #E46A10;
   --color_plain_text: #333333;
   /* --color_background: #59656F; */
   /* --color_background: #333333; */

@@ -8,6 +8,8 @@ template: template-home.html
 
 <div class=posts>
 
+13/12/2025 [Decoding UTFs](/posts/utf-encoding/)  
+
 04/11/2025 [Setting Up a Simple Blog - Handmade Static Site Generator](/posts/simple-blog/)  
 
 </div>
