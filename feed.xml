@@ -11,7 +11,7 @@
 <item>
 <title>Decoding UTFs</title>
 <pubDate>Sat, 13 Dec 2025 00:00:00 +0000</pubDate>
-<guid>https://ngonella.com/utf-encoding.html</guid>
+<guid>https://ngonella.com/posts/utf-encoding/</guid>
 <description><![CDATA[<hr />
 <p>As a small project I built a simple JSON parser in C. I first added
 support for all data types, except for Unicode escape characters (JSON
@@ -437,7 +437,7 @@ role="doc-backlink">↩︎</a></p></li>
 <item>
 <title>Setting Up a Simple Blog - Handmade Static Site Generator</title>
 <pubDate>Tue, 04 Nov 2025 00:00:00 +0000</pubDate>
-<guid>https://ngonella.com/setting-up-a-simple-blog-handmade-static-site-generator.html</guid>
+<guid>https://ngonella.com/posts/simple-blog/</guid>
 <description><![CDATA[<hr />
 <p>You can check the repository <a
 href="https://github.com/NazaGonella/yors-generator">here</a>.</p>
