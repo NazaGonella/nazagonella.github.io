@@ -2,7 +2,6 @@
 title: Decoding UTFs
 author: Nazareno Gonella
 date: December 13, 2025
-url: https://ngonella.com/posts/utf-encoding/
 template: template.html
 ---
 
