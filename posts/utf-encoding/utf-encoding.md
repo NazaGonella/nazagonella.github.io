@@ -7,7 +7,7 @@ template: template.html
 
 ---
 
-As a small project, I started building a simple JSON parser in C. I added support for all data types, except for Unicode escape characters (JSON accepts values such as `\u03C0` if you don't feel like manually copy-pasting the character with code point `U+03C0`). When it came time to add them to my parser, I realized encoding Unicode characters wasn't as simple as I had expected.
+As a small project I built a simple JSON parser in C. I first added support for all data types, except for Unicode escape characters (JSON accepts values such as `\u03C0` if you don't feel like manually copy-pasting the character with code point `U+03C0`). I didn't find it urgent to add support for them right away, but when it came time to do it, I realized encoding Unicode characters wasn't as simple as I had expected. You are not supposed to just put the raw code point value into the data structure.
 
 So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. Hopefully you'll also pick something up along the way.
 
@@ -32,7 +32,7 @@ There is a slight difference. ASCII and Unicode are both *coded character sets*,
 
 ### How ASCII does it
 
-ASCII is straightforward. These are small values; we can assign a byte for each code point, so the character with the code point `84` would be stored in a byte like `0101 0100`. We can extend this idea to Unicode with a naive approach, mapping the code point directly to bytes.
+ASCII is straightforward. These are small values, we can assign a byte for each code point so the character with the code point `84` would be stored in a byte like `0101 0100`. We can extend this idea to Unicode with a naive approach, mapping the code point directly to bytes.
 
 
 The problem arises from the number of characters in Unicode, over 150,000 characters that will need more than a single byte. This gets worse when you take into account the *codespace* of Unicode, the total set of possible codepoints Unicode defines for present and future use, which ranges from 0 to 1,114,111 code points[^1], or `U+0000` to `U+10FFFF` using Unicode notation with the `U+` prefix.
@@ -41,7 +41,7 @@ The problem arises from the number of characters in Unicode, over 150,000 charac
 
 ### UTF-32: The Naive Approach
 
-The UTF-32 encoding solves this by assigning 4 bytes for each code point. Code point `84` would be stored as  `00 00 00 54` in hexadecimal. A string like `Dog` would be encoded this way:
+The UTF-32 encoding solves this by assigning 4 bytes for each code point. Code point `84` (`54` in hexadecimal) would be stored as  `00 00 00 54`. A string like `Dog` would be encoded this way in binary:
 
 - D: `0000 0000` `0000 0000` `0000 0000` `0100 0100`
 - o: `0000 0000` `0000 0000` `0000 0000` `0110 1111`
@@ -71,11 +71,11 @@ int CodepointToUTF32BE(unsigned int codepoint, unsigned char *output) {
 
 ### UTF-16 and Surrogate Pairs
 
-UTF-16 introduces *variable-width* encoding. Every code point is encoded as one or two 16 bit values, called *code units*.
+UTF-16 introduces *variable-width* encoding. Every code point is encoded as one or two 16-bit values, called *code units*.
 
-Code points less than or equal to `U+FFFF`, outside the range `0xD800-0xDFFF` (you'll see why in a bit), correspond to characters in the *Basic Multilingual Plane* (BMP) and are directly encoded in a single 16 bit code unit.
+Code points less than or equal to `U+FFFF`, outside the range `0xD800-0xDFFF` (you'll see why in a bit), correspond to characters in the *Basic Multilingual Plane* (BMP) and are directly encoded in a single 16-bit code unit.
 
-For code points outside the BMP (greater than `U+FFFF`), UTF-16 uses *surrogate pairs*: each pair consists of two 16 bit code units, the first one being the *high surrogate* followed by the *low surrogate*.
+For code points outside the BMP (greater than `U+FFFF`), UTF-16 uses *surrogate pairs*: each pair consists of two 16-bit code units, the first one being the *high surrogate* followed by the *low surrogate*.
 
 Surrogate pairs follow a simple formula for encoding code points.
 
@@ -84,11 +84,11 @@ Surrogate pairs follow a simple formula for encoding code points.
 3. To make the **low surrogate**, take the *bottom* 10 bits of the 20-bit number and add the prefix `110111` (hex `0xDC00`).
 
 
-So high surrogates have the form `1101` `10xx` `xxxx` `xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are the data (or payload) bits carrying the code point value minus `0x10000`. This subtraction allows to insert values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
+So high surrogates have the form `1101` `10xx` `xxxx` `xxxx` and low surrogates `1101` `11xx` `xxxx` `xxxx`. The `x` bits are the data (or payload) bits carrying the code point value minus `0x10000`. This subtraction allows inserting values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.
 
 The high surrogate range is `0xD800-0xDBFF`. The low surrogate range is `0xDC00-0xDFFF`. The full surrogate block `0xD800-0xDFFF` is reserved exclusively in Unicode for surrogate code points. This means that no matter the UTF form, no character can have a code point in this range.
 
-Like UTF-32, the order of the bytes determine the version of UTF-16, in this case we are describing **UTF-16BE** since it's big-endian. For little-endian it would be **UTF-16LE**.
+Like UTF-32, the order of the bytes determines the version of UTF-16, in this case we are describing **UTF-16BE** since it's big-endian. For little-endian it would be **UTF-16LE**.
 
 ```
 int CodepointToUTF16BE(unsigned int codepoint, unsigned char *output) {
@@ -122,7 +122,7 @@ int CodepointToUTF16BE(unsigned int codepoint, unsigned char *output) {
 
 Now let's look into UTF-8, which also uses variable-width encoding.
 
-In UTF-8, the number of bytes it takes to store a code point correspond to the range of the value. Code points from `U+0000` to `U+007F` are stored in 1 byte, ranges from `U+0080` to `U+07FF` are stored in 2 bytes, and so on.
+In UTF-8, the number of bytes it takes to store a code point corresponds to the range of the value. Code points from `U+0000` to `U+007F` are stored in 1 byte, ranges from `U+0080` to `U+07FF` are stored in 2 bytes, and so on.
 
 - `U+00000` - `U+00007F`: 1 Byte
 - `U+00080` - `U+0007FF`: 2 Bytes
@@ -148,9 +148,9 @@ Inside the parentheses are the header bits. Just by looking at the header bits w
 
 Continuation bytes start with `10`. We look at continuation bytes to validate UTF-8. If the number of continuation bytes do not correspond to those indicated by the leading byte, we know it's invalid UTF-8.
 
-Leading bytes consist of a sequence of ones followed by a zero. The number of ones indicate the total number of bytes used by the code point, including the leading byte. In our emoji example we see the leading byte has header bits `11110`, so we can read the code point as one character of 4 bytes. This rule applies to all code points lengths except for those of 1 byte, the ASCII characters.
+Leading bytes in multi-byte sequences consist of a series of ones followed by a zero. The number of ones indicates the total number of bytes used by the code point, including the leading byte. In our emoji example we see the leading byte has header bits `11110`, so we can read the code point as one character of 4 bytes. This rule applies to all code point lengths except for those of 1 byte, the ASCII characters.
 
-ASCII characters have a leading byte that starts with zero, followed by the code point value. The letter `A` will be encoded in UTF-8 the same way as one would encode it in ASCII.[^2]
+1-byte characters have a leading byte that starts with zero, followed by the code point value. The letter `A` will be encoded in UTF-8 the same way as one would encode it in ASCII.[^2]
 
 The rest of the bits are the data bits. These contain the code point value in binary, padded with leading zeros.
 
@@ -282,6 +282,7 @@ print("char 1 byte length:", len(char1))
 print("char 2 byte length", len(char2))
 print("char 1 bytes:", char1)
 print("char 2 bytes:", char2)
+
     # OUTPUT:
     # char 1 byte length: 2
     # char 2 byte length 3
