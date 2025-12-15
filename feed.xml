@@ -16,11 +16,12 @@
 <p>As a small project I built a simple JSON parser in C. I first added
 support for all data types, except for Unicode escape characters (JSON
 accepts values such as <code>\u03C0</code> if you don’t feel like
-manually copy-pasting the character with code point
+manually copy-pasting the character <code>π</code> with code point
 <code>U+03C0</code>). I didn’t find it urgent to add support for them
-right away, but when it came time to do it, I realized encoding Unicode
-characters wasn’t as simple as I had expected. You are not supposed to
-just put the raw code point value into the data structure.</p>
+right away, but when I finally got around to it, I realized encoding
+Unicode characters wasn’t as simple as I had expected. You are not
+supposed to just put the raw code point value into the data
+structure.</p>
 <p>So I decided to dive deep into Unicode and its encodings, and write
 about what I learned in the process. Hopefully you’ll also pick
 something up along the way.</p>
