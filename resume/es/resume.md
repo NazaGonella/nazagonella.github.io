@@ -4,11 +4,11 @@ author: Nazareno Gonella
 template: template-home.html
 ---
 
----
-
 [[EN]](/resume/en/) - [[PDF]](/resume/es/Gonella-Nazareno.pdf)
 
 ---
+
+### Nazareno Gonella
 
 Estudiante de Ingeniería en Inteligencia Artificial
 
