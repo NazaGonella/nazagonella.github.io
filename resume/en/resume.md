@@ -10,6 +10,8 @@ template: template-home.html
 
 ---
 
+### Nazareno Gonella
+
 Artificial Intelligence Engineering Student
 
 San Fernando, Buenos Aires, Argentina
