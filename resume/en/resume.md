@@ -4,8 +4,6 @@ author: Nazareno Gonella
 template: template-home.html
 ---
 
----
-
 [[ES]](/resume/es/) - [[PDF]](/resume/en/Gonella-Nazareno.pdf)
 
 ---

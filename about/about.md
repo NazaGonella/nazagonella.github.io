@@ -4,12 +4,10 @@ author: Nazareno Gonella
 template: template-home.html
 ---
 
----
-
 <div style="margin-top:2em;"></div>
 
 <center>
-Hello! I'm Nazareno Gonella. I'm an AI engineering student sharing what I'm learning or building as I go.
+Hello, I'm Nazareno Gonella, an AI engineering student. Here I share code, projects, and topics I'm currently learning about.
 </center>
 
 <div style="margin-bottom:2em;"></div>
