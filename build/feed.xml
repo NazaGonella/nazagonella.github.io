@@ -1,0 +1,414 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Naza Gonella Blog</title><link>https://ngonella.com/feed.xml</link><description>Hello and welcome to my feed!!</description><atom:link href="https://ngonella.com/feed.xml" rel="self"/><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><language>en</language><lastBuildDate>Sat, 17 Jan 2026 02:33:12 +0000</lastBuildDate><item><title>Setting Up a Simple Blog</title><link>https://ngonella.com/simple-blog</link><description>&lt;hr /&gt;
+&lt;p&gt;You can check the repository &lt;a href="https://github.com/NazaGonella/yors-generator"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The idea to start writing a blog has been in my mind for some time now, until today that I decided to get on with it. And what better way to begin than writing about this same process?&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="what-am-i-looking-for"&gt;What Am I Looking For?&lt;/h3&gt;
+&lt;p&gt;From the start I knew I wanted something simple, easy to maintain and quick to iterate. One of the major reasons I'm doing this is to structure my thinking when working on any type of project, and for that I need not be distracted by implementation details.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="barebones"&gt;Barebones&lt;/h3&gt;
+&lt;p&gt;Still, I would like to have some formatting, as there were times I would take notes in plain text files for then to never come back to them. So I'm using the next closest thing, Markdown.&lt;/p&gt;
+&lt;p&gt;Now what I need is to convert this Markdown file into a HTML file. After looking around through some posts on reddit, I found the &lt;a href="https://pandoc.org/"&gt;pandoc&lt;/a&gt; document converter, exactly what I needed. For any Markdown file I just had to run &lt;code&gt;pandoc input.md -o index.html&lt;/code&gt;. &lt;/p&gt;
+&lt;p&gt;Pandoc uses an extended version of Markdown which comes in handy, as it includes support for tables, definition lists, footnotes, citations and even math.  It also supports &lt;em&gt;Metadata Blocks&lt;/em&gt;, which allows including information such as &lt;code&gt;% title&lt;/code&gt;, &lt;code&gt;% author&lt;/code&gt; and &lt;code&gt;% date&lt;/code&gt;. I will only be using &lt;code&gt;% title&lt;/code&gt; since the tool issues a warning when not using it.&lt;/p&gt;
+&lt;p&gt;And there it was, just what I wanted, almost.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="not-stylish-just-yet"&gt;Not Stylish, Just Yet&lt;/h3&gt;
+&lt;p&gt;A plain HTML file with formatted text is a lot better than a plain text file, but unfortunately it doesn't look good on the portfolio. &lt;/p&gt;
+&lt;p&gt;I need something simple, but still good looking. Luckily you can link a &lt;code&gt;.css&lt;/code&gt; file to the output of pandoc using the &lt;code&gt;--css&lt;/code&gt; argument. The problem is I don't have much experience using css, so it is time to look for references.&lt;/p&gt;
+&lt;p&gt;I really like &lt;a href="https://fabiensanglard.net/"&gt;Fabien Sanglard's&lt;/a&gt; and &lt;a href="https://stevelosh.com/"&gt;Steve Losh's&lt;/a&gt; websites. They are minimalistic, nice to look at, and easy to read. I appreciate how you can immediately see all the stuff the authors have been working on or pondering over the last couple of years as soon as you enter. With the help of inspect element, a couple of queries to ChatGPT, and a background from &lt;a href="https://heropatterns.com/"&gt;Hero Patterns&lt;/a&gt;, I ended up with a style I was happy with.&lt;/p&gt;
+&lt;p&gt;There was now a need for a nice header: css and Markdown alone wouldn't suffice. Fortunately, pandoc allows for HTML to be written into the Markdown file, which it then passes to the final output unchanged. I can now define a simple header to include on all the pages and ensure a concise style, but to achieve that I would have to copy and paste the same header everytime I create a new page. It would be nice to have some sort of page template.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="the-page-template"&gt;The Page Template&lt;/h3&gt;
+&lt;p&gt;I went on and created &lt;code&gt;create-post.py&lt;/code&gt;, a Python script that takes &lt;code&gt;&amp;lt;file-name&amp;gt;&lt;/code&gt; and &lt;code&gt;&amp;lt;post-title&amp;gt;&lt;/code&gt; as arguments. This script creates &lt;code&gt;&amp;lt;file-name&amp;gt;.md&lt;/code&gt; and writes to it the metadata block &lt;code&gt;% &amp;lt;post-title&amp;gt;&lt;/code&gt;, the page header and the post header with the date of when the post was created.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;header_date = datetime.now().strftime("%B {S}, %Y").replace('{S}', str(datetime.now().day))
+
+header = f"""%{post_title}
+
+&amp;lt;header&amp;gt;
+    header content goes here
+&amp;lt;/header&amp;gt;
+
+## {post_title}
+
+{header_date}
+
+---
+"""
+
+with open(f"{posts_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") as f:
+    f.write(header)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I also included some code to add the post entry along with the date to the home page&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;home_path = "./home.md"
+date_entry = datetime.now().strftime("%d/%m/%Y")
+post_entry = f"{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n"
+
+with open(home_path, "r", encoding="utf-8") as f:
+    lines = f.readlines()
+
+lines.insert(7, post_entry) # hardcoded position, for now
+
+with open(home_path, "w", encoding="utf-8") as f:
+    f.writelines(lines)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Some of this code is hardcoded. I plan on adding config files in the future. To see the full code visit the &lt;a href="https://github.com/NazaGonella/ngonella-static-site-generator"&gt;repository&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;With this, I now have an easy way of creating new entries.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="generating-the-site"&gt;Generating the Site&lt;/h3&gt;
+&lt;p&gt;Calling pandoc for every &lt;code&gt;.md&lt;/code&gt; file is not ideal. That's why I implemented &lt;code&gt;build.py&lt;/code&gt;, a minimal build system for transforming recently modified Markdown files into HTML files.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import os
+import subprocess
+from pathlib import Path
+
+css_path = Path("style.css").resolve()      # absolute path to CSS
+
+ignored_mds = [Path("./README.md")]         # will not apply to ALL Markdown files
+
+markdown_files = [md for md in Path(".").rglob("*.md") if md not in ignored_mds]
+
+paired_files = [(md, md.parent / "index.html") for md in markdown_files if md not in ignored_mds]   # target: index.html file in the same directory
+
+print("### BUILD ###")
+
+for md, html in paired_files:
+    mod_time_md = md.stat().st_mtime
+    if html.exists():
+        mod_time_html = html.stat().st_mtime
+        if mod_time_html &amp;gt;  mod_time_md:
+            continue
+
+    relative_path_css  = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
+
+    subprocess.run([
+        "pandoc",
+        "-s", str(md),
+        "-o", str(html),
+        "--css", relative_path_css,
+        "-V", "title="
+    ])
+
+    print(md, "-&amp;gt;", html)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;-s&lt;/code&gt; inserts the necessary headers and footers to create a full HTML file.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-V title=&lt;/code&gt; prevents pandoc of inserting the variable defined in &lt;code&gt;% title&lt;/code&gt; as a header, while still keeping it as the document title.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="workflow"&gt;Workflow&lt;/h3&gt;
+&lt;p&gt;I will be using &lt;a href="https://www.vim.org/"&gt;vim&lt;/a&gt; as my text editor, primarily for three reasons.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Fast and comfortable to write in.&lt;/li&gt;
+&lt;li&gt;Very customizable.&lt;/li&gt;
+&lt;li&gt;Looks cool.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Probably one of the most important aspects of using vim in this case is having the option to execute a command when saving the file. Thanks to this, I can now avoid having to call pandoc with the same arguments everytime I want to see the results on the browser. I just save the file and the HTML file is automatically generated.&lt;/p&gt;
+&lt;p&gt;I added the following to the &lt;code&gt;.vimrc&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;let s:script_dir = expand('&amp;lt;sfile&amp;gt;:p:h')
+autocmd FileType markdown autocmd BufWritePost &amp;lt;buffer&amp;gt; execute '!python3 ' . shellescape(s:script_dir . '/build.py')
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will apply only when saving &lt;code&gt;.md&lt;/code&gt; files.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;How about deployment? As I'm using Github Pages for hosting, pushing my local files to the remote repository will deploy the page. The thing is, I don't want to deploy everytime I correct a minor mistake, it would make version control really uncomfortable.&lt;/p&gt;
+&lt;p&gt;To fix this I created a new &lt;code&gt;working&lt;/code&gt; branch. Every change I make gets pushed to that branch. And once I feel it's time to deploy, I merge into the &lt;code&gt;master&lt;/code&gt; branch.&lt;/p&gt;
+&lt;p&gt;For easy deployment I made a simple shell script &lt;code&gt;deploy.sh&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;set -e
+
+working_branch="working"
+
+git checkout master
+git merge "$working_branch" --no-ff -m "Merge $working_branch branch into master"
+git push origin master
+
+echo "Master branch updated"
+
+git checkout "$working_branch"
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;set -e&lt;/code&gt; tells the shell to exit immediately if any command fails.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;--no-ff&lt;/code&gt; ensures git creates a merge commit even if a fast-forward is possible.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;And there it is, a simple framework for my use case. Every time I want to write about a new topic, I run &lt;code&gt;create-post.py&lt;/code&gt; and start writing right away. Once I'm done, I simply save and check the browser. If I'm happy with the result, I commit, push to origin and then run &lt;code&gt;deploy.sh&lt;/code&gt;. And just like that a new entry is added to the blog.&lt;/p&gt;
+&lt;p&gt;Initially, I wasn't familiar with the concept of static site generators. I've seen recommendations of tools like &lt;a href="https://jekyllrb.com/"&gt;Jekyll&lt;/a&gt; or &lt;a href="https://gohugo.io/"&gt;Hugo&lt;/a&gt; for easily creating personal websites, but I felt they were more than what I needed at the moment&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;. I also liked the idea of creating a basic blog framework. What I ended up with was a custom static site generator. &lt;/p&gt;
+&lt;p&gt;Now it's a matter of time to see how well this framework holds up for me.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;It would make more sense for the date to be the day it's published, added to the TODO list.&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;This assumes the .vimrc or .exrc files are in the same directory as build.py.&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;Reading Fabien Sanglard's post &lt;a href="https://fabiensanglard.net/html/index.html"&gt;All you may need is HTML&lt;/a&gt; may have had an effect on this decision.&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><guid isPermaLink="false">https://ngonella.com/simple-blog</guid></item><item><title>Decoding UTFs</title><link>https://ngonella.com/utf-encoding</link><description>&lt;hr /&gt;
+&lt;p&gt;As a small project I built a simple JSON parser in C. I first added support for all data types, except for Unicode escape characters (JSON accepts values such as &lt;code&gt;\u03C0&lt;/code&gt; if you don't feel like manually copy-pasting the character &lt;code&gt;π&lt;/code&gt; with code point &lt;code&gt;U+03C0&lt;/code&gt;). I didn't find it urgent to add support for them right away, but when I finally got around to it, I realized encoding Unicode characters wasn't as simple as I had expected. You are not supposed to just put the raw code point value into the data structure.&lt;/p&gt;
+&lt;p&gt;So I decided to dive deep into Unicode and its encodings, and write about what I learned in the process. Hopefully you'll also pick something up along the way.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="code-structure-and-endianness"&gt;Code Structure and Endianness&lt;/h3&gt;
+&lt;p&gt;In each UTF encoding section, there will be a function named &lt;code&gt;CodepointToX&lt;/code&gt; written in C that takes a code point and transforms it to its proper encoding, returning the size of the encoding in bytes.&lt;/p&gt;
+&lt;p&gt;I'm using a &lt;em&gt;big-endian&lt;/em&gt; layout for writing sequential bytes: the most significant byte comes first. This also includes a big-endian implementation for the &lt;code&gt;CodepointToX&lt;/code&gt; functions in &lt;a href="#utf-16-and-surrogate-pairs"&gt;UTF-16&lt;/a&gt; and &lt;a href="#utf-32-the-naive-approach"&gt;UTF-32&lt;/a&gt;. You can find little-endian implementations in the &lt;a href="https://github.com/NazaGonella/utf-encodings"&gt;repository&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The &lt;a href="#bonus-combining-characters"&gt;bonus&lt;/a&gt; section contains code written in Python.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="unicode-is-not-just-ascii"&gt;Unicode is not just ASCII++&lt;/h3&gt;
+&lt;p&gt;You probably know ASCII, characters represented by numbers from 0 to 127; you may also know Unicode, same thing as ASCII but expanded, right?
+There is a slight difference. ASCII and Unicode are both &lt;em&gt;coded character sets&lt;/em&gt;, they map abstract symbols to numeric values called &lt;em&gt;code points&lt;/em&gt;. The way they differ is on how they store these code points in memory, what is called &lt;em&gt;encoding&lt;/em&gt;. ASCII is both a coded character set and an encoding format. Unicode itself is NOT an encoding format, in fact, it has multiple encodings.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="how-ascii-does-it"&gt;How ASCII does it&lt;/h3&gt;
+&lt;p&gt;ASCII is straightforward. These are small values, we can assign a byte for each code point so the character with the code point &lt;code&gt;84&lt;/code&gt; would be stored in a byte like &lt;code&gt;0101 0100&lt;/code&gt;. We can extend this idea to Unicode with a naive approach, mapping the code point directly to bytes.&lt;/p&gt;
+&lt;p&gt;The problem arises from the number of characters in Unicode, over 150,000 characters that will need more than a single byte. This gets worse when you take into account the &lt;em&gt;codespace&lt;/em&gt; of Unicode, the total set of possible codepoints Unicode defines for present and future use, which ranges from 0 to 1,114,111 code points&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt;, or &lt;code&gt;U+0000&lt;/code&gt; to &lt;code&gt;U+10FFFF&lt;/code&gt; using Unicode notation with the &lt;code&gt;U+&lt;/code&gt; prefix.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="utf-32-the-naive-approach"&gt;UTF-32: The Naive Approach&lt;/h3&gt;
+&lt;p&gt;The UTF-32 encoding solves this by assigning 4 bytes for each code point. Code point &lt;code&gt;84&lt;/code&gt; (&lt;code&gt;54&lt;/code&gt; in hexadecimal) would be stored as  &lt;code&gt;00 00 00 54&lt;/code&gt;. A string like &lt;code&gt;Dog&lt;/code&gt; would be encoded this way in binary:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;D: &lt;code&gt;0000 0000&lt;/code&gt; &lt;code&gt;0000 0000&lt;/code&gt; &lt;code&gt;0000 0000&lt;/code&gt; &lt;code&gt;0100 0100&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;o: &lt;code&gt;0000 0000&lt;/code&gt; &lt;code&gt;0000 0000&lt;/code&gt; &lt;code&gt;0000 0000&lt;/code&gt; &lt;code&gt;0110 1111&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;g: &lt;code&gt;0000 0000&lt;/code&gt; &lt;code&gt;0000 0000&lt;/code&gt; &lt;code&gt;0000 0000&lt;/code&gt; &lt;code&gt;0110 0111&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You may notice the problem UTF-32 introduces. A lot of bytes go to waste when using the most common letters in the English alphabet. What in ASCII takes only 3 bytes to encode (dog), becomes 12 bytes with UTF-32. With this encoding, every character takes the same amount of bytes, so we call UTF-32 a &lt;em&gt;fixed-length&lt;/em&gt; encoding.&lt;/p&gt;
+&lt;p&gt;Another thing to notice is the order of the bytes, in this case we are using big-endian. This version of UTF-32 is called &lt;strong&gt;UTF-32-BE&lt;/strong&gt;. The little-endian version is called &lt;strong&gt;UTF-32-LE&lt;/strong&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;int CodepointToUTF32BE(unsigned int codepoint, unsigned char *output) {
+
+    if (codepoint &amp;gt;= 0x0 &amp;amp;&amp;amp; codepoint &amp;lt;= 0x10FFFF) {
+        output[0] = (codepoint &amp;gt;&amp;gt; 24) &amp;amp; 0xFF;
+        output[1] = (codepoint &amp;gt;&amp;gt; 16) &amp;amp; 0xFF;
+        output[2] = (codepoint &amp;gt;&amp;gt; 8) &amp;amp; 0xFF;
+        output[3] = codepoint &amp;amp; 0xFF;
+        return 4;
+    }
+
+    // invalid codepoint
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h3 id="utf-16-and-surrogate-pairs"&gt;UTF-16 and Surrogate Pairs&lt;/h3&gt;
+&lt;p&gt;UTF-16 introduces &lt;em&gt;variable-width&lt;/em&gt; encoding. Every code point is encoded as one or two 16-bit values, called &lt;em&gt;code units&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Code points less than or equal to &lt;code&gt;U+FFFF&lt;/code&gt;, outside the range &lt;code&gt;0xD800-0xDFFF&lt;/code&gt; (you'll see why in a bit), correspond to characters in the &lt;em&gt;Basic Multilingual Plane&lt;/em&gt; (BMP) and are directly encoded in a single 16-bit code unit.&lt;/p&gt;
+&lt;p&gt;For code points outside the BMP (greater than &lt;code&gt;U+FFFF&lt;/code&gt;), UTF-16 uses &lt;em&gt;surrogate pairs&lt;/em&gt;: each pair consists of two 16-bit code units, the first one being the &lt;em&gt;high surrogate&lt;/em&gt; followed by the &lt;em&gt;low surrogate&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Surrogate pairs follow a simple formula for encoding code points.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Subtract &lt;code&gt;0x10000&lt;/code&gt; from the code point. The result is a 20-bit number in the range &lt;code&gt;0x00000-0xFFFFF&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;To make the &lt;strong&gt;high surrogate&lt;/strong&gt;, take the &lt;em&gt;top&lt;/em&gt; 10 bits of the 20-bit number and add the prefix &lt;code&gt;110110&lt;/code&gt; (hex &lt;code&gt;0xD800&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;To make the &lt;strong&gt;low surrogate&lt;/strong&gt;, take the &lt;em&gt;bottom&lt;/em&gt; 10 bits of the 20-bit number and add the prefix &lt;code&gt;110111&lt;/code&gt; (hex &lt;code&gt;0xDC00&lt;/code&gt;).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;So high surrogates have the form &lt;code&gt;1101&lt;/code&gt; &lt;code&gt;10xx&lt;/code&gt; &lt;code&gt;xxxx&lt;/code&gt; &lt;code&gt;xxxx&lt;/code&gt; and low surrogates &lt;code&gt;1101&lt;/code&gt; &lt;code&gt;11xx&lt;/code&gt; &lt;code&gt;xxxx&lt;/code&gt; &lt;code&gt;xxxx&lt;/code&gt;. The &lt;code&gt;x&lt;/code&gt; bits are the data (or payload) bits carrying the code point value minus &lt;code&gt;0x10000&lt;/code&gt;. This subtraction allows inserting values from 0 to 2^20 - 1, an additional 1,048,576 code points beyond the 65,536 code points of the BMP.&lt;/p&gt;
+&lt;p&gt;The high surrogate range is &lt;code&gt;0xD800-0xDBFF&lt;/code&gt;. The low surrogate range is &lt;code&gt;0xDC00-0xDFFF&lt;/code&gt;. The full surrogate block &lt;code&gt;0xD800-0xDFFF&lt;/code&gt; is reserved exclusively in Unicode for surrogate code points. This means that no matter the UTF form, no character can have a code point in this range.&lt;/p&gt;
+&lt;p&gt;Like UTF-32, the order of the bytes determines the version of UTF-16, in this case we are describing &lt;strong&gt;UTF-16BE&lt;/strong&gt; since it's big-endian. For little-endian it would be &lt;strong&gt;UTF-16LE&lt;/strong&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;int CodepointToUTF16BE(unsigned int codepoint, unsigned char *output) {
+
+    if (codepoint &amp;lt;= 0xFFFF) {
+        if (codepoint &amp;gt;= 0xD800 &amp;amp;&amp;amp; codepoint &amp;lt;= 0xDFFF) return 0; // values reserved for surrogate code points
+        output[0] = (unsigned char)((codepoint &amp;gt;&amp;gt; 8) &amp;amp; 0xFF);
+        output[1] = (unsigned char)(codepoint &amp;amp; 0xFF);
+        return 2;
+    }
+    else if (codepoint &amp;lt;= 0x10FFFF) {
+        unsigned int codepoint_u = codepoint - 0b10000;
+        unsigned int high = (0b110110 &amp;lt;&amp;lt; 10) | ((codepoint_u &amp;gt;&amp;gt; 10) &amp;amp; 0b1111111111);
+        unsigned int low  = (0b110111 &amp;lt;&amp;lt; 10) | (codepoint_u &amp;amp; 0b1111111111);
+
+        output[0] = (high &amp;gt;&amp;gt; 8) &amp;amp; 0xFF;
+        output[1] = high &amp;amp; 0xFF;
+        output[2] = (low &amp;gt;&amp;gt; 8) &amp;amp; 0xFF;
+        output[3] = low &amp;amp; 0xFF;
+        return 4;
+    }
+
+    // invalid codepoint
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h3 id="utf-8-the-standard-encoding"&gt;UTF-8: The Standard Encoding&lt;/h3&gt;
+&lt;p&gt;Now let's look into UTF-8, which also uses variable-width encoding.&lt;/p&gt;
+&lt;p&gt;In UTF-8, the number of bytes it takes to store a code point corresponds to the range of the value. Code points from &lt;code&gt;U+0000&lt;/code&gt; to &lt;code&gt;U+007F&lt;/code&gt; are stored in 1 byte, ranges from &lt;code&gt;U+0080&lt;/code&gt; to &lt;code&gt;U+07FF&lt;/code&gt; are stored in 2 bytes, and so on.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;U+00000&lt;/code&gt; - &lt;code&gt;U+00007F&lt;/code&gt;: 1 Byte&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;U+00080&lt;/code&gt; - &lt;code&gt;U+0007FF&lt;/code&gt;: 2 Bytes&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;U+00800&lt;/code&gt; - &lt;code&gt;U+00FFFF&lt;/code&gt;: 3 Bytes&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;U+01000&lt;/code&gt; - &lt;code&gt;U+10FFFF&lt;/code&gt;: 4 Bytes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The Smiling Face with Sunglasses emoji 😎 corresponds to the Unicode code point &lt;code&gt;U+1F60E&lt;/code&gt; which in UTF-8 uses 4 bytes. How would you encode this?&lt;/p&gt;
+&lt;p&gt;If we took the same plain encoding approach as UTF-32 there would be 4 bytes one next to the other, but nothing to indicate that those 4 bytes make a single character. How do we know if this isn't 4 characters each one taking 1 byte? Or 2 characters of 2 bytes? Let's say we want to index the third character in a string. How would we do that?&lt;/p&gt;
+&lt;p&gt;We need to define a more complex structure when working with variable-width encoding. An ideal encoding format will make it possible to identify where a character starts and where it ends in a string.&lt;/p&gt;
+&lt;p&gt;A document with UTF-8 encoding will have every byte either be a &lt;em&gt;leading byte&lt;/em&gt;, which indicates the start of a character as well as how many bytes follow it, or a &lt;em&gt;continuation byte&lt;/em&gt;, which allows validating the sequence.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;U+1F60E&lt;/code&gt; (or &lt;code&gt;0001 1111 0110 0000 1110&lt;/code&gt; in binary) encoded with UTF-8 looks like this:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;(11110)000&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;(10)011111&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;(10)011000&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;(10)001110&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Inside the parentheses are the header bits. Just by looking at the header bits we can determine if we are in a leading or continuation byte.&lt;/p&gt;
+&lt;p&gt;Continuation bytes start with &lt;code&gt;10&lt;/code&gt;. We look at continuation bytes to validate UTF-8. If the number of continuation bytes do not correspond to those indicated by the leading byte, we know it's invalid UTF-8.&lt;/p&gt;
+&lt;p&gt;Leading bytes in multi-byte sequences consist of a series of ones followed by a zero. The number of ones indicates the total number of bytes used by the code point, including the leading byte. In our emoji example we see the leading byte has header bits &lt;code&gt;11110&lt;/code&gt;, so we can read the code point as one character of 4 bytes. This rule applies to all code point lengths except for those of 1 byte, the ASCII characters.&lt;/p&gt;
+&lt;p&gt;1-byte characters have a leading byte that starts with zero, followed by the code point value. The letter &lt;code&gt;A&lt;/code&gt; will be encoded in UTF-8 the same way as one would encode it in ASCII.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;The rest of the bits are the data bits. These contain the code point value in binary, padded with leading zeros.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;First code point&lt;/th&gt;
+&lt;th&gt;Last code point&lt;/th&gt;
+&lt;th&gt;Byte 1&lt;/th&gt;
+&lt;th&gt;Byte 2&lt;/th&gt;
+&lt;th&gt;Byte 3&lt;/th&gt;
+&lt;th&gt;Byte 4&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;U+0000&lt;/td&gt;
+&lt;td&gt;U+007F&lt;/td&gt;
+&lt;td&gt;0xxxxxxx&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;U+0080&lt;/td&gt;
+&lt;td&gt;U+07FF&lt;/td&gt;
+&lt;td&gt;110xxxxx&lt;/td&gt;
+&lt;td&gt;10xxxxxx&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;U+0800&lt;/td&gt;
+&lt;td&gt;U+FFFF&lt;/td&gt;
+&lt;td&gt;1110xxxx&lt;/td&gt;
+&lt;td&gt;10xxxxxx&lt;/td&gt;
+&lt;td&gt;10xxxxxx&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;U+010000&lt;/td&gt;
+&lt;td&gt;U+10FFFF&lt;/td&gt;
+&lt;td&gt;11110xxx&lt;/td&gt;
+&lt;td&gt;10xxxxxx&lt;/td&gt;
+&lt;td&gt;10xxxxxx&lt;/td&gt;
+&lt;td&gt;10xxxxxx&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The table contains the bytes with the header bits set. The &lt;code&gt;x&lt;/code&gt; bits correspond to the data bits holding code point values.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
+
+    if (codepoint &amp;lt;= 0x7F) {
+        output[0] = (unsigned char)codepoint;
+        return 1;
+    } else if (codepoint &amp;lt;= 0x7FF) {
+        output[0] = (unsigned char)(0b11000000 | ((codepoint &amp;gt;&amp;gt; 6) &amp;amp; 0x1F));    // (110)0 0000 | 000x xxxx
+        output[1] = (unsigned char)(0b10000000 | (codepoint &amp;amp; 0x3F));           // (10)00 0000 | 00xx xxxx
+        return 2;
+    } else if (codepoint &amp;lt;= 0xFFFF) {
+        output[0] = (unsigned char)(0b11100000 | ((codepoint &amp;gt;&amp;gt; 12) &amp;amp; 0x0F));   // (1110) 0000 | 0000 xxxx
+        output[1] = (unsigned char)(0b10000000 | ((codepoint &amp;gt;&amp;gt; 6) &amp;amp; 0x3F));    // (10)00 0000 | 00xx xxxx
+        output[2] = (unsigned char)(0b10000000 | (codepoint &amp;amp; 0x3F));           // (10)00 0000 | 00xx xxxx
+        return 3;
+    } else if (codepoint &amp;lt;= 0x10FFFF) {
+        output[0] = (unsigned char)(0b11110000 | ((codepoint &amp;gt;&amp;gt; 18) &amp;amp; 0x07));   // (1111 0)000 | 0000 0xxx
+        output[1] = (unsigned char)(0b10000000 | ((codepoint &amp;gt;&amp;gt; 12) &amp;amp; 0x3F));   // (10)00 0000 | 00xx xxxx
+        output[2] = (unsigned char)(0b10000000 | ((codepoint &amp;gt;&amp;gt; 6) &amp;amp; 0x3F));    // (10)00 0000 | 00xx xxxx
+        output[3] = (unsigned char)(0b10000000 | (codepoint &amp;amp; 0x3F));           // (10)00 0000 | 00xx xxxx
+        return 4;
+    }
+
+    // invalid codepoint
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h3 id="encoding-code-points"&gt;Encoding Code Points&lt;/h3&gt;
+&lt;p&gt;I will be using this wrapper to quickly print different code points.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;void PrintCodepointChar(int codepoint) {
+    unsigned char encodedChar[5];   // a Unicode character doesn't take more than 4 bytes, the 5th byte is for the null terminator
+
+    size_t len = CodepointToUTF8(codepoint, encodedChar);
+
+    encodedChar[len] = '\0';
+    printf("%s\n", encodedChar);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If we run the code in a terminal with UTF-8 encoding we get the following when printing.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PrintCodepointChar(0x0040);
+    // OUTPUT: @
+PrintCodepointChar(0xE9);
+    // OUTPUT: é
+PrintCodepointChar(0x03BB);
+    // OUTPUT: λ
+PrintCodepointChar(0x266A);
+    // OUTPUT: ♪
+PrintCodepointChar(0x1F60E);
+    // OUTPUT: 😎
+PrintCodepointChar(0x1F40C);
+    // OUTPUT: 🐌
+PrintCodepointChar(0x1F697);
+    // OUTPUT: 🚗
+PrintCodepointChar(0x1F43B);
+    // OUTPUT: 🐻
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let's change the wrapper function a little to showcase a cool Unicode feature.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;void PrintCodepointCombiningChar(int codepointBase, int codepointComb) {
+    unsigned char encodedChars[9];
+
+    unsigned char* p = encodedChars;
+    p += CodepointToUTF8(codepointBase, encodedChars);
+    p += CodepointToUTF8(codepointComb, p);
+
+    *p = '\0';
+    printf("%s\n", encodedChars);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In this function we define &lt;code&gt;encodedChars&lt;/code&gt; as a string containing the encoded code point &lt;code&gt;codepointBase&lt;/code&gt; followed by the encoded code point &lt;code&gt;codepointComb&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If we use this function with regular characters we get&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PrintCodepointCombiningChar(0x1F47D, 0x1F916);
+    // OUTPUT: 👽🤖
+PrintCodepointCombiningChar(0x1F355, 0x1F62D);
+    // OUTPUT: 🍕😭
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That was to be expected, let's try with some other characters&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PrintCodepointChar(0x0065);                     
+    // OUTPUT: e
+PrintCodepointChar(0xE9);                       
+    // OUTPUT: é
+PrintCodepointCombiningChar(0x0065, 0x0301);    
+    // OUTPUT: é
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;What exactly happened in the last line? Why was the string composed of the characters with code points &lt;code&gt;0x0065&lt;/code&gt; and &lt;code&gt;0x0301&lt;/code&gt; printed as a single character?&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3 id="bonus-combining-characters"&gt;Bonus! Combining characters&lt;/h3&gt;
+&lt;p&gt;Not all characters have a direct visual representation (for example, control characters like the null terminator or line breaks), and not all characters have a single code point when encoded in Unicode. Believe it or not, the letters &lt;code&gt;é&lt;/code&gt; and &lt;code&gt;é&lt;/code&gt; don't share the same code point&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;char1 = "é".encode("utf-8")
+char2 = "é".encode("utf-8")
+
+print("char 1 byte length:", len(char1))
+print("char 2 byte length", len(char2))
+print("char 1 bytes:", char1)
+print("char 2 bytes:", char2)
+
+    # OUTPUT:
+    # char 1 byte length: 2
+    # char 2 byte length 3
+    # char 1 bytes: b'\xc3\xa9'
+    # char 2 bytes: b'e\xcc\x81'
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;What is going on? The answer to this is &lt;em&gt;combining characters&lt;/em&gt;. These are special characters that modify preceding characters in order to create new variations.&lt;/p&gt;
+&lt;p&gt;In the first example, we are using a &lt;em&gt;precomposed character&lt;/em&gt;, a character with a dedicated code point. In this case &lt;code&gt;é&lt;/code&gt; has the code point &lt;code&gt;U+00E9&lt;/code&gt;. In the next example, we are creating a combination of two characters for &lt;code&gt;é&lt;/code&gt;, &lt;code&gt;U+0065&lt;/code&gt; + &lt;code&gt;U+0301&lt;/code&gt;, that is the letter &lt;code&gt;e&lt;/code&gt; and the acute diacritic. This is called a &lt;em&gt;decomposed&lt;/em&gt; character.&lt;/p&gt;
+&lt;p&gt;Most letters and symbols accept combining characters, and there is no limit to how many you can apply. This allows you to create some monstrous-looking characters that this site's font won't allow me to render properly, so I'm attaching an image&lt;/p&gt;
+&lt;p&gt;
+&lt;figure&gt;&lt;img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Zalgo_text_filter.png" /&gt;&lt;figcaption&gt;&lt;a href="https://en.wikipedia.org/wiki/Zalgo_text"&gt;Zalgo text!&lt;/a&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;/p&gt;
+&lt;p&gt;Now comes a new problem: how do we know if two strings are the same? They may look the same when printed but have totally different encodings. Luckily, Unicode defines &lt;em&gt;Unicode equivalence&lt;/em&gt; to solve this issue.&lt;/p&gt;
+&lt;p&gt;Code point sequences are defined as &lt;strong&gt;canonically equivalent&lt;/strong&gt; if they represent the same abstract character while also looking the same when displayed. In the last case &lt;code&gt;é&lt;/code&gt; (precomposed) and &lt;code&gt;é&lt;/code&gt; (decomposed) would be an example of this type of equivalence. When code point sequences are &lt;strong&gt;compatibility equivalent&lt;/strong&gt;, they might look similar, but are used in different contexts, as they represent different abstract characters. It is the case of &lt;code&gt;A&lt;/code&gt; and &lt;code&gt;𝔸&lt;/code&gt;. You understand the meaning of the word &lt;code&gt;𝔸mbiguous&lt;/code&gt;, but that is not how the character is usually used.&lt;/p&gt;
+&lt;p&gt;Based on these equivalences the standard also defines &lt;em&gt;Unicode normalization&lt;/em&gt;, to make sure that equivalent text sequences have consistent encodings. You can read further on this topic in this &lt;a href="https://mcilloni.ovh/2023/07/23/unicode-is-hard/#unicode-normalization"&gt;article&lt;/a&gt; by Marco Cilloni.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;This doesn't mean all code points are assigned.&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;One of the major benefits of using UTF-8 is backwards compatibility with ASCII.&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><guid isPermaLink="false">https://ngonella.com/utf-encoding</guid></item></channel></rss>
