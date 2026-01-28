@@ -1,9 +1,10 @@
----
-title: Setting Up a Simple Blog
-author: Nazareno Gonella
-date: 04/11/25
-template: template-post
----
++++
+title = "Setting Up a Simple Blog"
+author = "Nazareno Gonella"
+date = "2025-11-04"
+template = "template-post"
+section = "posts"
++++
 
 ---
 

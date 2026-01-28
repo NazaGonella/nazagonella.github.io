@@ -1,9 +1,10 @@
----
-title: Decoding UTFs
-author: Nazareno Gonella
-date: 13/12/25
-template: template-post
----
++++
+title = "Decoding UTFs"
+author = "Nazareno Gonella"
+date = "2025-12-13"
+template = "template-post"
+section = "posts"
++++
 
 ---
 

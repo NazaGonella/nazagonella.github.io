@@ -1,0 +1,23 @@
+[paths]
+static = "static/"
+content = "content/"
+templates = "templates/"
+build = "build/"
+
+[site]
+title = "Nazareno Gonella"               # the default title for pages
+description = "Hello, I'm Nazareno Gonella, an AI engineering student. Here I share code, projects, and topics I'm currently learning about."   # the default description for pages
+base_url = "https://ngonella.com/"
+languages = ["en"]
+
+[[site.authors]]
+name = "Nazareno Gonella"
+email = "nazagonella2@gmail.com"
+
+[feed]
+title = "Naza Gonella Blog"
+subtitle = "Hello and welcome to my feed!!"
+icon = "icon.svg"
+output = "feed.xml"
+sections = ["posts"]
+tags = []

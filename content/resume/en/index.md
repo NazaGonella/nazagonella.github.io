@@ -1,8 +1,8 @@
----
-title: Resume | Nazareno Gonella
-author: Nazareno Gonella
-template: template-home
----
++++
+title = "Resume | Nazareno Gonella"
+author = "Nazareno Gonella"
+template = "template-home"
++++
 
 [[ES]](/resume/es/) - [[PDF]](/resume/en/Gonella-Nazareno.pdf)
 

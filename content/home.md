@@ -1,8 +1,8 @@
----
-title: Nazareno Gonella
-author: Nazareno Gonella
-template: template-home
----
++++
+title = "Nazareno Gonella"
+author = "Nazareno Gonella"
+template = "template-home"
++++
 
 ### Posts!
 
