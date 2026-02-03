@@ -1,0 +1,27 @@
+[paths]
+static = "static/"
+content = "content/"
+templates = "templates/"
+build = "build/"
+
+[site]
+title = "Your Site Title"               # the default title for pages
+description = "Your site description"   # the default description for pages
+base_url = "https://example.com"
+languages = ["en"]                      # RSS feeds uses the first language in this list, defaults to english
+
+[[site.authors]]
+name = "author 1 name"
+email = "author 1 email address"
+
+[deploy]
+page_repo = "gh-pages"
+
+[feed]
+title = "Your Feed Title"
+subtitle = "Your Feed Subtitle"
+icon = "icon.svg"
+output = "feed.xml"
+# the RSS feed will include pages that fit at least one of the following criteria (sections or tags)
+sections = ["posts"]
+tags = []

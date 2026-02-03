@@ -4,9 +4,11 @@ author = "Nazareno Gonella"
 template = "template-home"
 +++
 
-### Posts!
+### Posts
 
 ---
+
+29/01/2026 [One Unix Command a Day](/posts/unix-commands/)  
 
 13/12/2025 [Decoding UTFs](/posts/utf-encoding/)  
 

@@ -1,0 +1,21 @@
++++
+title = "One Unix Command a Day"
+author = "Nazareno Gonella"
+date = "2026-01-29"
+template = "template-post"
+section = "posts"
++++
+
+---
+
+I recently realized that my knowledge of every-day linux commands is quite superficial.
+
+---
+
+### Index
+
+> [Day 00: ls]()
+
+> [Day 01: mv]()
+
+> [Day 02: cd]()
