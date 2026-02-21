@@ -308,6 +308,7 @@ a:hover {
 
 pre, pre code, code {
   font-family: JetBrainsMono, Consolas, Monaco, "DejaVu Sans Mono", "Courier New", monospace;
+  font-variant-ligatures: none;
   font-size: 95%;
   /* font-family: inherit; */
   white-space: pre;
