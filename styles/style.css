@@ -1,37 +1,34 @@
 /* font */
 
-/* Regular */
+/* @font-face {
+	font-family: "fontNormal";
+	src: url("fonts/TitilliumWeb-Light.ttf") format('truetype');
+} */
+
 @font-face {
-  font-family: 'Source Code';
-  src: url('/assets/Source_Code_Pro/static/SourceCodePro-Regular.ttf') format('truetype');
+  font-family: "JetBrainsMono";
+  src: url("/fonts/JetBrainsMono-Regular.ttf") format("truetype");
   font-weight: 400;
-  font-style: normal;
 }
 
-/* Bold */
 @font-face {
-  font-family: 'Source Code';
-  src: url('/assets/Source_Code_Pro/static/SourceCodePro-Bold.ttf') format('truetype');
+  font-family: "TitilliumWeb";
+  src: url("/fonts/TitilliumWeb-Regular.ttf") format("truetype");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "TitilliumWeb";
+  src: url("/fonts/TitilliumWeb-Bold.ttf") format("truetype");
   font-weight: 700;
-  font-style: normal;
 }
 
-/* Italic */
 @font-face {
-  font-family: 'Source Code';
-  src: url('/assets/Source_Code_Pro/static/SourceCodePro-Italic.ttf') format('truetype');
+  font-family: "TitilliumWeb";
+  src: url("/fonts/TitilliumWeb-Italic.ttf") format("truetype");
   font-weight: 400;
   font-style: italic;
 }
-
-/* Bold Italic */
-@font-face {
-  font-family: 'Source Code';
-  src: url('/assets/Source_Code_Pro/static/SourceCodePro-BoldItalic.ttf') format('truetype');
-  font-weight: 700;
-  font-style: italic;
-}
-
 
 
 /* colors */
@@ -94,10 +91,12 @@
 
 .darkmode {
   --color_background: #2E2E2E;
+  --color_body_background: #3E3E3E;
   /*--color_background: #3A3A3A;*/
   /*--color_plain_text: #E0E0E0;*/
   /*--color_plain_text: #FFFFFF;*/
   --color_plain_text: #E4E4E4;
+  /* --color_plain_text: #ddd; */
   --color_highlight: #3399FF;
   /*--color_highlight: #4D7CFF;*/
   --color_title: #CC88FF;
@@ -162,12 +161,16 @@
 /* base layout */
 
 p, h1, h2, h3, h4, h5, h6, blockquote, figure, div {
-    /*
-    margin-top: 1em;
-    margin-bottom: 1em;
-    */
-    line-height: 1.4;
+  /*
+  margin-top: 1em;
+  margin-bottom: 1em;
+  */
+  line-height: 1.4;
 }
+
+/* h1, h2, h3, h4, h5, h6 {
+  font-family: Inter;
+} */
 
 .separator::after {
   content: ":";
@@ -203,15 +206,18 @@ html {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   */
 body {
+  /* background: var(--color_background); */
   background: var(--color_background);
-  font-family: Consolas, Monaco, "DejaVu Sans Mono", "Courier New", monospace;
+  /* font-family: Consolas, Monaco, "DejaVu Sans Mono", "Courier New", monospace; */
+  font-family: TitilliumWeb, Helvetica, Arial, sans-serif;
   font-size: 17px;
-  line-height: 1.5;
+  /* line-height: 1.6em; */
+  letter-spacing: .6px;
   padding-top: 2.0em;
   padding-right: 1.0em;
   padding-left: 1.0em;
   max-width: 100%;
-  font-weight: 400;
+  font-weight: 300;
   color: var(--color_plain_text);
 }
 
@@ -242,7 +248,8 @@ header {
   /*align-items: center;*/
   color: #777;
   font-size: 17px;
-  line-height: 1.5;
+  /* line-height: 1.5; */
+  /* margin: 0em 0 2.5em;  */
 }
 
 header > nav {
@@ -251,27 +258,20 @@ header > nav {
   /*gap: 1em;*/
   gap: 2em;
   font-size: 17px;
-  line-height: 1.5;
-}
-
-header a {
-    text-decoration: underline;
+  /* line-height: 1.5; */
+  align-items: baseline;
+  margin-bottom: 1.0em;
 }
 
 /*COLORS*/
 
-header .author-name {
-  color: var(--color_plain_text);
-}
-
-header .author-name:hover {
-  color: var(--color_highlight);
-}
-
-header .title {
-  text-decoration: none;
-  color: var(--color_highlight);
-}
+/* header .title { */
+  /* text-decoration: none; */
+  /* color: var(--color_highlight); */
+  /* color: black; */
+  /* background-color: #028090; */
+  /* background-color: var(--color_plain_text); */
+/* } */
 
 
 /* typography */
@@ -289,28 +289,27 @@ p a strong {
 }
 
 a {
-  color: black;
+  background-color: #3399ff16;
+  color: var(--color_highlight);
   font-weight: bold;
   text-decoration: none;
-}
-
-a:not(.author-name):not(.title) {
-  color: blue;
-  color: #028090;
-  color: #1B9AAA;
-  color: red;
-  color: var(--color_highlight);
+  /* border-bottom-style: solid;
+  border-bottom-width: 3px; */
 }
 
 a:hover {
-  text-decoration: underline;
+  /* text-decoration: underline; */
+  background-color: var(--color_highlight);
+  color: var(--color_background);
 }
 
 
 /* code */
 
 pre, pre code, code {
-  font-family: inherit;
+  font-family: JetBrainsMono, Consolas, Monaco, "DejaVu Sans Mono", "Courier New", monospace;
+  font-size: 95%;
+  /* font-family: inherit; */
   white-space: pre;
   /* background: #e5e5e5; */
   background: var(--color_code);
@@ -332,7 +331,7 @@ pre code {
 }
 
 :not(pre) > code {  /* inline code */
-  font-size: 90%;
+  /* font-size: 90%; */
   background: var(--color_inline_code);
   font-weight: bold;
   /* border-radius: 0.5ch; */
@@ -406,11 +405,11 @@ blockquote div {
 /* tables */
 
 table {
-    border-collapse: collapse;
-    width: 100%;
-    font-family: inherit;
-    font-size: 1rem;
-    line-height: 1.4;
+  border-collapse: collapse;
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
 }
 
 table, th, td {
