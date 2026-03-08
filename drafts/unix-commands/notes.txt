@@ -1,0 +1,65 @@
+* commands VS shell builtins
+* linux may have more options for commands (see [https://superuser.com/a/296195], GNU coreutils tools, GNU implementations, POSIX, BSD)
+* differentiate the use of each command for each OS
+* talk about shells
+
+## File and Directory Management
+- ls: list directory contents  
+- cd: change directory  
+- cp: copy files or directories  
+- mv: move or rename files or directories  
+- rm: remove files or directories  
+- tree: display directories as a tree  
+- find: search for files or directories by name, type, size, etc.  
+
+## Text Viewing and Manipulation
+- cat: display file contents  
+- tac: display file contents in reverse  
+- nl: number lines of a file  
+- comm: compare two sorted files line by line  
+- split: split a file into chunks  
+- csplit: split a file by patterns  
+- shuf: randomize lines in a file  
+- head / tail: display start or end of a file  
+- wc: count lines, words, characters  
+- cut: extract specific fields or columns  
+- sort: sort lines in a file
+- awk: pattern scanning and text processing tool; can extract, format, and transform data from files or streams
+- less: view text files or command output one screen at a time with navigation and search
+
+## System Monitoring / Processes
+- ps: list current running processes and their status
+- kill: send signals to processes, commonly used to terminate them  
+- lsof: list open files and the processes that have them open; useful for diagnosing file or network usage
+
+## Searching and Filtering
+- grep: search for patterns in text  
+- sed: stream editor; substitution command syntax `s/pattern/replacement/flags`  
+- jq: parse and process JSON data  
+
+## Shell / Shell Utilities
+- echo: print text to stdout  
+- alias: create shortcuts for commands  
+- source: run a shell script in the current shell  
+- export: set environment variables  
+- watch: run a command repeatedly, showing live output  
+- xargs: construct and execute command lines from input, often used with `find` or `grep`
+- which: show full path of a command executable
+- zsh: interactive shell with scripting features, improved tab completion, and customization over bash
+- history: display the list of commands previously run in the current shell session
+
+## Networking
+- ping: test connectivity to a host  
+- curl: transfer data from or to a server  
+- wget: download files from the web  
+- ssh: secure shell access to remote systems  
+
+## Permissions
+- chmod: change file permissions  
+- chown: change file ownership  
+
+## Documentation
+- man: show manual pages for commands  
+- apropos: search the short descriptions of all man pages for a keyword
+
+
