@@ -34,54 +34,11 @@
 /* colors */
 
 :root {
-  --color_highlight: #E57A10;
-  --color_plain_text: #FFFCE8;
-  --color_background: #3E363F;
-  --color_code: #594C4D;
-  --color_title: #CE6C47;
-  --color_white: #FAFAFA;
-  --color_gray: #FFFCE8;
-}
-
-:root {
-  --color_background: #1E1E1E;   /* CRT dark gray, not pure black */
-  --color_plain_text: #E8E8E8;   /* phosphor white */
-  --color_highlight: #4D6CFF;    /* electric link blue */
-  --color_title: #B07ACC;        /* softened visited purple */
-  --color_code: #2A2A2A;         /* inset terminal panel */
-  --color_white: #FFFFFF;
-  --color_gray: #9A9A9A;         /* UI gray */
-}
-
-:root {
-  --color_background: #FAFAFA;   /* classic browser gray */
-  --color_plain_text: #000000;   /* pure black text */
-  --color_highlight: #0000EE;    /* default link blue */
-  --color_title: #800080;        /* visited-link purple */
-  --color_code: #E0E0E0;         /* light system panel */
-  --color_white: #FAFAFA;
-  --color_gray: #808080;         /* UI gray */
-}
-
-:root {
-  --color_background: #FFFFFF;   /* classic browser gray */
-  --color_plain_text: #000000;   /* pure black text */
-  --color_highlight: #0000EE;    /* default link blue */
-  --color_title: #800080;        /* visited-link purple */
-  --color_code: #E0E0E0;         /* light system panel */
-  --color_white: #FFFFFF;
-  --color_gray: #808080;         /* UI gray */
-}
-
-:root {
-  /*--color_background: #FFFFFF;*/
   --color_background: #FFFFFF;
+  /* --color_background: #E4E4E4; */
   --color_plain_text: #222222;
-  /*--color_highlight: #3399FF;*/
-  /*--color_highlight: #0000FF;*/
-  /* --color_highlight: #1A4DFF; */
   --color_highlight: #4D7CFF;
-  /* --color_highlight: #3399FF; */
+  --color_highlight_hover: #E4E4E4;
   --color_title: #800080;
   --color_inline_code: #E0E0E0;
   --color_code: #E0E0E0;
@@ -92,17 +49,12 @@
 .darkmode {
   --color_background: #2E2E2E;
   --color_body_background: #3E3E3E;
-  /*--color_background: #3A3A3A;*/
-  /*--color_plain_text: #E0E0E0;*/
-  /*--color_plain_text: #FFFFFF;*/
   --color_plain_text: #E4E4E4;
-  /* --color_plain_text: #ddd; */
   --color_highlight: #3399FF;
-  /*--color_highlight: #4D7CFF;*/
+  --color_highlight_hover: #E4E4E4;
   --color_title: #CC88FF;
   --color_inline_code: #5A5A5A;
   --color_code: #3A3A3A;
-  /*--color_code: #444444;*/
   --color_white: #FFFFFF;
   --color_gray: #AAAAAA;
   --color_table_border: #555555;
@@ -301,6 +253,7 @@ a:hover {
   /* text-decoration: underline; */
   background-color: var(--color_highlight);
   color: var(--color_background);
+  /* color: var(--color_highlight_hover); */
 }
 
 
