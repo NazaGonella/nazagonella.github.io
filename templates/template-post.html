@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hidden Tricks And Uses of Everyday Commands</title>
+  <title>{{page.title}}</title>
   <script>
     if (localStorage.getItem('darkmode') === 'active') {
       document.documentElement.classList.add('darkmode');
@@ -34,13 +34,9 @@
 
   <main>
     <article>
-      <h3>Hidden Tricks And Uses of Everyday Commands</h3>
-      <p><em>February 09, 2026</em></p>
-      <hr />
-<p>From Akinator's website FAQ: "The algorithm we use is an original creation. How we created it is our little secret.". That sounds like a fun challenge doesn't it? Now, there are a lot of explanations on how Akinator probably works, in this post I'm going to try and make an accurate estimation.</p>
-<p>Probably uses Neo4j?</p>
-<p>Neural networks? Decision trees?</p>
-<p>Maybe I can create the data using ChatGPT</p>
+      <h3>{{page.title}}</h3>
+      <p><em>{{ page.date.strftime("%B %d, %Y") }}</em></p>
+      {{page.content}}
     </article>
   </main>
 
