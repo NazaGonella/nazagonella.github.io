@@ -1,15 +1,20 @@
 +++
 title = "Nazareno Gonella"
 author = "Nazareno Gonella"
-template = "template-home"
+template = "/templates/template-home.html"
 +++
 
 ### Posts
 
 ---
 
-13/12/2025 [Decoding UTFs](/posts/utf-encoding/)  
-
-04/11/2025 [Setting Up a Simple Blog](/posts/simple-blog/)  
+{% for p in sections.posts | sort(attribute="date", reverse=True) %}
+<p>
+    {{ p.date.strftime("%d/%m/%Y") }}
+    <a href="{{ p.url }}">
+        {{ p.title }}
+    </a>
+</p>
+{% endfor %}
 
 ---

@@ -1,7 +1,7 @@
 +++
 title = "Nazareno Gonella"
 author = "Nazareno Gonella"
-template = "template-home"
+template = "/templates/template-home.html"
 +++
 
 <div style="margin-top:2em;"></div>

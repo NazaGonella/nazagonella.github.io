@@ -1,7 +1,7 @@
 +++
 title = "Resume | Nazareno Gonella"
 author = "Nazareno Gonella"
-template = "template-home"
+template = "/templates/template-home.html"
 +++
 
 [[ES]](/resume/es/) - [[PDF]](/resume/en/Gonella-Nazareno.pdf)

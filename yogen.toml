@@ -15,6 +15,7 @@ name = "Nazareno Gonella"
 email = "nazagonella2@gmail.com"
 
 [deploy]
+remote = "origin"
 page_repo = "gh-pages"
 
 [feed]

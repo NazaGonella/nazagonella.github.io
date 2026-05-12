@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nazareno Gonella</title>
+  <title>{{page.title}}</title>
   <script>
     if (localStorage.getItem('darkmode') === 'active') {
       document.documentElement.classList.add('darkmode');
@@ -34,24 +34,7 @@
 
   <main>
     <article>
-      <div style="margin-top:2em;"></div>
-
-<center>
-Hello, I'm Nazareno Gonella, an AI engineering student. Here I share code, projects, and topics I'm currently learning about.
-</center>
-
-<div style="margin-bottom:2em;"></div>
-
-<hr />
-<dl>
-<dt><strong>Email</strong></dt>
-<dd><a href="mailto:nazagonella2@gmail.com">nazagonella2@gmail.com</a></dd>
-<dt><strong>GitHub</strong></dt>
-<dd><a href="https://github.com/NazaGonella">github.com/NazaGonella</a></dd>
-<dt><strong>LinkedIn</strong></dt>
-<dd><a href="https://www.linkedin.com/in/nazareno-gonella/">linkedin.com/in/nazareno-gonella</a></dd>
-</dl>
-<hr />
+      {{page.content}}
     </article>
   </main>
 

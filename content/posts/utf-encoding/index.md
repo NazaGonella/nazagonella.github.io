@@ -2,7 +2,7 @@
 title = "Decoding UTFs"
 author = "Nazareno Gonella"
 date = "2025-12-13"
-template = "template-post"
+template = "/templates/template-post.html"
 section = "posts"
 +++
 
