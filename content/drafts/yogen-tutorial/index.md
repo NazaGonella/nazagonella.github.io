@@ -2,7 +2,7 @@
 title = "All You Need to Know to Use yogen"
 author = "Nazareno Gonella"
 date = "2026-01-30"
-template = "template-post"
+template = "/templates/template-post.html"
 section = "draft"
 +++
 

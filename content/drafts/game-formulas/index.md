@@ -2,7 +2,7 @@
 title = "Game Formulas"
 author = "Nazareno Gonella"
 date = "2026-03-06"
-template = "template-post"
+template = "/templates/template-post.html"
 section = "draft"
 +++
 

@@ -2,7 +2,7 @@
 title = "The Useful Git"
 author = "Nazareno Gonella"
 date = "2026-02-09"
-template = "template-post"
+template = "/templates/template-post.html"
 section = "draft"
 +++
 

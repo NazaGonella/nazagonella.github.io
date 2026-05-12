@@ -2,7 +2,7 @@
 title = "Hidden Tricks And Uses of Everyday Commands"
 author = "Nazareno Gonella"
 date = "2026-02-09"
-template = "template-post"
+template = "/templates/template-post.html"
 section = "draft"
 +++
 

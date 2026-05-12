@@ -2,7 +2,7 @@
 title = "One Unix Command a Day"
 author = "Nazareno Gonella"
 date = "2026-01-29"
-template = "template-post"
+template = "/templates/template-post.html"
 section = "draft"
 +++
 
