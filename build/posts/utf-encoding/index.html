@@ -222,7 +222,7 @@ There is a slight difference. ASCII and Unicode are both <em>coded character set
     size_t len = CodepointToUTF8(codepoint, encodedChar);
 
     encodedChar[len] = '\0';
-    printf("%s\n", encodedChar);
+    printf(&quot;%s\n&quot;, encodedChar);
 }
 </code></pre>
 <p>If we run the code in a terminal with UTF-8 encoding we get the following when printing.</p>
@@ -252,7 +252,7 @@ PrintCodepointChar(0x1F43B);
     p += CodepointToUTF8(codepointComb, p);
 
     *p = '\0';
-    printf("%s\n", encodedChars);
+    printf(&quot;%s\n&quot;, encodedChars);
 }
 </code></pre>
 <p>In this function we define <code>encodedChars</code> as a string containing the encoded code point <code>codepointBase</code> followed by the encoded code point <code>codepointComb</code>.</p>
@@ -274,13 +274,13 @@ PrintCodepointCombiningChar(0x0065, 0x0301);
 <hr />
 <h3 id="bonus-combining-characters">Bonus! Combining characters</h3>
 <p>Not all characters have a direct visual representation (for example, control characters like the null terminator or line breaks), and not all characters have a single code point when encoded in Unicode. Believe it or not, the letters <code>é</code> and <code>é</code> don't share the same code point</p>
-<pre><code>char1 = "é".encode("utf-8")
-char2 = "é".encode("utf-8")
+<pre><code>char1 = &quot;é&quot;.encode(&quot;utf-8&quot;)
+char2 = &quot;é&quot;.encode(&quot;utf-8&quot;)
 
-print("char 1 byte length:", len(char1))
-print("char 2 byte length", len(char2))
-print("char 1 bytes:", char1)
-print("char 2 bytes:", char2)
+print(&quot;char 1 byte length:&quot;, len(char1))
+print(&quot;char 2 byte length&quot;, len(char2))
+print(&quot;char 1 bytes:&quot;, char1)
+print(&quot;char 2 bytes:&quot;, char2)
 
     # OUTPUT:
     # char 1 byte length: 2

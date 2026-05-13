@@ -48,37 +48,41 @@ There was now a need for a nice header: css and Markdown alone wouldn't suffice.
 
 I went on and created `create-post.py`, a Python script that takes `<file-name>` and `<post-title>` as arguments. This script creates `<file-name>.md` and writes to it the metadata block `% <post-title>`, the page header and the post header with the date of when the post was created.[^1]
 
-    header_date = datetime.now().strftime("%B {S}, %Y").replace('{S}', str(datetime.now().day))
+```
+header_date = datetime.now().strftime("%B {S}, %Y").replace('{S}', str(datetime.now().day))
 
-    header = f"""%{post_title}
+header = f"""%{post_title}
 
-    <header>
-        header content goes here
-    </header>
+<header>
+    header content goes here
+</header>
 
-    ## {post_title}
+## {post_title}
 
-    {header_date}
+{header_date}
 
-    ---
-    """
+---
+"""
 
-    with open(f"{posts_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") as f:
-        f.write(header)
+with open(f"{posts_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") as f:
+    f.write(header)
+```
 
 I also included some code to add the post entry along with the date to the home page
 
-    home_path = "./home.md"
-    date_entry = datetime.now().strftime("%d/%m/%Y")
-    post_entry = f"{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n"
+```
+home_path = "./home.md"
+date_entry = datetime.now().strftime("%d/%m/%Y")
+post_entry = f"{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n"
 
-    with open(home_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+with open(home_path, "r", encoding="utf-8") as f:
+    lines = f.readlines()
 
-    lines.insert(7, post_entry) # hardcoded position, for now
+lines.insert(7, post_entry) # hardcoded position, for now
 
-    with open(home_path, "w", encoding="utf-8") as f:
-        f.writelines(lines)
+with open(home_path, "w", encoding="utf-8") as f:
+    f.writelines(lines)
+```
 
 Some of this code is hardcoded. I plan on adding config files in the future. To see the full code visit the [repository](https://github.com/NazaGonella/ngonella-static-site-generator).
 
@@ -90,38 +94,40 @@ With this, I now have an easy way of creating new entries.
 
 Calling pandoc for every `.md` file is not ideal. That's why I implemented `build.py`, a minimal build system for transforming recently modified Markdown files into HTML files.
 
-    import os
-    import subprocess
-    from pathlib import Path
+```
+import os
+import subprocess
+from pathlib import Path
 
-    css_path = Path("style.css").resolve()      # absolute path to CSS
+css_path = Path("style.css").resolve()      # absolute path to CSS
 
-    ignored_mds = [Path("./README.md")]         # will not apply to ALL Markdown files
+ignored_mds = [Path("./README.md")]         # will not apply to ALL Markdown files
 
-    markdown_files = [md for md in Path(".").rglob("*.md") if md not in ignored_mds]
+markdown_files = [md for md in Path(".").rglob("*.md") if md not in ignored_mds]
 
-    paired_files = [(md, md.parent / "index.html") for md in markdown_files if md not in ignored_mds]   # target: index.html file in the same directory
+paired_files = [(md, md.parent / "index.html") for md in markdown_files if md not in ignored_mds]   # target: index.html file in the same directory
 
-    print("### BUILD ###")
+print("### BUILD ###")
 
-    for md, html in paired_files:
-        mod_time_md = md.stat().st_mtime
-        if html.exists():
-            mod_time_html = html.stat().st_mtime
-            if mod_time_html >  mod_time_md:
-                continue
+for md, html in paired_files:
+    mod_time_md = md.stat().st_mtime
+    if html.exists():
+        mod_time_html = html.stat().st_mtime
+        if mod_time_html >  mod_time_md:
+            continue
 
-        relative_path_css  = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
+    relative_path_css  = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
 
-        subprocess.run([
-            "pandoc",
-            "-s", str(md),
-            "-o", str(html),
-            "--css", relative_path_css,
-            "-V", "title="
-        ])
+    subprocess.run([
+        "pandoc",
+        "-s", str(md),
+        "-o", str(html),
+        "--css", relative_path_css,
+        "-V", "title="
+    ])
 
-        print(md, "->", html)
+    print(md, "->", html)
+```
 
 `-s` inserts the necessary headers and footers to create a full HTML file.
 
@@ -141,8 +147,10 @@ Probably one of the most important aspects of using vim in this case is having t
 
 I added the following to the `.vimrc`
 
-    let s:script_dir = expand('<sfile>:p:h')
-    autocmd FileType markdown autocmd BufWritePost <buffer> execute '!python3 ' . shellescape(s:script_dir . '/build.py')
+```
+let s:script_dir = expand('<sfile>:p:h')
+autocmd FileType markdown autocmd BufWritePost <buffer> execute '!python3 ' . shellescape(s:script_dir . '/build.py')
+```
 
 This will apply only when saving `.md` files.[^2]
 
@@ -152,17 +160,19 @@ To fix this I created a new `working` branch. Every change I make gets pushed to
 
 For easy deployment I made a simple shell script `deploy.sh`.
 
-    set -e
+```
+set -e
 
-    working_branch="working"
+working_branch="working"
 
-    git checkout master
-    git merge "$working_branch" --no-ff -m "Merge $working_branch branch into master"
-    git push origin master
+git checkout master
+git merge "$working_branch" --no-ff -m "Merge $working_branch branch into master"
+git push origin master
 
-    echo "Master branch updated"
+echo "Master branch updated"
 
-    git checkout "$working_branch"
+git checkout "$working_branch"
+```
 
 `set -e` tells the shell to exit immediately if any command fails.
 

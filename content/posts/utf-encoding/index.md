@@ -52,19 +52,21 @@ You may notice the problem UTF-32 introduces. A lot of bytes go to waste when us
 
 Another thing to notice is the order of the bytes, in this case we are using big-endian. This version of UTF-32 is called **UTF-32-BE**. The little-endian version is called **UTF-32-LE**.
 
-    int CodepointToUTF32BE(unsigned int codepoint, unsigned char *output) {
+```
+int CodepointToUTF32BE(unsigned int codepoint, unsigned char *output) {
 
-        if (codepoint >= 0x0 && codepoint <= 0x10FFFF) {
-            output[0] = (codepoint >> 24) & 0xFF;
-            output[1] = (codepoint >> 16) & 0xFF;
-            output[2] = (codepoint >> 8) & 0xFF;
-            output[3] = codepoint & 0xFF;
-            return 4;
-        }
-
-        // invalid codepoint
-        return 0;
+    if (codepoint >= 0x0 && codepoint <= 0x10FFFF) {
+        output[0] = (codepoint >> 24) & 0xFF;
+        output[1] = (codepoint >> 16) & 0xFF;
+        output[2] = (codepoint >> 8) & 0xFF;
+        output[3] = codepoint & 0xFF;
+        return 4;
     }
+
+    // invalid codepoint
+    return 0;
+}
+```
 
 ---
 
@@ -89,29 +91,31 @@ The high surrogate range is `0xD800-0xDBFF`. The low surrogate range is `0xDC00-
 
 Like UTF-32, the order of the bytes determines the version of UTF-16, in this case we are describing **UTF-16BE** since it's big-endian. For little-endian it would be **UTF-16LE**.
 
-    int CodepointToUTF16BE(unsigned int codepoint, unsigned char *output) {
+```
+int CodepointToUTF16BE(unsigned int codepoint, unsigned char *output) {
 
-        if (codepoint <= 0xFFFF) {
-            if (codepoint >= 0xD800 && codepoint <= 0xDFFF) return 0; // values reserved for surrogate code points
-            output[0] = (unsigned char)((codepoint >> 8) & 0xFF);
-            output[1] = (unsigned char)(codepoint & 0xFF);
-            return 2;
-        }
-        else if (codepoint <= 0x10FFFF) {
-            unsigned int codepoint_u = codepoint - 0b10000;
-            unsigned int high = (0b110110 << 10) | ((codepoint_u >> 10) & 0b1111111111);
-            unsigned int low  = (0b110111 << 10) | (codepoint_u & 0b1111111111);
-
-            output[0] = (high >> 8) & 0xFF;
-            output[1] = high & 0xFF;
-            output[2] = (low >> 8) & 0xFF;
-            output[3] = low & 0xFF;
-            return 4;
-        }
-
-        // invalid codepoint
-        return 0;
+    if (codepoint <= 0xFFFF) {
+        if (codepoint >= 0xD800 && codepoint <= 0xDFFF) return 0; // values reserved for surrogate code points
+        output[0] = (unsigned char)((codepoint >> 8) & 0xFF);
+        output[1] = (unsigned char)(codepoint & 0xFF);
+        return 2;
     }
+    else if (codepoint <= 0x10FFFF) {
+        unsigned int codepoint_u = codepoint - 0b10000;
+        unsigned int high = (0b110110 << 10) | ((codepoint_u >> 10) & 0b1111111111);
+        unsigned int low  = (0b110111 << 10) | (codepoint_u & 0b1111111111);
+
+        output[0] = (high >> 8) & 0xFF;
+        output[1] = high & 0xFF;
+        output[2] = (low >> 8) & 0xFF;
+        output[3] = low & 0xFF;
+        return 4;
+    }
+
+    // invalid codepoint
+    return 0;
+}
+```
 
 ---
 
@@ -160,31 +164,33 @@ The rest of the bits are the data bits. These contain the code point value in bi
 
 The table contains the bytes with the header bits set. The `x` bits correspond to the data bits holding code point values.
 
-    int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
+```
+int CodepointToUTF8(unsigned int codepoint, unsigned char *output) {
 
-        if (codepoint <= 0x7F) {
-            output[0] = (unsigned char)codepoint;
-            return 1;
-        } else if (codepoint <= 0x7FF) {
-            output[0] = (unsigned char)(0b11000000 | ((codepoint >> 6) & 0x1F));    // (110)0 0000 | 000x xxxx
-            output[1] = (unsigned char)(0b10000000 | (codepoint & 0x3F));           // (10)00 0000 | 00xx xxxx
-            return 2;
-        } else if (codepoint <= 0xFFFF) {
-            output[0] = (unsigned char)(0b11100000 | ((codepoint >> 12) & 0x0F));   // (1110) 0000 | 0000 xxxx
-            output[1] = (unsigned char)(0b10000000 | ((codepoint >> 6) & 0x3F));    // (10)00 0000 | 00xx xxxx
-            output[2] = (unsigned char)(0b10000000 | (codepoint & 0x3F));           // (10)00 0000 | 00xx xxxx
-            return 3;
-        } else if (codepoint <= 0x10FFFF) {
-            output[0] = (unsigned char)(0b11110000 | ((codepoint >> 18) & 0x07));   // (1111 0)000 | 0000 0xxx
-            output[1] = (unsigned char)(0b10000000 | ((codepoint >> 12) & 0x3F));   // (10)00 0000 | 00xx xxxx
-            output[2] = (unsigned char)(0b10000000 | ((codepoint >> 6) & 0x3F));    // (10)00 0000 | 00xx xxxx
-            output[3] = (unsigned char)(0b10000000 | (codepoint & 0x3F));           // (10)00 0000 | 00xx xxxx
-            return 4;
-        }
-
-        // invalid codepoint
-        return 0;
+    if (codepoint <= 0x7F) {
+        output[0] = (unsigned char)codepoint;
+        return 1;
+    } else if (codepoint <= 0x7FF) {
+        output[0] = (unsigned char)(0b11000000 | ((codepoint >> 6) & 0x1F));    // (110)0 0000 | 000x xxxx
+        output[1] = (unsigned char)(0b10000000 | (codepoint & 0x3F));           // (10)00 0000 | 00xx xxxx
+        return 2;
+    } else if (codepoint <= 0xFFFF) {
+        output[0] = (unsigned char)(0b11100000 | ((codepoint >> 12) & 0x0F));   // (1110) 0000 | 0000 xxxx
+        output[1] = (unsigned char)(0b10000000 | ((codepoint >> 6) & 0x3F));    // (10)00 0000 | 00xx xxxx
+        output[2] = (unsigned char)(0b10000000 | (codepoint & 0x3F));           // (10)00 0000 | 00xx xxxx
+        return 3;
+    } else if (codepoint <= 0x10FFFF) {
+        output[0] = (unsigned char)(0b11110000 | ((codepoint >> 18) & 0x07));   // (1111 0)000 | 0000 0xxx
+        output[1] = (unsigned char)(0b10000000 | ((codepoint >> 12) & 0x3F));   // (10)00 0000 | 00xx xxxx
+        output[2] = (unsigned char)(0b10000000 | ((codepoint >> 6) & 0x3F));    // (10)00 0000 | 00xx xxxx
+        output[3] = (unsigned char)(0b10000000 | (codepoint & 0x3F));           // (10)00 0000 | 00xx xxxx
+        return 4;
     }
+
+    // invalid codepoint
+    return 0;
+}
+```
 
 ---
 
@@ -192,64 +198,74 @@ The table contains the bytes with the header bits set. The `x` bits correspond t
 
 I will be using this wrapper to quickly print different code points.
 
-    void PrintCodepointChar(int codepoint) {
-        unsigned char encodedChar[5];   // a Unicode character doesn't take more than 4 bytes, the 5th byte is for the null terminator
+```
+void PrintCodepointChar(int codepoint) {
+    unsigned char encodedChar[5];   // a Unicode character doesn't take more than 4 bytes, the 5th byte is for the null terminator
 
-        size_t len = CodepointToUTF8(codepoint, encodedChar);
+    size_t len = CodepointToUTF8(codepoint, encodedChar);
 
-        encodedChar[len] = '\0';
-        printf("%s\n", encodedChar);
-    }
+    encodedChar[len] = '\0';
+    printf("%s\n", encodedChar);
+}
+```
 
 If we run the code in a terminal with UTF-8 encoding we get the following when printing.
 
-    PrintCodepointChar(0x0040);
-        // OUTPUT: @
-    PrintCodepointChar(0xE9);
-        // OUTPUT: é
-    PrintCodepointChar(0x03BB);
-        // OUTPUT: λ
-    PrintCodepointChar(0x266A);
-        // OUTPUT: ♪
-    PrintCodepointChar(0x1F60E);
-        // OUTPUT: 😎
-    PrintCodepointChar(0x1F40C);
-        // OUTPUT: 🐌
-    PrintCodepointChar(0x1F697);
-        // OUTPUT: 🚗
-    PrintCodepointChar(0x1F43B);
-        // OUTPUT: 🐻
+```
+PrintCodepointChar(0x0040);
+    // OUTPUT: @
+PrintCodepointChar(0xE9);
+    // OUTPUT: é
+PrintCodepointChar(0x03BB);
+    // OUTPUT: λ
+PrintCodepointChar(0x266A);
+    // OUTPUT: ♪
+PrintCodepointChar(0x1F60E);
+    // OUTPUT: 😎
+PrintCodepointChar(0x1F40C);
+    // OUTPUT: 🐌
+PrintCodepointChar(0x1F697);
+    // OUTPUT: 🚗
+PrintCodepointChar(0x1F43B);
+    // OUTPUT: 🐻
+```
 
 Let's change the wrapper function a little to showcase a cool Unicode feature.
 
-    void PrintCodepointCombiningChar(int codepointBase, int codepointComb) {
-        unsigned char encodedChars[9];
+```
+void PrintCodepointCombiningChar(int codepointBase, int codepointComb) {
+    unsigned char encodedChars[9];
 
-        unsigned char* p = encodedChars;
-        p += CodepointToUTF8(codepointBase, encodedChars);
-        p += CodepointToUTF8(codepointComb, p);
+    unsigned char* p = encodedChars;
+    p += CodepointToUTF8(codepointBase, encodedChars);
+    p += CodepointToUTF8(codepointComb, p);
 
-        *p = '\0';
-        printf("%s\n", encodedChars);
-    }
+    *p = '\0';
+    printf("%s\n", encodedChars);
+}
+```
 
 In this function we define `encodedChars` as a string containing the encoded code point `codepointBase` followed by the encoded code point `codepointComb`.
 
 If we use this function with regular characters we get
 
-    PrintCodepointCombiningChar(0x1F47D, 0x1F916);
-        // OUTPUT: 👽🤖
-    PrintCodepointCombiningChar(0x1F355, 0x1F62D);
-        // OUTPUT: 🍕😭
+```
+PrintCodepointCombiningChar(0x1F47D, 0x1F916);
+    // OUTPUT: 👽🤖
+PrintCodepointCombiningChar(0x1F355, 0x1F62D);
+    // OUTPUT: 🍕😭
+```
 
 That was to be expected, let's try with some other characters
 
-    PrintCodepointChar(0x0065);                     
-        // OUTPUT: e
-    PrintCodepointChar(0xE9);                       
-        // OUTPUT: é
-    PrintCodepointCombiningChar(0x0065, 0x0301);    
-        // OUTPUT: é
+```
+PrintCodepointChar(0x0065);                     
+    // OUTPUT: e
+PrintCodepointChar(0xE9);                       
+    // OUTPUT: é
+PrintCodepointCombiningChar(0x0065, 0x0301);    
+    // OUTPUT: é
+```
 
 What exactly happened in the last line? Why was the string composed of the characters with code points `0x0065` and `0x0301` printed as a single character?
 
@@ -259,19 +275,21 @@ What exactly happened in the last line? Why was the string composed of the chara
 
 Not all characters have a direct visual representation (for example, control characters like the null terminator or line breaks), and not all characters have a single code point when encoded in Unicode. Believe it or not, the letters `é` and `é` don't share the same code point
 
-    char1 = "é".encode("utf-8")
-    char2 = "é".encode("utf-8")
+```
+char1 = "é".encode("utf-8")
+char2 = "é".encode("utf-8")
 
-    print("char 1 byte length:", len(char1))
-    print("char 2 byte length", len(char2))
-    print("char 1 bytes:", char1)
-    print("char 2 bytes:", char2)
+print("char 1 byte length:", len(char1))
+print("char 2 byte length", len(char2))
+print("char 1 bytes:", char1)
+print("char 2 bytes:", char2)
 
-        # OUTPUT:
-        # char 1 byte length: 2
-        # char 2 byte length 3
-        # char 1 bytes: b'\xc3\xa9'
-        # char 2 bytes: b'e\xcc\x81'
+    # OUTPUT:
+    # char 1 byte length: 2
+    # char 2 byte length 3
+    # char 1 bytes: b'\xc3\xa9'
+    # char 2 bytes: b'e\xcc\x81'
+```
 
 What is going on? The answer to this is *combining characters*. These are special characters that modify preceding characters in order to create new variations.
 
