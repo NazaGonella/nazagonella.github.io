@@ -57,9 +57,9 @@
 <hr />
 <h3 id="the-page-template">The Page Template</h3>
 <p>I went on and created <code>create-post.py</code>, a Python script that takes <code>&lt;file-name&gt;</code> and <code>&lt;post-title&gt;</code> as arguments. This script creates <code>&lt;file-name&gt;.md</code> and writes to it the metadata block <code>% &lt;post-title&gt;</code>, the page header and the post header with the date of when the post was created.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
-<pre><code>header_date = datetime.now().strftime("%B {S}, %Y").replace('{S}', str(datetime.now().day))
+<pre><code>header_date = datetime.now().strftime(&quot;%B {S}, %Y&quot;).replace('{S}', str(datetime.now().day))
 
-header = f"""%{post_title}
+header = f&quot;&quot;&quot;%{post_title}
 
 &lt;header&gt;
     header content goes here
@@ -70,22 +70,22 @@ header = f"""%{post_title}
 {header_date}
 
 ---
-"""
+&quot;&quot;&quot;
 
-with open(f"{posts_path}/{file_name}/{file_name}.md", "w", encoding="utf-8") as f:
+with open(f&quot;{posts_path}/{file_name}/{file_name}.md&quot;, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
     f.write(header)
 </code></pre>
 <p>I also included some code to add the post entry along with the date to the home page</p>
-<pre><code>home_path = "./home.md"
-date_entry = datetime.now().strftime("%d/%m/%Y")
-post_entry = f"{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n"
+<pre><code>home_path = &quot;./home.md&quot;
+date_entry = datetime.now().strftime(&quot;%d/%m/%Y&quot;)
+post_entry = f&quot;{date_entry}: [**{post_title}**]({posts_path}/{file_name}/index.html)  \n&quot;
 
-with open(home_path, "r", encoding="utf-8") as f:
+with open(home_path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
     lines = f.readlines()
 
 lines.insert(7, post_entry) # hardcoded position, for now
 
-with open(home_path, "w", encoding="utf-8") as f:
+with open(home_path, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
     f.writelines(lines)
 </code></pre>
 <p>Some of this code is hardcoded. I plan on adding config files in the future. To see the full code visit the <a href="https://github.com/NazaGonella/ngonella-static-site-generator">repository</a>.</p>
@@ -97,15 +97,15 @@ with open(home_path, "w", encoding="utf-8") as f:
 import subprocess
 from pathlib import Path
 
-css_path = Path("style.css").resolve()      # absolute path to CSS
+css_path = Path(&quot;style.css&quot;).resolve()      # absolute path to CSS
 
-ignored_mds = [Path("./README.md")]         # will not apply to ALL Markdown files
+ignored_mds = [Path(&quot;./README.md&quot;)]         # will not apply to ALL Markdown files
 
-markdown_files = [md for md in Path(".").rglob("*.md") if md not in ignored_mds]
+markdown_files = [md for md in Path(&quot;.&quot;).rglob(&quot;*.md&quot;) if md not in ignored_mds]
 
-paired_files = [(md, md.parent / "index.html") for md in markdown_files if md not in ignored_mds]   # target: index.html file in the same directory
+paired_files = [(md, md.parent / &quot;index.html&quot;) for md in markdown_files if md not in ignored_mds]   # target: index.html file in the same directory
 
-print("### BUILD ###")
+print(&quot;### BUILD ###&quot;)
 
 for md, html in paired_files:
     mod_time_md = md.stat().st_mtime
@@ -117,14 +117,14 @@ for md, html in paired_files:
     relative_path_css  = os.path.relpath(css_path, start=html.parent)  # relative to html and md path
 
     subprocess.run([
-        "pandoc",
-        "-s", str(md),
-        "-o", str(html),
-        "--css", relative_path_css,
-        "-V", "title="
+        &quot;pandoc&quot;,
+        &quot;-s&quot;, str(md),
+        &quot;-o&quot;, str(html),
+        &quot;--css&quot;, relative_path_css,
+        &quot;-V&quot;, &quot;title=&quot;
     ])
 
-    print(md, "-&gt;", html)
+    print(md, &quot;-&gt;&quot;, html)
 </code></pre>
 <p><code>-s</code> inserts the necessary headers and footers to create a full HTML file.</p>
 <p><code>-V title=</code> prevents pandoc of inserting the variable defined in <code>% title</code> as a header, while still keeping it as the document title.</p>
@@ -147,15 +147,15 @@ autocmd FileType markdown autocmd BufWritePost &lt;buffer&gt; execute '!python3 
 <p>For easy deployment I made a simple shell script <code>deploy.sh</code>.</p>
 <pre><code>set -e
 
-working_branch="working"
+working_branch=&quot;working&quot;
 
 git checkout master
-git merge "$working_branch" --no-ff -m "Merge $working_branch branch into master"
+git merge &quot;$working_branch&quot; --no-ff -m &quot;Merge $working_branch branch into master&quot;
 git push origin master
 
-echo "Master branch updated"
+echo &quot;Master branch updated&quot;
 
-git checkout "$working_branch"
+git checkout &quot;$working_branch&quot;
 </code></pre>
 <p><code>set -e</code> tells the shell to exit immediately if any command fails.</p>
 <p><code>--no-ff</code> ensures git creates a merge commit even if a fast-forward is possible.</p>
